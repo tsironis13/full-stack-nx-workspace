@@ -1,14 +1,13 @@
 {
   "extends": "../../tsconfig.base.json",
-  "compilerOptions": {
-    "outDir": "out-tsc/@full-stack-nx-workspace/business-portal-api-e2e",
-    "esModuleInterop": true,
-    "noUnusedLocals": false,
-    "noImplicitAny": false
-  },
-  "include": [
-    "jest.config.ts",
-    "src/**/*.ts"
+  "files": [],
+  "include": [],
+  "references": [
+    {
+      "path": "./tsconfig.spec.json"
+    }
   ],
-  "references": []
+  "compilerOptions": {
+    "esModuleInterop": true
+  }
 }
