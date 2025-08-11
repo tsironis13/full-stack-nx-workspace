@@ -9,7 +9,7 @@ import { DrizzleService } from './drizzle.service';
   imports: [
     // Method #1: Pass options object
     DrizzlePostgresModule.register({
-      tag: process.env.DB_TAG,
+      tag: 'DB_DEV',
       postgres: {
         url: process.env.DATABASE_URL as string,
       },
