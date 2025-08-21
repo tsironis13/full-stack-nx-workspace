@@ -29,7 +29,8 @@
           "buildDepsName": "build-deps",
           "watchDepsName": "watch-deps"
         }
-      }
+      },
+      "exclude": ["libs/api/shared/dto/pagination/*"]
     },
     {
       "plugin": "@nx/webpack/plugin",
@@ -52,12 +53,24 @@
       "options": {
         "targetName": "test"
       },
-      "exclude": ["apps/business-portal-api-e2e/**/*"]
+      "exclude": [
+        "apps/business-portal-api-e2e/**/*",
+        "apps/ecommerce-api-e2e/**/*"
+      ]
     },
     {
       "plugin": "@nx/playwright/plugin",
       "options": {
         "targetName": "e2e"
+      }
+    },
+    {
+      "plugin": "@nx/js/typescript",
+      "include": ["libs/api/shared/dto/pagination/*"],
+      "options": {
+        "typecheck": {
+          "targetName": "typecheck"
+        }
       }
     }
   ],

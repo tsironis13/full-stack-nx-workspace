@@ -7,7 +7,5 @@ import * as schema from '../db/schema';
 export class DrizzleService {
   constructor(
     @Inject('DB_DEV') readonly db: PostgresJsDatabase<typeof schema>
-  ) {
-    console.log('test123');
-  }
+  ) {}
 }
