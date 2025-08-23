@@ -18,8 +18,4 @@ import { SupabaseSdkModule } from './supabase-sdk.module';
   ],
   exports: [SupabaseSdkModule],
 })
-export class SupabaseModule {
-  constructor() {
-    console.log('test123');
-  }
-}
+export class SupabaseModule {}

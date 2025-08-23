@@ -1,20 +1,30 @@
 import { Injectable } from '@nestjs/common';
+import { asc } from 'drizzle-orm';
+
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { DrizzleService } from '../drizzle/drizzle.service';
-import { PaginationDto } from '@full-stack-nx-workspace/pagination';
+import { ProductsPaginatedPostDto } from './dto/products-paginated.post.dto';
+import { products } from '../db/schema';
+import { withPagination } from '@full-stack-nx-workspace/api';
 
 @Injectable()
 export class ProductsService {
   constructor(private readonly drizzleService: DrizzleService) {}
-  create(createProductDto: CreateProductDto) {
-    return 'This action adds a new product';
+
+  getAllPaginated(productsPaginatedPostDto: ProductsPaginatedPostDto) {
+    const productsQuery = this.drizzleService.db.select().from(products);
+
+    return withPagination(
+      productsQuery.$dynamic(),
+      asc(products.id),
+      productsPaginatedPostDto.page,
+      productsPaginatedPostDto.limit
+    );
   }
 
-  findAll(paginationDto: PaginationDto) {
-    console.log(paginationDto);
-    const products1 = this.drizzleService.db.query.products.findMany();
-    return products1;
+  create(createProductDto: CreateProductDto) {
+    return 'This action adds a new product';
   }
 
   findOne(id: number) {

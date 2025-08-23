@@ -19,9 +19,7 @@
     "customConditions": ["development"],
     "baseUrl": ".",
     "paths": {
-      "@full-stack-nx-workspace/pagination": [
-        "libs/api/shared/dto/pagination/src/index.ts"
-      ]
+      "@full-stack-nx-workspace/api": ["libs/api/src/index.ts"]
     }
   }
 }
