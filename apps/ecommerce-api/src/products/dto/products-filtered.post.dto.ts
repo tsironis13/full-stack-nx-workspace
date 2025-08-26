@@ -1,3 +1,3 @@
 import { PaginationDto } from '@full-stack-nx-workspace/api';
 
-export class ProductsPaginatedPostDto extends PaginationDto {}
+export class ProductsFilteredPostDto extends PaginationDto {}

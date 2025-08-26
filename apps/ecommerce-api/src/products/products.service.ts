@@ -1,25 +1,46 @@
 import { Injectable } from '@nestjs/common';
-import { asc } from 'drizzle-orm';
+import { asc, eq, sql } from 'drizzle-orm';
 
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { DrizzleService } from '../drizzle/drizzle.service';
-import { ProductsPaginatedPostDto } from './dto/products-paginated.post.dto';
-import { products } from '../db/schema';
+import { ProductsFilteredPostDto } from './dto/products-filtered.post.dto';
+import { products, productItems, productImages } from '../db/schema';
 import { withPagination } from '@full-stack-nx-workspace/api';
 
 @Injectable()
 export class ProductsService {
   constructor(private readonly drizzleService: DrizzleService) {}
 
-  getAllPaginated(productsPaginatedPostDto: ProductsPaginatedPostDto) {
-    const productsQuery = this.drizzleService.db.select().from(products);
+  getFiltered(productsFilteredPostDto: ProductsFilteredPostDto) {
+    const productsQuery = this.drizzleService.db
+      .select({
+        sku: productItems.sku,
+        category_id: products.categoryId,
+        name: products.name,
+        description: products.description,
+        original_price: productItems.originalPrice,
+        sale_price: productItems.salePrice,
+        image_url: productImages.url,
+        variations_count: sql<number>`
+      (SELECT COUNT(*)
+       FROM ${productItems} product_items
+       WHERE product_items.product_id = ${products.id}
+         AND product_items.id <> ${productItems.id})`,
+      })
+      .from(products)
+      .innerJoin(productItems, eq(products.id, productItems.productId))
+      .innerJoin(
+        productImages,
+        eq(productItems.id, productImages.productItemId)
+      )
+      .where(eq(productItems.isMainProduct, true));
 
     return withPagination(
       productsQuery.$dynamic(),
       asc(products.id),
-      productsPaginatedPostDto.page,
-      productsPaginatedPostDto.limit
+      productsFilteredPostDto.page,
+      productsFilteredPostDto.limit
     );
   }
 
