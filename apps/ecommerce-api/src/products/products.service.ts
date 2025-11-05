@@ -4,7 +4,7 @@ import { asc, eq, sql } from 'drizzle-orm';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { DrizzleService } from '../drizzle/drizzle.service';
-import { ProductsFilteredPostDto } from './dto/products-filtered.post.dto';
+import { ProductsPostDto } from './dto/products.post.dto';
 import { products, productItems, productImages } from '../db/schema';
 import { withPagination } from '@full-stack-nx-workspace/api';
 
@@ -12,7 +12,7 @@ import { withPagination } from '@full-stack-nx-workspace/api';
 export class ProductsService {
   constructor(private readonly drizzleService: DrizzleService) {}
 
-  getFiltered(productsFilteredPostDto: ProductsFilteredPostDto) {
+  getPaginatedFilteredBy(productsPostDto: ProductsPostDto) {
     const productsQuery = this.drizzleService.db
       .select({
         sku: productItems.sku,
@@ -35,12 +35,13 @@ export class ProductsService {
         eq(productItems.id, productImages.productItemId)
       )
       .where(eq(productItems.isMainProduct, true));
+      
 
     return withPagination(
       productsQuery.$dynamic(),
       asc(products.id),
-      productsFilteredPostDto.page,
-      productsFilteredPostDto.limit
+      productsPostDto.page,
+      productsPostDto.limit
     );
   }
 
