@@ -59,6 +59,7 @@ export default [
                 ['core-api'],
                 ['layout'],
                 ['ui-api'],
+                ['domain-routes'],
               ],
             },
             {

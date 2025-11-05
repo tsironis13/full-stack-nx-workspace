@@ -1,0 +1,13 @@
+import { ProductsDataService } from '../data/public-api';
+import { ProductsApiService } from '../infrastructure/public-api';
+
+export default [
+  {
+    path: '',
+    providers: [ProductsDataService, ProductsApiService],
+    loadComponent: () =>
+      import('../feat-catalog/products-catalog.page').then(
+        (m) => m.ProductsCatalogPage
+      ),
+  },
+];
