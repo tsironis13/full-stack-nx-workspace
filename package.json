@@ -17,6 +17,8 @@
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.0",
     "@nestjs/platform-express": "^11.0.0",
+    "@ngrx/operators": "^20.1.0",
+    "@ngrx/signals": "^20.1.0",
     "@supabase/supabase-js": "^2.55.0",
     "axios": "^1.6.0",
     "class-transformer": "^0.5.1",

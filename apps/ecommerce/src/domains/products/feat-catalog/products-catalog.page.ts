@@ -1,19 +1,23 @@
-import { Component, inject, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  OnInit,
+} from '@angular/core';
 
-import { ProductsDataService } from '../data/public-api';
+import { ProductsFacade } from '../application/public-api';
+import { CardComponent } from '@full-stack-nx-workspace/shared';
 
 @Component({
   selector: 'app-products-catalog',
   templateUrl: './products-catalog.page.html',
+  imports: [CardComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductsCatalogPage implements OnInit {
-  readonly #productsDataService = inject(ProductsDataService);
+  protected readonly productsFacade = inject(ProductsFacade);
 
   ngOnInit(): void {
-    this.#productsDataService
-      .getPaginatedFilteredBy({ page: 1, limit: 10 })
-      .subscribe((products) => {
-        console.log(products);
-      });
+    this.productsFacade.getProductsPaginatedFilteredBy({ page: 1, limit: 10 });
   }
 }

@@ -77,6 +77,7 @@ export default [
                 ['domain-data-api', { domain: '${from.domain}' }],
                 ['domain-feature', { domain: '${from.domain}' }],
                 ['domain-infrastructure-api', { domain: '${from.domain}' }],
+                ['domain-application-api', { domain: '${from.domain}' }],
               ],
             },
             {
@@ -88,11 +89,16 @@ export default [
               ],
             },
             {
+              from: ['domain-business'],
+              allow: [['domain-business', { domain: '${from.domain}' }]],
+            },
+            {
               from: ['domain-data'],
               allow: [
                 ['env'],
                 ['core-api'],
                 ['domain-data', { domain: '${from.domain}' }],
+                ['domain-business-api', { domain: '${from.domain}' }],
                 ['domain-infrastructure-api', { domain: '${from.domain}' }],
               ],
             },
@@ -103,12 +109,27 @@ export default [
                 ['core-api'],
                 ['pattern-api'],
                 ['ui-api'],
+                ['lib'],
                 [
                   'domain-feature',
                   { domain: '${from.domain}', feature: '${from.feature}' },
                 ],
-                ['domain-data-api', { domain: '${from.domain}' }],
+                ['domain-application-api', { domain: '${from.domain}' }],
                 ['domain-shared', { domain: '${from.domain}' }],
+              ],
+            },
+            {
+              from: ['domain-application'],
+              allow: [
+                ['env'],
+                ['core-api'],
+                ['lib'],
+                [
+                  'domain-application',
+                  { domain: '${from.domain}', feature: '${from.feature}' },
+                ],
+                ['domain-data-api', { domain: '${from.domain}' }],
+                ['domain-business-api', { domain: '${from.domain}' }],
               ],
             },
             {
@@ -253,6 +274,28 @@ export default [
         {
           type: 'domain-infrastructure',
           pattern: 'domains/*/infrastructure',
+          capture: ['domain'],
+        },
+        {
+          type: 'domain-application-api',
+          mode: 'file',
+          pattern: 'domains/*/application/public-api.ts',
+          capture: ['domain'],
+        },
+        {
+          type: 'domain-application',
+          pattern: 'domains/*/application',
+          capture: ['domain'],
+        },
+        {
+          type: 'domain-business-api',
+          mode: 'file',
+          pattern: 'domains/*/domain/public-api.ts',
+          capture: ['domain'],
+        },
+        {
+          type: 'domain-business',
+          pattern: 'domains/*/domain',
           capture: ['domain'],
         },
         // library types

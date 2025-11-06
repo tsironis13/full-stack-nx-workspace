@@ -1,18 +1,22 @@
 import { inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 
 import { ProductsApiService } from '../infrastructure/public-api';
-import { ProductDataModel, ProductsPostDataModel } from './products.data.model';
+import {
+  productQueryModelToProductPostDto,
+  productDtoToProductModel,
+} from './products.mapper';
+import { ProductQuery, Product } from '../domain/public-api';
 
 @Injectable()
 export class ProductsDataService {
   readonly #productsApiService = inject(ProductsApiService);
 
   public getPaginatedFilteredBy(
-    productsPostDataModel: ProductsPostDataModel
-  ): Observable<ProductDataModel[]> {
-    return this.#productsApiService.getPaginatedFilteredBy(
-      productsPostDataModel
-    );
+    productQuery: ProductQuery
+  ): Observable<Product[]> {
+    return this.#productsApiService
+      .getPaginatedFilteredBy(productQueryModelToProductPostDto(productQuery))
+      .pipe(map((products) => products.map(productDtoToProductModel)));
   }
 }

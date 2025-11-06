@@ -5,4 +5,5 @@ export type ProductsPostDto = {
 
 export type ProductDto = {
   name: string;
+  image_url: string;
 };

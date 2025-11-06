@@ -19,7 +19,8 @@
     "customConditions": ["development"],
     "baseUrl": ".",
     "paths": {
-      "@full-stack-nx-workspace/api": ["libs/api/src/index.ts"]
+      "@full-stack-nx-workspace/api": ["libs/api/src/index.ts"],
+      "@full-stack-nx-workspace/shared": ["libs/shared/src/lib/public-api.ts"]
     }
   }
 }
