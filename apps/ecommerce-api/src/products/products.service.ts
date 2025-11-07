@@ -15,6 +15,7 @@ export class ProductsService {
   getPaginatedFilteredBy(productsPostDto: ProductsPostDto) {
     const productsQuery = this.drizzleService.db
       .select({
+        id: products.id,
         sku: productItems.sku,
         category_id: products.categoryId,
         name: products.name,
@@ -35,7 +36,6 @@ export class ProductsService {
         eq(productItems.id, productImages.productItemId)
       )
       .where(eq(productItems.isMainProduct, true));
-      
 
     return withPagination(
       productsQuery.$dynamic(),

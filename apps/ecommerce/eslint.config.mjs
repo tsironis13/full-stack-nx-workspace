@@ -48,6 +48,7 @@ export default [
                 ['pattern-api'],
                 ['layout'],
                 ['domain-routes'],
+                ['domain-feature'],
               ],
             },
             {
@@ -124,6 +125,7 @@ export default [
                 ['env'],
                 ['core-api'],
                 ['lib'],
+                ['domain-application-anti-corruption-layer-api'],
                 [
                   'domain-application',
                   { domain: '${from.domain}', feature: '${from.feature}' },
@@ -275,6 +277,11 @@ export default [
           type: 'domain-infrastructure',
           pattern: 'domains/*/infrastructure',
           capture: ['domain'],
+        },
+        {
+          type: 'domain-application-anti-corruption-layer-api',
+          mode: 'file',
+          pattern: 'domains/*/application/anti-corruption-layer.ts',
         },
         {
           type: 'domain-application-api',

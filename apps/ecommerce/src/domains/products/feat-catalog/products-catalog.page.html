@@ -1,11 +1,19 @@
 <h1>Products Catalog</h1>
 
 <button
+  style="display: block"
   (click)="productsFacade.getProductsPaginatedFilteredBy({ page: 2, limit: 5 })"
 >
   Load Products
 </button>
 
-@for (product of productsFacade.products(); track $index) {
+@for (product of productsFacade.productsViewModel(); track $index) {
 <app-card [card]="product" [attr.data-index]="$index"></app-card>
+<div>{{ product.name }}</div>
+<button
+  style="display: block"
+  (click)="productsFacade.addItemToCart(product.id)"
+>
+  Add to Cart
+</button>
 }

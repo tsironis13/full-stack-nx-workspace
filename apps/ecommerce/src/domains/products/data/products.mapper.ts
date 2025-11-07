@@ -12,6 +12,7 @@ export const productQueryModelToProductPostDto = (
 
 export const productDtoToProductModel = (productDto: ProductDto): Product => {
   return {
+    id: productDto.id,
     name: productDto.name,
     imageUrl: productDto.image_url,
   };
