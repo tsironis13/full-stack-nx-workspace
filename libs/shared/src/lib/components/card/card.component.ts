@@ -1,14 +1,42 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  contentChild,
+  Directive,
+  TemplateRef,
+} from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
 
-import { ImageComponent } from '../image/image.component';
-import { CardViewModel } from './card.view.model';
+@Directive({
+  selector: 'ng-template[cardBody]',
+})
+export class CardBodyTemplateDirective {}
+
+@Directive({
+  selector: 'ng-template[cardHeader]',
+})
+export class CardHeaderTemplateDirective {}
 
 @Component({
   selector: 'app-card',
   templateUrl: './card.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ImageComponent],
+  imports: [NgTemplateOutlet],
+  host: {
+    class: 'relative w-full',
+  },
 })
 export class CardComponent {
-  public readonly card = input.required<CardViewModel>();
+  protected readonly cardHeaderTemplate = contentChild(
+    CardHeaderTemplateDirective,
+    {
+      read: TemplateRef,
+    }
+  );
+  protected readonly cardBodyTemplate = contentChild(
+    CardBodyTemplateDirective,
+    {
+      read: TemplateRef,
+    }
+  );
 }

@@ -5,6 +5,9 @@
   "prefix": "app",
   "sourceRoot": "apps/ecommerce/src",
   "tags": [],
+  "i18n": {
+    "sourceLocale": "el-GR"
+  },
   "targets": {
     "build": {
       "executor": "@angular/build:application",

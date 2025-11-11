@@ -48,7 +48,7 @@ export default [
                 ['pattern-api'],
                 ['layout'],
                 ['domain-routes'],
-                ['domain-feature'],
+                ['domain-application-anti-corruption-layer-api'],
               ],
             },
             {

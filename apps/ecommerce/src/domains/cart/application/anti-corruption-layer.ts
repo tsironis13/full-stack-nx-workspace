@@ -3,4 +3,5 @@
  * Exposes stuff that are needed by other domains like the products domain
  * Domains can communicate with each other only through the anti-corruption layer
  */
-export { addItemToCart } from './events';
+export { addItemToCart, removeItemFromCart } from './events';
+export { CartUiAdapter } from './cart-ui.adapter';

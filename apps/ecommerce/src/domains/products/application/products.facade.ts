@@ -1,10 +1,26 @@
 import { computed, inject, Injectable } from '@angular/core';
-import { Dispatcher } from '@ngrx/signals/events';
 
 import { ProductsStore } from './products.store';
 import { Product, ProductQuery } from '../domain/public-api';
 import { ProductViewModel } from './view-models/product.view.model';
-import { addItemToCart } from '../../cart/application/anti-corruption-layer';
+
+const productToProductViewModel = (
+  product: Product,
+  quantity: number
+): ProductViewModel => {
+  return {
+    id: product.id,
+    name: product.name,
+    image: {
+      path: product.imageUrl,
+      priority: false,
+      fill: true,
+    },
+    originalPrice: product.originalPrice,
+    salePrice: product.salePrice,
+    quantity: quantity,
+  };
+};
 
 /**
  * Facade for the products domain
@@ -16,26 +32,24 @@ import { addItemToCart } from '../../cart/application/anti-corruption-layer';
 @Injectable()
 export class ProductsFacade {
   readonly #productsStore = inject(ProductsStore);
-  readonly #dispatcher = inject(Dispatcher);
 
   public readonly productsViewModel = computed<ProductViewModel[]>(() =>
-    this.#productsStore.products().map((product: Product) => ({
-      id: product.id,
-      name: product.name,
-      image: {
-        path: product.imageUrl,
-        priority: false,
-        width: 300,
-        height: 300,
-      },
-    }))
+    this.#productsStore
+      .products()
+      .map((product: { item: Product; quantity: number }) =>
+        productToProductViewModel(product.item, product.quantity)
+      )
   );
 
   public getProductsPaginatedFilteredBy(query: ProductQuery): void {
     this.#productsStore.getProductsPaginatedFilteredBy(query);
   }
 
+  public removeItemFromCart(id: number): void {
+    this.#productsStore.removeItemFromCart(id);
+  }
+
   public addItemToCart(id: number): void {
-    this.#dispatcher.dispatch(addItemToCart(id));
+    this.#productsStore.addItemToCart(id);
   }
 }

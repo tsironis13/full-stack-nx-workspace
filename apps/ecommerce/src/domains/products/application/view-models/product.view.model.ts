@@ -4,4 +4,7 @@ export type ProductViewModel = {
   id: number;
   name: string;
   image: ImageViewModel;
+  originalPrice: number;
+  salePrice: number;
+  quantity: number;
 };

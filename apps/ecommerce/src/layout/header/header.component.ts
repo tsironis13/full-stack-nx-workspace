@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 
-import { CartIconComponent } from '../../domains/cart/feat-cart-icon/cart-icon.component';
+import { CartIconComponent } from './cart-icon/cart-icon.component';
 
 @Component({
   selector: 'app-header',

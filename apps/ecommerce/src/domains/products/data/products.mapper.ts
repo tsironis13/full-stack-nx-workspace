@@ -15,5 +15,7 @@ export const productDtoToProductModel = (productDto: ProductDto): Product => {
     id: productDto.id,
     name: productDto.name,
     imageUrl: productDto.image_url,
+    originalPrice: productDto.original_price,
+    salePrice: productDto.sale_price,
   };
 };

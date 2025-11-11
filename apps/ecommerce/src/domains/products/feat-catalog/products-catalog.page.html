@@ -6,14 +6,40 @@
 >
   Load Products
 </button>
+<div class="grid grid-cols-4 gap-8">
+  @for (product of productsFacade.productsViewModel(); track $index) {
 
-@for (product of productsFacade.productsViewModel(); track $index) {
-<app-card [card]="product" [attr.data-index]="$index"></app-card>
-<div>{{ product.name }}</div>
-<button
-  style="display: block"
-  (click)="productsFacade.addItemToCart(product.id)"
->
-  Add to Cart
-</button>
-}
+  <app-card>
+    <ng-template cardHeader>
+      <app-card-header>
+        <ng-template cardHeaderContent>
+          <app-image
+            class="relative h-112 flex"
+            [image]="product.image"
+          ></app-image>
+        </ng-template>
+        <ng-template cardHeaderActions
+          ><p-button
+            label="Remove"
+            (onClick)="productsFacade.removeItemFromCart(product.id)"
+          />
+          {{ product.quantity }}
+          <p-button
+            label="Add to Cart"
+            (onClick)="productsFacade.addItemToCart(product.id)"
+          />
+        </ng-template>
+      </app-card-header>
+    </ng-template>
+
+    <ng-template cardBody>
+      <app-card-body>
+        <ng-template cardBodyTitle>{{ product.name }}</ng-template>
+        <ng-template cardBodyDescription>
+          {{ product.salePrice | currency: 'EUR':'symbol':'1.2-2' }}
+        </ng-template>
+      </app-card-body>
+    </ng-template>
+  </app-card>
+  }
+</div>

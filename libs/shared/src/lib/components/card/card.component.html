@@ -1,1 +1,15 @@
-<app-image [image]="card().image"></app-image>
+<ng-container
+  [ngTemplateOutlet]="cardHeaderTemplate() || defaultCardHeaderTemplate"
+></ng-container>
+
+<ng-container
+  [ngTemplateOutlet]="cardBodyTemplate() || defaultCardBodyTemplate"
+></ng-container>
+
+<ng-template #defaultCardHeaderTemplate>
+  <div>card header</div>
+</ng-template>
+
+<ng-template #defaultCardBodyTemplate>
+  <div>card body</div>
+</ng-template>

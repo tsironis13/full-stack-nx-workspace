@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { asc, eq, sql } from 'drizzle-orm';
+import { and, asc, count, eq, ne, sql } from 'drizzle-orm';
+import { alias } from 'drizzle-orm/pg-core';
 
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -13,6 +14,27 @@ export class ProductsService {
   constructor(private readonly drizzleService: DrizzleService) {}
 
   getPaginatedFilteredBy(productsPostDto: ProductsPostDto) {
+    const productImageSubquery = this.drizzleService.db
+      .select({ url: productImages.url })
+      .from(productImages)
+      .where(eq(productImages.productItemId, productItems.id))
+      .orderBy(asc(productImages.id))
+      .limit(1)
+      .as('img');
+
+    const pi2 = alias(productItems, 'pi2');
+
+    const variationsCountSubquery = this.drizzleService.db
+      .select({ variations_count: count().as('variations_count') })
+      .from(pi2)
+      .where(
+        and(
+          eq(pi2.productId, productItems.productId), // same product
+          ne(pi2.id, productItems.id) // exclude self
+        )
+      )
+      .as('variations_count');
+
     const productsQuery = this.drizzleService.db
       .select({
         id: products.id,
@@ -22,19 +44,13 @@ export class ProductsService {
         description: products.description,
         original_price: productItems.originalPrice,
         sale_price: productItems.salePrice,
-        image_url: productImages.url,
-        variations_count: sql<number>`
-      (SELECT COUNT(*)
-       FROM ${productItems} product_items
-       WHERE product_items.product_id = ${products.id}
-         AND product_items.id <> ${productItems.id})`,
+        image_url: productImageSubquery.url,
+        variations_count: variationsCountSubquery.variations_count,
       })
       .from(products)
-      .innerJoin(productItems, eq(products.id, productItems.productId))
-      .innerJoin(
-        productImages,
-        eq(productItems.id, productImages.productItemId)
-      )
+      .innerJoin(productItems, eq(productItems.productId, products.id))
+      .leftJoinLateral(variationsCountSubquery, sql`true`)
+      .leftJoinLateral(productImageSubquery, sql`true`)
       .where(eq(productItems.isMainProduct, true));
 
     return withPagination(
