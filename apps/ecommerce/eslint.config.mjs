@@ -68,6 +68,13 @@ export default [
               allow: [['lib-api'], ['env'], ['core-api'], ['ui-api']],
             },
             {
+              from: 'domain-application-anti-corruption-layer-api',
+              allow: [
+                ['domain-application-api'],
+                ['domain-application-anti-corruption-layer-api'],
+              ],
+            },
+            {
               from: ['domain-routes'],
               allow: [
                 ['lib-api'],

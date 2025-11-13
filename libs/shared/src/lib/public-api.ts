@@ -15,3 +15,4 @@ export {
   CardBodyTitleTemplateDirective,
   CardBodyDescriptionTemplateDirective,
 } from './components/card/body/card-body/card-body.component';
+export { CartQuantityControlComponent } from './components/cart-quantity-control/cart-quantity-control.component';

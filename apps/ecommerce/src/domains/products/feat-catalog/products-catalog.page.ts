@@ -5,7 +5,6 @@ import {
   OnInit,
 } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
-import { ButtonModule } from 'primeng/button';
 
 import { ProductsFacade } from '../application/public-api';
 import {
@@ -19,6 +18,7 @@ import {
   CardBodyTemplateDirective,
   CardBodyTitleTemplateDirective,
   CardBodyDescriptionTemplateDirective,
+  CartQuantityControlComponent,
 } from '@full-stack-nx-workspace/shared';
 
 @Component({
@@ -36,7 +36,7 @@ import {
     CardBodyTitleTemplateDirective,
     CardBodyDescriptionTemplateDirective,
     ImageComponent,
-    ButtonModule,
+    CartQuantityControlComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -45,5 +45,6 @@ export class ProductsCatalogPage implements OnInit {
 
   ngOnInit(): void {
     this.productsFacade.getProductsPaginatedFilteredBy({ page: 1, limit: 10 });
+    this.productsFacade.getProductCategoryFilters(434);
   }
 }

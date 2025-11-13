@@ -1,7 +1,13 @@
-import { patchState, signalStore, withMethods, withState } from '@ngrx/signals';
+import {
+  patchState,
+  signalStore,
+  withHooks,
+  withMethods,
+  withState,
+} from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { inject } from '@angular/core';
-import { debounceTime, distinctUntilChanged, pipe, switchMap } from 'rxjs';
+import { distinctUntilChanged, pipe, switchMap } from 'rxjs';
 import { tapResponse } from '@ngrx/operators';
 import { Dispatcher } from '@ngrx/signals/events';
 
@@ -56,7 +62,6 @@ export const ProductsStore = signalStore(
       },
       getProductsPaginatedFilteredBy: rxMethod<ProductQuery>(
         pipe(
-          debounceTime(300),
           distinctUntilChanged(),
           switchMap((query) => {
             return productsService.getPaginatedFilteredBy(query).pipe(
@@ -78,5 +83,10 @@ export const ProductsStore = signalStore(
         )
       ),
     })
-  )
+  ),
+  withHooks(() => ({
+    onInit: () => {
+      console.log('products store initialized');
+    },
+  }))
 );

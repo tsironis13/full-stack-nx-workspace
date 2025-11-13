@@ -4,6 +4,10 @@ import { CartStore } from './cart.store';
 import { CartItem } from '../domain/public-api';
 import { CartItemViewModel } from './view-models/cart-item.view.model';
 
+/**
+ * Used only by the cart domain UI layer to transform the cart domain state into a UI view model.
+ * Does not expose to world outside the cart domain.
+ */
 @Injectable({
   providedIn: 'root',
 })

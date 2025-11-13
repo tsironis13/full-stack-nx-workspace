@@ -18,16 +18,12 @@
             [image]="product.image"
           ></app-image>
         </ng-template>
-        <ng-template cardHeaderActions
-          ><p-button
-            label="Remove"
-            (onClick)="productsFacade.removeItemFromCart(product.id)"
-          />
-          {{ product.quantity }}
-          <p-button
-            label="Add to Cart"
-            (onClick)="productsFacade.addItemToCart(product.id)"
-          />
+        <ng-template cardHeaderActions>
+          <app-cart-quantity-control
+            [quantity]="product.quantity"
+            (addItemToCart)="productsFacade.addItemToCart(product.id)"
+            (removeItemFromCart)="productsFacade.removeItemFromCart(product.id)"
+          ></app-cart-quantity-control>
         </ng-template>
       </app-card-header>
     </ng-template>

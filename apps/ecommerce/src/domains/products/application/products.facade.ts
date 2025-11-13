@@ -1,8 +1,9 @@
-import { computed, inject, Injectable } from '@angular/core';
+import { computed, effect, inject, Injectable } from '@angular/core';
 
 import { ProductsStore } from './products.store';
 import { Product, ProductQuery } from '../domain/public-api';
 import { ProductViewModel } from './view-models/product.view.model';
+import { CategoriesUiAdapter } from '../../../domains/categories/application/anti-corruption-layer';
 
 const productToProductViewModel = (
   product: Product,
@@ -32,6 +33,11 @@ const productToProductViewModel = (
 @Injectable()
 export class ProductsFacade {
   readonly #productsStore = inject(ProductsStore);
+  readonly #categoriesUiAdapter = inject(CategoriesUiAdapter);
+
+  c = effect(() => {
+    console.log(this.#categoriesUiAdapter.categoryFilters());
+  });
 
   public readonly productsViewModel = computed<ProductViewModel[]>(() =>
     this.#productsStore
@@ -40,6 +46,12 @@ export class ProductsFacade {
         productToProductViewModel(product.item, product.quantity)
       )
   );
+
+  public getProductCategoryFilters(categoryId: number): void {
+    this.#categoriesUiAdapter.getCategoryFiltersGroupedByAttributeValuesById(
+      categoryId
+    );
+  }
 
   public getProductsPaginatedFilteredBy(query: ProductQuery): void {
     this.#productsStore.getProductsPaginatedFilteredBy(query);
