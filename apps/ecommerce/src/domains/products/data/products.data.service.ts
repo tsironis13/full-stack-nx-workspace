@@ -3,20 +3,47 @@ import { map, Observable } from 'rxjs';
 
 import { ProductsApiService } from '../infrastructure/public-api';
 import {
-  productQueryModelToProductPostDto,
+  productCatalogFilterDtoToProductCatalogFilterModel,
+  productCatalogFiltersQueryModelToProductCatalogFiltersPostDto,
+  productCatalogQueryModelToProductCatalogPostDto,
   productDtoToProductModel,
 } from './products.mapper';
-import { ProductQuery, Product } from '../domain/public-api';
+import {
+  Product,
+  ProductCatalogFilter,
+  ProductCatalogFiltersQuery,
+  ProductCatalogQuery,
+} from '../domain/public-api';
 
 @Injectable()
 export class ProductsDataService {
   readonly #productsApiService = inject(ProductsApiService);
 
-  public getPaginatedFilteredBy(
-    productQuery: ProductQuery
+  public getPaginatedProductsCatalogFilteredBy(
+    productCatalogQuery: ProductCatalogQuery
   ): Observable<Product[]> {
     return this.#productsApiService
-      .getPaginatedFilteredBy(productQueryModelToProductPostDto(productQuery))
+      .getPaginatedProductsCatalogFilteredBy(
+        productCatalogQueryModelToProductCatalogPostDto(productCatalogQuery)
+      )
       .pipe(map((products) => products.map(productDtoToProductModel)));
+  }
+
+  public getProductsCatalogFilters(
+    productCatalogFiltersQuery: ProductCatalogFiltersQuery
+  ): Observable<ProductCatalogFilter[]> {
+    return this.#productsApiService
+      .getProductsCatalogFilters(
+        productCatalogFiltersQueryModelToProductCatalogFiltersPostDto(
+          productCatalogFiltersQuery
+        )
+      )
+      .pipe(
+        map((productCatalogFilters) =>
+          productCatalogFilters.map(
+            productCatalogFilterDtoToProductCatalogFilterModel
+          )
+        )
+      );
   }
 }

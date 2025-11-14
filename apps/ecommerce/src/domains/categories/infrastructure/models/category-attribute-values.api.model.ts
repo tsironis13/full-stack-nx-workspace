@@ -1,6 +1,9 @@
+type InputType = 'radio' | 'checkbox';
+
 export type CategoryAttributeValuesDto = {
   attribute_id: number;
   attribute_name: string;
+  attribute_input_type: InputType;
   values: CategoryAttributeValueDto[];
 }[];
 

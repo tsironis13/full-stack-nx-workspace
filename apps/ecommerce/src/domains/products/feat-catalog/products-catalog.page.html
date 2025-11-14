@@ -1,41 +1,76 @@
 <h1>Products Catalog</h1>
 
-<button
-  style="display: block"
-  (click)="productsFacade.getProductsPaginatedFilteredBy({ page: 2, limit: 5 })"
->
-  Load Products
-</button>
-<div class="grid grid-cols-4 gap-8">
-  @for (product of productsFacade.productsViewModel(); track $index) {
+<div class="flex gap-10 flex-col lg:flex-row items-start justify-between">
+  <div
+    [formGroup]="productsCatalogStore.productFiltersForm()"
+    class="grid grid-cols-1 gap-4 w-full lg:max-w-[300px]"
+  >
+    @for (filter of productsCatalogStore.productFilters(); track $index) {
+    <div>
+      <h3>{{ filter.attributeName }}</h3>
 
-  <app-card>
-    <ng-template cardHeader>
-      <app-card-header>
-        <ng-template cardHeaderContent>
-          <app-image
-            class="relative h-112 flex"
-            [image]="product.image"
-          ></app-image>
-        </ng-template>
-        <ng-template cardHeaderActions>
-          <app-cart-quantity-control
-            [quantity]="product.quantity"
-            (addItemToCart)="productsFacade.addItemToCart(product.id)"
-            (removeItemFromCart)="productsFacade.removeItemFromCart(product.id)"
-          ></app-cart-quantity-control>
-        </ng-template>
-      </app-card-header>
-    </ng-template>
+      @switch (filter.inputType) { @case ('radio') { @for (filterValue of
+      filter.values; track $index) {
+      <div>
+        <p-radiobutton
+          [inputId]="'test-' + filterValue.valueId"
+          [formControlName]="filter.attributeName"
+          [name]="filter.attributeName"
+          [value]="filterValue.valueName"
+        />
+        <label [for]="filter.attributeName" class="ml-2">
+          {{ filterValue.valueName }}
+        </label>
+        ({{ filterValue.productItemsCount }})
+      </div>
+      } } @case ('checkbox') { @for (filterValue of filter.values; track $index)
+      {
+      <div>
+        <p-checkbox
+          [inputId]="filter.attributeName"
+          [formControlName]="filter.attributeName"
+          [name]="filter.attributeName"
+          [value]="filterValue.valueName"
+        />
+        <label [for]="filter.attributeName" class="ml-2">
+          {{ filterValue.valueName }}
+        </label>
+      </div>
+      } } }
+    </div>
+    }
+  </div>
+  <div class="grid grid-cols-3 gap-8">
+    @for (product of productsCatalogStore.products(); track $index) {
 
-    <ng-template cardBody>
-      <app-card-body>
-        <ng-template cardBodyTitle>{{ product.name }}</ng-template>
-        <ng-template cardBodyDescription>
-          {{ product.salePrice | currency: 'EUR':'symbol':'1.2-2' }}
-        </ng-template>
-      </app-card-body>
-    </ng-template>
-  </app-card>
-  }
+    <app-card>
+      <ng-template cardHeader>
+        <app-card-header>
+          <ng-template cardHeaderContent>
+            <app-image
+              class="relative h-112 flex"
+              [image]="product.image"
+            ></app-image>
+          </ng-template>
+          <ng-template cardHeaderActions>
+            <app-cart-quantity-control
+              [quantity]="product.quantity"
+              (addItemToCart)="productsCatalogStore.addItemToCart(product.id)"
+              (removeItemFromCart)="productsCatalogStore.removeItemFromCart(product.id)"
+            ></app-cart-quantity-control>
+          </ng-template>
+        </app-card-header>
+      </ng-template>
+
+      <ng-template cardBody>
+        <app-card-body>
+          <ng-template cardBodyTitle>{{ product.name }}</ng-template>
+          <ng-template cardBodyDescription>
+            {{ product.salePrice | currency: 'EUR':'symbol':'1.2-2' }}
+          </ng-template>
+        </app-card-body>
+      </ng-template>
+    </app-card>
+    }
+  </div>
 </div>

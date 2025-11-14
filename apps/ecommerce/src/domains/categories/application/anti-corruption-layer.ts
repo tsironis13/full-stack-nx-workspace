@@ -1,6 +1,4 @@
-import { inject, Injectable } from '@angular/core';
-
-import { CategoriesStore } from './public-api';
+import { Injectable } from '@angular/core';
 /** Anti Corruption Layer for the categories domain
  * It is the external interface for the categories domain, not the internal interface for the categories domain
  * Exposes stuff that are needed by other domains like the products domain
@@ -26,14 +24,5 @@ import { CategoriesStore } from './public-api';
  * 🧩 Examples:
  *   - Categories filters use `categoryAttributeValues` to display the categories filters.
  */
-@Injectable({
-  providedIn: 'root',
-})
-export class CategoriesUiAdapter {
-  readonly #categoriesStore = inject(CategoriesStore);
-
-  public readonly getCategoryFiltersGroupedByAttributeValuesById =
-    this.#categoriesStore.getCategoryFiltersGroupedByAttributeValuesById;
-
-  public readonly categoryFilters = this.#categoriesStore.categoryFilters;
-}
+@Injectable()
+export class CategoriesUiAdapter {}

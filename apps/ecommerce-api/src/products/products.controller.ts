@@ -11,15 +11,29 @@ import {
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { ProductsPostDto } from './dto/products.post.dto';
+import { ProductsCatalogPostDto } from './dto/products-catalog.post.dto';
+import { ProductsCatalogFiltersPostDto } from './dto/products-catalog-filters.post.dto';
 
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
-  @Post('paginated') // POST /products/paginated
-  getPaginatedFilteredBy(@Body() productsPostDto: ProductsPostDto) {
-    return this.productsService.getPaginatedFilteredBy(productsPostDto);
+  @Post('/catalog/paginated') // POST /products/catalog/paginated
+  getPaginatedProductsCatalogFilteredBy(
+    @Body() productsCatalogPostDto: ProductsCatalogPostDto
+  ) {
+    return this.productsService.getPaginatedProductsCatalogFilteredBy(
+      productsCatalogPostDto
+    );
+  }
+
+  @Post('/catalog/filters') // POST /products/catalog/filters
+  getProductsCatalogFilters(
+    @Body() productsCatalogFiltersPostDto: ProductsCatalogFiltersPostDto
+  ) {
+    return this.productsService.getProductsCatalogFilters(
+      productsCatalogFiltersPostDto
+    );
   }
 
   @Post()

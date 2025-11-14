@@ -1,2 +1,1 @@
-export { ProductsFacade } from './products.facade';
-export { ProductsStore } from './products.store';
+export { ProductsCatalogStore } from './products-catalog.store';

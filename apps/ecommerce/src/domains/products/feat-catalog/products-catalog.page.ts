@@ -1,12 +1,15 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  effect,
   inject,
-  OnInit,
 } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
+import { CheckboxModule } from 'primeng/checkbox';
+import { RadioButtonModule } from 'primeng/radiobutton';
+import { ReactiveFormsModule } from '@angular/forms';
 
-import { ProductsFacade } from '../application/public-api';
+import { ProductsCatalogStore } from '../application/public-api';
 import {
   CardComponent,
   CardActionsTemplateDirective,
@@ -37,14 +40,36 @@ import {
     CardBodyDescriptionTemplateDirective,
     ImageComponent,
     CartQuantityControlComponent,
+    ReactiveFormsModule,
+    CheckboxModule,
+    RadioButtonModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProductsCatalogPage implements OnInit {
-  protected readonly productsFacade = inject(ProductsFacade);
+export class ProductsCatalogPage {
+  protected readonly productsCatalogStore = inject(ProductsCatalogStore);
 
-  ngOnInit(): void {
-    this.productsFacade.getProductsPaginatedFilteredBy({ page: 1, limit: 10 });
-    this.productsFacade.getProductCategoryFilters(434);
-  }
+  y = effect(() => {
+    console.log(this.productsCatalogStore.productFilters());
+  });
+
+  x = effect(() => {
+    this.productsCatalogStore
+      .productFiltersForm()
+      .valueChanges.subscribe((value) => {
+        console.log(value);
+        this.productsCatalogStore.update({
+          page: 2,
+          limit: 10,
+          filters: {
+            ...this.productsCatalogStore.filterQuery().filters,
+            categoryId: value?.categoryId ?? 0,
+            filter: {
+              df: [],
+            },
+          },
+          //this.productsCatalogFiltersStore.updateCatalogFilters(value);
+        });
+      });
+  });
 }

@@ -4,24 +4,78 @@ import { desc } from 'drizzle-orm';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { DrizzleService } from '../drizzle/drizzle.service';
-import { ProductsPostDto } from './dto/products.post.dto';
+import { ProductsCatalogPostDto } from './dto/products-catalog.post.dto';
 import { products } from '../db/schema';
 import { withPagination } from '@full-stack-nx-workspace/api';
-import { getProducts } from './products.repository';
+import {
+  getProductsCatalog,
+  getProductsCatalogFilters,
+} from './products.repository';
+import { ProductsCatalogFiltersPostDto } from './dto/products-catalog-filters.post.dto';
+
+type InputType = 'radio' | 'checkbox';
+
+type AttributeValue = {
+  value_id: number;
+  value_name: string;
+  product_items_count: number;
+};
+
+type GroupedAttribute = {
+  attribute_id: number;
+  attribute_name: string;
+  attribute_input_type: InputType | null;
+  values: AttributeValue[];
+};
 
 @Injectable()
 export class ProductsService {
   constructor(private readonly drizzleService: DrizzleService) {}
 
-  getPaginatedFilteredBy(productsPostDto: ProductsPostDto) {
-    const productsQuery = getProducts(this.drizzleService);
+  getPaginatedProductsCatalogFilteredBy(
+    productsCatalogPostDto: ProductsCatalogPostDto
+  ) {
+    const productsQuery = getProductsCatalog(this.drizzleService);
 
     return withPagination(
       productsQuery.$dynamic(),
       desc(products.id),
-      productsPostDto.page,
-      productsPostDto.limit
+      productsCatalogPostDto.page,
+      productsCatalogPostDto.limit
     );
+  }
+
+  async getProductsCatalogFilters(
+    productsCatalogFiltersPostDto: ProductsCatalogFiltersPostDto
+  ) {
+    const result = await getProductsCatalogFilters(
+      this.drizzleService,
+      productsCatalogFiltersPostDto
+    );
+
+    return result.reduce<GroupedAttribute[]>((acc, row) => {
+      let attribute = acc.find(
+        (a) => a.attribute_id === Number(row.attribute_id)
+      );
+
+      if (!attribute) {
+        attribute = {
+          attribute_id: Number(row.attribute_id),
+          attribute_name: row.attribute_name ?? '',
+          attribute_input_type: row.input_type,
+          values: [],
+        };
+        acc.push(attribute);
+      }
+
+      attribute.values.push({
+        value_id: Number(row.value_id),
+        value_name: row.value_name ?? '',
+        product_items_count: Number(row.product_items_count),
+      });
+
+      return acc;
+    }, []);
   }
 
   create(createProductDto: CreateProductDto) {
