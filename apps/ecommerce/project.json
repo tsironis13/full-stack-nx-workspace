@@ -15,7 +15,7 @@
       "options": {
         "outputPath": "dist/apps/ecommerce",
         "browser": "apps/ecommerce/src/main.ts",
-        "polyfills": ["zone.js"],
+        "polyfills": [],
         "tsConfig": "apps/ecommerce/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "assets": [

@@ -2,7 +2,6 @@ import {
   ProductCatalogQuery,
   Product,
   ProductCatalogFilter,
-  ProductCatalogFiltersQuery,
 } from '../domain/public-api';
 import {
   ProductDto,
@@ -17,6 +16,8 @@ export const productCatalogQueryModelToProductCatalogPostDto = (
   return {
     page: productQuery.page,
     limit: productQuery.limit,
+    categoryId: productQuery.categoryId,
+    filters: productQuery.filters,
   };
 };
 
@@ -30,12 +31,11 @@ export const productDtoToProductModel = (productDto: ProductDto): Product => {
   };
 };
 
-export const productCatalogFiltersQueryModelToProductCatalogFiltersPostDto = (
-  productCatalogFiltersQuery: ProductCatalogFiltersQuery
+export const categoryIdToProductsCatalogFiltersPostDto = (
+  categoryId: number
 ): ProductsCatalogFiltersPostDto => {
   return {
-    categoryId: productCatalogFiltersQuery.categoryId,
-    filter: productCatalogFiltersQuery.filter,
+    categoryId,
   };
 };
 

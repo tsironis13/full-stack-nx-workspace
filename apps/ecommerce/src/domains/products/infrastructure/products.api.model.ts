@@ -1,6 +1,8 @@
 export type ProductsCatalogPostDto = {
   page: number;
   limit: number;
+  categoryId: number | null;
+  filters: { attributeId: number; values: number[] }[] | null;
 };
 
 export type ProductDto = {
@@ -11,18 +13,17 @@ export type ProductDto = {
   sale_price: number;
 };
 
-export type ProductsCatalogFiltersPostDto = {
-  categoryId: number;
-  filter: Record<string, []> | null;
-};
-
 export type ProductCatalogFilterDto = {
   attribute_id: number;
   attribute_name: string;
-  attribute_input_type: 'radio' | 'checkbox';
+  attribute_input_type: 'radio' | 'checkbox' | 'select';
   values: {
     value_id: number;
     value_name: string;
     product_items_count: number;
   }[];
+};
+
+export type ProductsCatalogFiltersPostDto = {
+  categoryId: number;
 };

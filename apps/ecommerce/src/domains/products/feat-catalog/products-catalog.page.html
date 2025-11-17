@@ -1,10 +1,8 @@
 <h1>Products Catalog</h1>
-
-<div class="flex gap-10 flex-col lg:flex-row items-start justify-between">
-  <div
-    [formGroup]="productsCatalogStore.productFiltersForm()"
-    class="grid grid-cols-1 gap-4 w-full lg:max-w-[300px]"
-  >
+<p-button label="Change Page" (onClick)="productsCatalogStore.changePage(2)" />
+<!-- <input type="text" pInputText [control]="signalForm.name" /> -->
+<div class="flex gap-10 flex-col lg:flex-row items-start">
+  <div class="grid grid-cols-1 gap-4 w-full lg:max-w-[300px]">
     @for (filter of productsCatalogStore.productFilters(); track $index) {
     <div>
       <h3>{{ filter.attributeName }}</h3>
@@ -13,10 +11,10 @@
       filter.values; track $index) {
       <div>
         <p-radiobutton
-          [inputId]="'test-' + filterValue.valueId"
-          [formControlName]="filter.attributeName"
+          [inputId]="'' + filterValue.valueId"
+          [control]="signalForm[filter.attributeId]"
           [name]="filter.attributeName"
-          [value]="filterValue.valueName"
+          [value]="filterValue.valueId"
         />
         <label [for]="filter.attributeName" class="ml-2">
           {{ filterValue.valueName }}
@@ -27,20 +25,21 @@
       {
       <div>
         <p-checkbox
-          [inputId]="filter.attributeName"
-          [formControlName]="filter.attributeName"
+          [inputId]="'' + filterValue.valueId"
+          [control]="signalForm[filter.attributeId]"
           [name]="filter.attributeName"
-          [value]="filterValue.valueName"
+          [value]="filterValue.valueId"
         />
         <label [for]="filter.attributeName" class="ml-2">
           {{ filterValue.valueName }}
         </label>
+        ({{ filterValue.productItemsCount }})
       </div>
       } } }
     </div>
     }
   </div>
-  <div class="grid grid-cols-3 gap-8">
+  <div class="grid grid-cols-3 gap-8 flex-1">
     @for (product of productsCatalogStore.products(); track $index) {
 
     <app-card>

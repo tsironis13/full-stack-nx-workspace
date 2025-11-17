@@ -35,7 +35,10 @@ export class ProductsService {
   getPaginatedProductsCatalogFilteredBy(
     productsCatalogPostDto: ProductsCatalogPostDto
   ) {
-    const productsQuery = getProductsCatalog(this.drizzleService);
+    const productsQuery = getProductsCatalog(
+      this.drizzleService,
+      productsCatalogPostDto
+    );
 
     return withPagination(
       productsQuery.$dynamic(),

@@ -1,9 +1,9 @@
 import {
   ApplicationConfig,
   provideBrowserGlobalErrorListeners,
-  provideZoneChangeDetection,
+  provideZonelessChangeDetection,
 } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withComponentInputBinding } from '@angular/router';
 import {
   provideHttpClient,
   withInterceptorsFromDi,
@@ -18,8 +18,8 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideHttpClient(withInterceptorsFromDi()),
     provideBrowserGlobalErrorListeners(),
-    provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter(appRoutes),
+    provideZonelessChangeDetection(),
+    provideRouter(appRoutes, withComponentInputBinding()),
     provideAnimationsAsync(),
     providePrimeNG({
       theme: {

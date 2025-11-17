@@ -1,4 +1,4 @@
-import { and, eq, asc, count, ne, sql } from 'drizzle-orm';
+import { and, eq, asc, count, ne, sql, inArray } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 
 import {
@@ -12,11 +12,43 @@ import {
 } from '../db/schema';
 import { DrizzleService } from '../drizzle/drizzle.service';
 import { ProductsCatalogFiltersPostDto } from './dto/products-catalog-filters.post.dto';
+import { ProductsCatalogPostDto } from './dto/products-catalog.post.dto';
 
-export const getProductsCatalog = (drizzleService: DrizzleService) => {
-  if (!drizzleService) {
-    throw new Error('Drizzle service is required');
-  }
+export function getProductsCatalog(
+  drizzleService: DrizzleService,
+  productsCatalogPostDto: ProductsCatalogPostDto
+) {
+  const { categoryId, filters } = productsCatalogPostDto;
+
+  const activeFilters = filters
+    .filter((f) => f.values.length > 0)
+    .map((f) => ({
+      attributeId: f.attributeId,
+      values: Array.isArray(f.values) ? f.values : [f.values],
+    }));
+
+  //----------------------------------------------------------------------
+  // 2️⃣ Build subquery for product_item_ids that match ANY filter
+  //----------------------------------------------------------------------
+  const piaAlias = alias(productItemAttributes, 'pia_sub');
+
+  const productItemIdsSubquery = drizzleService.db
+    .select({ product_item_id: piaAlias.productItemId })
+    .from(piaAlias)
+    .where(
+      activeFilters.length > 0
+        ? activeFilters
+            .map((f) =>
+              // Each filter becomes a OR condition inside the subquery
+              and(
+                eq(piaAlias.attributeId, f.attributeId),
+                inArray(piaAlias.attributeValueId, f.values)
+              )
+            )
+            .reduce((prev, curr) => sql`${prev} OR ${curr}`)
+        : sql`TRUE` // No filters = match all
+    )
+    .groupBy(piaAlias.productItemId);
 
   const productImageSubquery = drizzleService.db
     .select({ url: productImages.url })
@@ -39,7 +71,10 @@ export const getProductsCatalog = (drizzleService: DrizzleService) => {
     )
     .as('variations_count');
 
-  return drizzleService.db
+  //----------------------------------------------------------------------
+  // 3️⃣ Build main query
+  //----------------------------------------------------------------------
+  const query = drizzleService.db
     .select({
       id: products.id,
       product_item_id: productItems.id,
@@ -56,8 +91,18 @@ export const getProductsCatalog = (drizzleService: DrizzleService) => {
     .innerJoin(productItems, eq(productItems.productId, products.id))
     .leftJoinLateral(variationsCountSubquery, sql`true`)
     .leftJoinLateral(productImageSubquery, sql`true`)
-    .where(eq(productItems.isMainProduct, true));
-};
+    .where(
+      and(
+        eq(products.categoryId, categoryId),
+        eq(productItems.isMainProduct, true),
+        activeFilters.length > 0
+          ? sql`${productItems.id} IN (${productItemIdsSubquery})`
+          : sql`TRUE` // << allow products with no attributes
+      )
+    );
+
+  return query;
+}
 
 export const getProductsCatalogFilters = async (
   drizzleService: DrizzleService,

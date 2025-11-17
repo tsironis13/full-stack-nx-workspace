@@ -3,15 +3,14 @@ import { map, Observable } from 'rxjs';
 
 import { ProductsApiService } from '../infrastructure/public-api';
 import {
+  categoryIdToProductsCatalogFiltersPostDto,
   productCatalogFilterDtoToProductCatalogFilterModel,
-  productCatalogFiltersQueryModelToProductCatalogFiltersPostDto,
   productCatalogQueryModelToProductCatalogPostDto,
   productDtoToProductModel,
 } from './products.mapper';
 import {
   Product,
   ProductCatalogFilter,
-  ProductCatalogFiltersQuery,
   ProductCatalogQuery,
 } from '../domain/public-api';
 
@@ -30,13 +29,11 @@ export class ProductsDataService {
   }
 
   public getProductsCatalogFilters(
-    productCatalogFiltersQuery: ProductCatalogFiltersQuery
+    categoryId: number
   ): Observable<ProductCatalogFilter[]> {
     return this.#productsApiService
       .getProductsCatalogFilters(
-        productCatalogFiltersQueryModelToProductCatalogFiltersPostDto(
-          productCatalogFiltersQuery
-        )
+        categoryIdToProductsCatalogFiltersPostDto(categoryId)
       )
       .pipe(
         map((productCatalogFilters) =>

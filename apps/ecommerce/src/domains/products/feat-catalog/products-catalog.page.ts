@@ -1,15 +1,20 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  effect,
   inject,
+  WritableSignal,
 } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { CheckboxModule } from 'primeng/checkbox';
 import { RadioButtonModule } from 'primeng/radiobutton';
-import { ReactiveFormsModule } from '@angular/forms';
+import { Control, form } from '@angular/forms/signals';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
 
-import { ProductsCatalogStore } from '../application/public-api';
+import {
+  ProductFiltersForm,
+  ProductsCatalogStore,
+} from '../application/public-api';
 import {
   CardComponent,
   CardActionsTemplateDirective,
@@ -40,36 +45,18 @@ import {
     CardBodyDescriptionTemplateDirective,
     ImageComponent,
     CartQuantityControlComponent,
-    ReactiveFormsModule,
     CheckboxModule,
     RadioButtonModule,
+    ButtonModule,
+    InputTextModule,
+    Control,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductsCatalogPage {
   protected readonly productsCatalogStore = inject(ProductsCatalogStore);
 
-  y = effect(() => {
-    console.log(this.productsCatalogStore.productFilters());
-  });
-
-  x = effect(() => {
-    this.productsCatalogStore
-      .productFiltersForm()
-      .valueChanges.subscribe((value) => {
-        console.log(value);
-        this.productsCatalogStore.update({
-          page: 2,
-          limit: 10,
-          filters: {
-            ...this.productsCatalogStore.filterQuery().filters,
-            categoryId: value?.categoryId ?? 0,
-            filter: {
-              df: [],
-            },
-          },
-          //this.productsCatalogFiltersStore.updateCatalogFilters(value);
-        });
-      });
-  });
+  protected readonly signalForm = form(
+    this.productsCatalogStore.filtersForm as WritableSignal<ProductFiltersForm>
+  );
 }

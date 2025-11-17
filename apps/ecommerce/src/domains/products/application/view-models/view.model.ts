@@ -9,15 +9,15 @@ export type ProductViewModel = {
   quantity: number;
 };
 
-export type ProductFiltersQueryViewModel = {
-  categoryId: number;
-  filter: Record<string, []> | null;
+export type ProductFiltersForm = {
+  [key: string | number]: string[] | number[] | number | string | null;
 };
 
 export type ProductQueryViewModel = {
   page: number;
   limit: number;
-  filters: ProductFiltersQueryViewModel | null;
+  categoryId: number | null;
+  filters: { attributeId: number; values: number[] }[] | null;
 };
 
 type InputType = 'radio' | 'checkbox' | 'select';

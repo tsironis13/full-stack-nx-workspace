@@ -5,8 +5,8 @@ import { Observable } from 'rxjs';
 import {
   ProductsCatalogPostDto,
   ProductDto,
-  ProductsCatalogFiltersPostDto,
   ProductCatalogFilterDto,
+  ProductsCatalogFiltersPostDto,
 } from './products.api.model';
 
 @Injectable()
