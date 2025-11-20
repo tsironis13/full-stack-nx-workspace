@@ -18,6 +18,7 @@ export const productCatalogQueryModelToProductCatalogPostDto = (
     limit: productQuery.limit,
     categoryId: productQuery.categoryId,
     filters: productQuery.filters,
+    priceRange: productQuery.priceRange,
   };
 };
 

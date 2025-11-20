@@ -1,4 +1,15 @@
-import { and, eq, asc, count, ne, sql, inArray } from 'drizzle-orm';
+import {
+  and,
+  eq,
+  asc,
+  count,
+  ne,
+  sql,
+  inArray,
+  lte,
+  gte,
+  SQL,
+} from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 
 import {
@@ -18,7 +29,24 @@ export function getProductsCatalog(
   drizzleService: DrizzleService,
   productsCatalogPostDto: ProductsCatalogPostDto
 ) {
-  const { categoryId, filters } = productsCatalogPostDto;
+  const { categoryId, filters, priceRange } = productsCatalogPostDto;
+
+  let priceCondition: SQL<unknown> = sql`TRUE`;
+
+  if (priceRange.overMax === true && priceRange.min != null) {
+    // Over max: no upper limit
+    priceCondition = gte(productItems.salePrice, priceRange.min);
+  } else if (priceRange.min != null && priceRange.max != null) {
+    // Normal range filter
+    priceCondition = and(
+      gte(productItems.salePrice, priceRange.min),
+      lte(productItems.salePrice, priceRange.max)
+    ) as SQL<unknown>;
+  } else if (priceRange.min != null) {
+    priceCondition = gte(productItems.salePrice, priceRange.min);
+  } else if (priceRange.max != null) {
+    priceCondition = lte(productItems.salePrice, priceRange.max);
+  }
 
   const activeFilters = filters
     .filter((f) => f.values.length > 0)
@@ -95,6 +123,7 @@ export function getProductsCatalog(
       and(
         eq(products.categoryId, categoryId),
         eq(productItems.isMainProduct, true),
+        priceCondition,
         activeFilters.length > 0
           ? sql`${productItems.id} IN (${productItemIdsSubquery})`
           : sql`TRUE` // << allow products with no attributes

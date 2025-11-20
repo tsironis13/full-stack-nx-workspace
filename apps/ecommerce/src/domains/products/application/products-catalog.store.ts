@@ -8,9 +8,18 @@ import {
 } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { inject } from '@angular/core';
-import { distinctUntilChanged, filter, pipe, skip, switchMap, tap } from 'rxjs';
+import {
+  debounceTime,
+  distinctUntilChanged,
+  filter,
+  pipe,
+  skip,
+  switchMap,
+  tap,
+} from 'rxjs';
 import { tapResponse } from '@ngrx/operators';
 import { Dispatcher } from '@ngrx/signals/events';
+import { ChangeContext, LabelType, Options } from '@angular-slider/ngx-slider';
 
 import { ProductsDataService } from '../data/public-api';
 import {
@@ -18,6 +27,7 @@ import {
   removeItemFromCart,
 } from '../../cart/application/anti-corruption-layer';
 import {
+  DynamicFields,
   ProductFiltersForm,
   ProductFilterViewModel,
   ProductQueryViewModel,
@@ -28,11 +38,17 @@ import {
   productToProductViewModel,
 } from './view-models/view-model.mapper';
 
+const maxPrice = 200;
+const minPrice = 0;
+
 type ProductsCatalogState = {
   products: ProductViewModel[]; // list of products to display in the catalog
   productFilters: ProductFilterViewModel[]; //list of filters by attributes (width (cm), height (cm), etc. used to filter products)
   filterQuery: ProductQueryViewModel; // query to get the products catalog (page, limit, filters)
   filtersForm: ProductFiltersForm | null; // used as view model for the filters form
+  priceRangeState: {
+    options: Options;
+  };
 };
 
 const initialState: ProductsCatalogState = {
@@ -43,8 +59,30 @@ const initialState: ProductsCatalogState = {
     limit: 10,
     categoryId: null,
     filters: null,
+    priceRange: { min: minPrice, max: maxPrice, overMax: true },
   },
   filtersForm: null,
+  priceRangeState: {
+    options: {
+      floor: minPrice,
+      ceil: maxPrice,
+      step: 1,
+      minRange: 10,
+      noSwitching: true,
+      translate: (value: number, label: LabelType): string => {
+        switch (label) {
+          case LabelType.Low:
+            return `€ ${value}`;
+          case LabelType.High:
+            return value === maxPrice ? `€ ${value}+` : `€ ${value}`;
+          case LabelType.Ceil:
+            return `€ ${value}+`;
+          default:
+            return ` € ${value}`;
+        }
+      },
+    },
+  },
 };
 
 export const ProductsCatalogStore = signalStore(
@@ -82,6 +120,7 @@ export const ProductsCatalogStore = signalStore(
       pipe(
         distinctUntilChanged(),
         skip(1),
+        debounceTime(400),
         switchMap((query) => {
           return store.productsService
             .getPaginatedProductsCatalogFilteredBy(query)
@@ -120,7 +159,10 @@ export const ProductsCatalogStore = signalStore(
 
                   return patchState(store, {
                     productFilters,
-                    filtersForm: buildProductFiltersForm(productFilters),
+                    filtersForm: {
+                      dynamicFields:
+                        buildProductFiltersFormDynamicFields(productFilters),
+                    },
                   });
                 },
                 error: (err) => {
@@ -136,9 +178,8 @@ export const ProductsCatalogStore = signalStore(
       pipe(
         filter((filters) => filters !== null),
         tap((filters) => {
-          console.log('filters', filters);
           if (filters !== null) {
-            const filtersArray = Object.entries(filters).map(
+            const filtersArray = Object.entries(filters.dynamicFields).map(
               ([key, value]) => ({
                 attributeId: parseInt(key),
                 values: (Array.isArray(value) ? value : [value]) as number[],
@@ -154,6 +195,24 @@ export const ProductsCatalogStore = signalStore(
         })
       )
     ),
+    onPriceRangeUserChangeEnd: (changeContext: ChangeContext): void => {
+      const { value, highValue } = changeContext;
+
+      if (!highValue) {
+        return;
+      }
+
+      patchState(store, {
+        filterQuery: {
+          ...store.filterQuery(),
+          priceRange: {
+            min: value,
+            max: highValue,
+            overMax: highValue === maxPrice,
+          },
+        },
+      });
+    },
     setCategoryId: (categoryId: number) => {
       patchState(store, {
         filterQuery: {
@@ -184,28 +243,28 @@ export const ProductsCatalogStore = signalStore(
   }))
 );
 
-const buildProductFiltersForm = (
+const buildProductFiltersFormDynamicFields = (
   productFilters: ProductFilterViewModel[]
-): ProductFiltersForm => {
-  const filters: ProductFiltersForm = {};
+): DynamicFields => {
+  const dynamicFields: DynamicFields = {};
 
   for (const attr of productFilters) {
     switch (attr.inputType) {
       case 'checkbox':
-        filters[attr.attributeId] = [];
+        dynamicFields[attr.attributeId] = [];
         break;
       case 'select':
-        filters[attr.attributeId] = null;
+        dynamicFields[attr.attributeId] = null;
         break;
 
       case 'radio':
-        filters[attr.attributeId] = [];
+        dynamicFields[attr.attributeId] = [];
         break;
 
       default:
-        filters[attr.attributeId] = null;
+        dynamicFields[attr.attributeId] = null;
         break;
     }
   }
-  return filters;
+  return dynamicFields;
 };

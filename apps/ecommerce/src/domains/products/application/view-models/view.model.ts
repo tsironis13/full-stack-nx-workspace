@@ -9,8 +9,12 @@ export type ProductViewModel = {
   quantity: number;
 };
 
-export type ProductFiltersForm = {
+export type DynamicFields = {
   [key: string | number]: string[] | number[] | number | string | null;
+};
+
+export type ProductFiltersForm = {
+  dynamicFields: DynamicFields;
 };
 
 export type ProductQueryViewModel = {
@@ -18,6 +22,7 @@ export type ProductQueryViewModel = {
   limit: number;
   categoryId: number | null;
   filters: { attributeId: number; values: number[] }[] | null;
+  priceRange: { min: number; max: number; overMax: boolean };
 };
 
 type InputType = 'radio' | 'checkbox' | 'select';

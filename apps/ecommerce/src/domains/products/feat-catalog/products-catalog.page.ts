@@ -10,6 +10,8 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 import { Control, form } from '@angular/forms/signals';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
+import { SliderModule } from 'primeng/slider';
+import { NgxSliderModule } from '@angular-slider/ngx-slider';
 
 import {
   ProductFiltersForm,
@@ -50,6 +52,8 @@ import {
     ButtonModule,
     InputTextModule,
     Control,
+    SliderModule,
+    NgxSliderModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

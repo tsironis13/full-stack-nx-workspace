@@ -1,8 +1,19 @@
 <h1>Products Catalog</h1>
 <p-button label="Change Page" (onClick)="productsCatalogStore.changePage(2)" />
-<!-- <input type="text" pInputText [control]="signalForm.name" /> -->
+
 <div class="flex gap-10 flex-col lg:flex-row items-start">
   <div class="grid grid-cols-1 gap-4 w-full lg:max-w-[300px]">
+    <div>
+      <h3>Price Range</h3>
+
+      <ngx-slider
+        [value]="productsCatalogStore.filterQuery().priceRange.min"
+        [highValue]="productsCatalogStore.filterQuery().priceRange.max"
+        [options]="productsCatalogStore.priceRangeState.options()"
+        (userChangeEnd)="productsCatalogStore.onPriceRangeUserChangeEnd($event)"
+      ></ngx-slider>
+    </div>
+
     @for (filter of productsCatalogStore.productFilters(); track $index) {
     <div>
       <h3>{{ filter.attributeName }}</h3>
@@ -12,9 +23,10 @@
       <div>
         <p-radiobutton
           [inputId]="'' + filterValue.valueId"
-          [control]="signalForm[filter.attributeId]"
+          [control]="signalForm.dynamicFields[filter.attributeId]"
           [name]="filter.attributeName"
           [value]="filterValue.valueId"
+          [disabled]="filterValue.productItemsCount === 0"
         />
         <label [for]="filter.attributeName" class="ml-2">
           {{ filterValue.valueName }}
@@ -26,9 +38,10 @@
       <div>
         <p-checkbox
           [inputId]="'' + filterValue.valueId"
-          [control]="signalForm[filter.attributeId]"
+          [control]="signalForm.dynamicFields[filter.attributeId]"
           [name]="filter.attributeName"
           [value]="filterValue.valueId"
+          [disabled]="filterValue.productItemsCount === 0"
         />
         <label [for]="filter.attributeName" class="ml-2">
           {{ filterValue.valueName }}

@@ -9,4 +9,11 @@ export class ProductsCatalogPostDto extends PaginationDto {
   @IsArray()
   @IsOptional()
   filters: { attributeId: number; values: number[] }[];
+
+  @IsOptional()
+  priceRange: {
+    min: number;
+    max: number;
+    overMax: boolean;
+  };
 }
