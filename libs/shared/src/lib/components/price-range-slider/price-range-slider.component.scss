@@ -1,0 +1,51 @@
+::ng-deep {
+  .slider-container {
+    .ngx-slider .ngx-slider-bar {
+      background: var(--bg-slider-bar);
+      height: 4px;
+    }
+
+    .ngx-slider .ngx-slider-selection {
+      background: var(--bg-slider-bar-selection);
+    }
+
+    &.square-pointer {
+      .ngx-slider-pointer {
+        width: 12px;
+        height: 12px;
+        border-radius: 0;
+        top: -4px;
+        background-color: var(--bg-slider-bar-selection);
+      }
+
+      :focus {
+        outline: none;
+      }
+    }
+
+    .ngx-slider .ngx-slider-pointer:after {
+      display: none;
+    }
+
+    .ngx-slider .ngx-slider-bubble {
+      bottom: 14px;
+    }
+
+    .ngx-slider .ngx-slider-bubble.ngx-slider-limit {
+      font-weight: bold;
+
+      &.ngx-slider-ceil {
+        color: var(--bg-slider-bar-selection);
+      }
+    }
+
+    .ngx-slider .ngx-slider-tick {
+      width: 1px;
+      height: 10px;
+      margin-left: 4px;
+      border-radius: 0;
+      background: var(--bg-slider-bar);
+      top: -1px;
+    }
+  }
+}

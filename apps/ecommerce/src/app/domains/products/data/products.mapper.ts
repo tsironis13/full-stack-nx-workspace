@@ -2,6 +2,7 @@ import {
   ProductCatalogQuery,
   Product,
   ProductCatalogFilter,
+  PriceRange,
 } from '../domain/public-api';
 import {
   ProductDto,
@@ -32,11 +33,13 @@ export const productDtoToProductModel = (productDto: ProductDto): Product => {
   };
 };
 
-export const categoryIdToProductsCatalogFiltersPostDto = (
-  categoryId: number
+export const productCatalogFiltersQueryModelToProductsCatalogFiltersPostDto = (
+  categoryId: number,
+  priceRange: PriceRange | null
 ): ProductsCatalogFiltersPostDto => {
   return {
     categoryId,
+    priceRange,
   };
 };
 

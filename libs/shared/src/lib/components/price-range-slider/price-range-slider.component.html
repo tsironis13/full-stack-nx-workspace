@@ -1,0 +1,23 @@
+<div
+  class="slider-container"
+  [class.square-pointer]="pointerType() === 'square-pointer'"
+>
+  <ngx-slider
+    [value]="min()"
+    [highValue]="max()"
+    [options]="options()"
+    (userChangeEnd)="userChangeEnd.emit($event)"
+    (userChange)="onChange($event)"
+  ></ngx-slider>
+
+  <ng-container
+    [ngTemplateOutlet]="priceRangeDisplayTemplate()"
+    [ngTemplateOutletContext]="{
+      $implicit: {
+        minRange: minRangeValue(),
+        maxRange: maxRangeValue(),
+        maxValue: max()
+      }
+    }"
+  ></ng-container>
+</div>

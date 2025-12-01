@@ -16,3 +16,8 @@ export {
   CardBodyDescriptionTemplateDirective,
 } from './components/card/body/card-body/card-body.component';
 export { CartQuantityControlComponent } from './components/cart-quantity-control/cart-quantity-control.component';
+export { PriceRangeSliderComponent } from './components/price-range-slider/price-range-slider.component';
+export {
+  PriceRangeDisplayTemplateDirective,
+  PriceRangeDisplayComponent,
+} from './components/price-range-display/price-range-display.component';

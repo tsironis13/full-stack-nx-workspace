@@ -1,6 +1,7 @@
 import { IsArray, IsInt, IsOptional } from 'class-validator';
 
 import { PaginationDto } from '@full-stack-nx-workspace/api';
+import { PriceRangeFilterPostDto } from './price-range-filter.post.dto';
 
 export class ProductsCatalogPostDto extends PaginationDto {
   @IsInt()
@@ -11,9 +12,5 @@ export class ProductsCatalogPostDto extends PaginationDto {
   filters: { attributeId: number; values: number[] }[];
 
   @IsOptional()
-  priceRange: {
-    min: number;
-    max: number;
-    overMax: boolean;
-  };
+  priceRange: PriceRangeFilterPostDto;
 }

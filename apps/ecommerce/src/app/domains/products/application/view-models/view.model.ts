@@ -22,7 +22,13 @@ export type ProductQueryViewModel = {
   limit: number;
   categoryId: number | null;
   filters: { attributeId: number; values: number[] }[] | null;
-  priceRange: { min: number; max: number; overMax: boolean };
+  priceRange: PriceRangeViewModel;
+};
+
+export type PriceRangeViewModel = {
+  min: number;
+  max: number;
+  overMax: boolean;
 };
 
 type InputType = 'radio' | 'checkbox' | 'select';

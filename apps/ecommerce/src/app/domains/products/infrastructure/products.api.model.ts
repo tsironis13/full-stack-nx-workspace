@@ -27,4 +27,5 @@ export type ProductCatalogFilterDto = {
 
 export type ProductsCatalogFiltersPostDto = {
   categoryId: number;
+  priceRange: { min: number; max: number; overMax: boolean } | null;
 };

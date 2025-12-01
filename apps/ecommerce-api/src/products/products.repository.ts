@@ -24,6 +24,28 @@ import {
 import { DrizzleService } from '../drizzle/drizzle.service';
 import { ProductsCatalogFiltersPostDto } from './dto/products-catalog-filters.post.dto';
 import { ProductsCatalogPostDto } from './dto/products-catalog.post.dto';
+import { PriceRangeFilterPostDto } from './dto/price-range-filter.post.dto';
+
+const getPriceCondition = (priceRange: PriceRangeFilterPostDto) => {
+  let priceCondition: SQL<unknown> = sql`TRUE`;
+
+  if (priceRange?.overMax === true && priceRange?.min != null) {
+    // Over max: no upper limit
+    priceCondition = gte(productItems.salePrice, priceRange.min);
+  } else if (priceRange?.min != null && priceRange?.max != null) {
+    // Normal range filter
+    priceCondition = and(
+      gte(productItems.salePrice, priceRange.min),
+      lte(productItems.salePrice, priceRange.max)
+    ) as SQL<unknown>;
+  } else if (priceRange?.min != null) {
+    priceCondition = gte(productItems.salePrice, priceRange.min);
+  } else if (priceRange?.max != null) {
+    priceCondition = lte(productItems.salePrice, priceRange.max);
+  }
+
+  return priceCondition;
+};
 
 export function getProductsCatalog(
   drizzleService: DrizzleService,
@@ -31,25 +53,10 @@ export function getProductsCatalog(
 ) {
   const { categoryId, filters, priceRange } = productsCatalogPostDto;
 
-  let priceCondition: SQL<unknown> = sql`TRUE`;
-
-  if (priceRange.overMax === true && priceRange.min != null) {
-    // Over max: no upper limit
-    priceCondition = gte(productItems.salePrice, priceRange.min);
-  } else if (priceRange.min != null && priceRange.max != null) {
-    // Normal range filter
-    priceCondition = and(
-      gte(productItems.salePrice, priceRange.min),
-      lte(productItems.salePrice, priceRange.max)
-    ) as SQL<unknown>;
-  } else if (priceRange.min != null) {
-    priceCondition = gte(productItems.salePrice, priceRange.min);
-  } else if (priceRange.max != null) {
-    priceCondition = lte(productItems.salePrice, priceRange.max);
-  }
+  const priceCondition = getPriceCondition(priceRange);
 
   const activeFilters = filters
-    .filter((f) => f.values.length > 0)
+    ?.filter((f) => f.values.length > 0)
     .map((f) => ({
       attributeId: f.attributeId,
       values: Array.isArray(f.values) ? f.values : [f.values],
@@ -64,7 +71,7 @@ export function getProductsCatalog(
     .select({ product_item_id: piaAlias.productItemId })
     .from(piaAlias)
     .where(
-      activeFilters.length > 0
+      activeFilters?.length > 0
         ? activeFilters
             .map((f) =>
               // Each filter becomes a OR condition inside the subquery
@@ -124,7 +131,7 @@ export function getProductsCatalog(
         eq(products.categoryId, categoryId),
         eq(productItems.isMainProduct, true),
         priceCondition,
-        activeFilters.length > 0
+        activeFilters?.length > 0
           ? sql`${productItems.id} IN (${productItemIdsSubquery})`
           : sql`TRUE` // << allow products with no attributes
       )
@@ -149,6 +156,10 @@ export const getProductsCatalogFilters = async (
     throw new Error('Category ID is required');
   }
 
+  const priceCondition = getPriceCondition(
+    productsCatalogFiltersPostDto.priceRange
+  );
+
   return await drizzleService.db
     .select({
       attribute_id: attributes.id,
@@ -167,7 +178,10 @@ export const getProductsCatalogFilters = async (
     )
     .leftJoin(
       productItems,
-      eq(productItems.id, productItemAttributes.productItemId)
+      and(
+        eq(productItems.id, productItemAttributes.productItemId),
+        priceCondition
+      )
     )
     .leftJoin(
       products,
@@ -177,9 +191,11 @@ export const getProductsCatalogFilters = async (
       )
     )
     .where(
-      eq(
-        categoryAttributes.categoryId,
-        productsCatalogFiltersPostDto.categoryId
+      and(
+        eq(
+          categoryAttributes.categoryId,
+          productsCatalogFiltersPostDto.categoryId
+        )
       )
     )
     .groupBy(

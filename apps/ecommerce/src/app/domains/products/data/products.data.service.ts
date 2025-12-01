@@ -3,8 +3,8 @@ import { map, Observable } from 'rxjs';
 
 import { ProductsApiService } from '../infrastructure/public-api';
 import {
-  categoryIdToProductsCatalogFiltersPostDto,
   productCatalogFilterDtoToProductCatalogFilterModel,
+  productCatalogFiltersQueryModelToProductsCatalogFiltersPostDto,
   productCatalogQueryModelToProductCatalogPostDto,
   productDtoToProductModel,
 } from './products.mapper';
@@ -12,6 +12,7 @@ import {
   Product,
   ProductCatalogFilter,
   ProductCatalogQuery,
+  ProductCatalogFiltersQuery,
 } from '../domain/public-api';
 
 @Injectable()
@@ -29,11 +30,14 @@ export class ProductsDataService {
   }
 
   public getProductsCatalogFilters(
-    categoryId: number
+    productCatalogFiltersQuery: ProductCatalogFiltersQuery
   ): Observable<ProductCatalogFilter[]> {
     return this.#productsApiService
       .getProductsCatalogFilters(
-        categoryIdToProductsCatalogFiltersPostDto(categoryId)
+        productCatalogFiltersQueryModelToProductsCatalogFiltersPostDto(
+          productCatalogFiltersQuery.categoryId,
+          productCatalogFiltersQuery.priceRange
+        )
       )
       .pipe(
         map((productCatalogFilters) =>

@@ -7,11 +7,9 @@ import {
 import { CurrencyPipe } from '@angular/common';
 import { CheckboxModule } from 'primeng/checkbox';
 import { RadioButtonModule } from 'primeng/radiobutton';
-import { Control, form } from '@angular/forms/signals';
+import { Field, form } from '@angular/forms/signals';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-import { SliderModule } from 'primeng/slider';
-import { NgxSliderModule } from '@angular-slider/ngx-slider';
 
 import {
   ProductFiltersForm,
@@ -29,6 +27,9 @@ import {
   CardBodyTitleTemplateDirective,
   CardBodyDescriptionTemplateDirective,
   CartQuantityControlComponent,
+  PriceRangeSliderComponent,
+  PriceRangeDisplayComponent,
+  PriceRangeDisplayTemplateDirective,
 } from '@full-stack-nx-workspace/shared';
 
 @Component({
@@ -51,9 +52,10 @@ import {
     RadioButtonModule,
     ButtonModule,
     InputTextModule,
-    Control,
-    SliderModule,
-    NgxSliderModule,
+    Field,
+    PriceRangeSliderComponent,
+    PriceRangeDisplayTemplateDirective,
+    PriceRangeDisplayComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

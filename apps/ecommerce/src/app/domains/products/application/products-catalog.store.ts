@@ -12,14 +12,14 @@ import {
   debounceTime,
   distinctUntilChanged,
   filter,
+  map,
   pipe,
-  skip,
   switchMap,
   tap,
 } from 'rxjs';
 import { tapResponse } from '@ngrx/operators';
 import { Dispatcher } from '@ngrx/signals/events';
-import { ChangeContext, LabelType, Options } from '@angular-slider/ngx-slider';
+import { ChangeContext, Options } from '@angular-slider/ngx-slider';
 
 import { ProductsDataService } from '../data/public-api';
 import {
@@ -28,6 +28,7 @@ import {
 } from '../../cart/application/anti-corruption-layer';
 import {
   DynamicFields,
+  PriceRangeViewModel,
   ProductFiltersForm,
   ProductFilterViewModel,
   ProductQueryViewModel,
@@ -69,18 +70,7 @@ const initialState: ProductsCatalogState = {
       step: 1,
       minRange: 10,
       noSwitching: true,
-      translate: (value: number, label: LabelType): string => {
-        switch (label) {
-          case LabelType.Low:
-            return `€ ${value}`;
-          case LabelType.High:
-            return value === maxPrice ? `€ ${value}+` : `€ ${value}`;
-          case LabelType.Ceil:
-            return `€ ${value}+`;
-          default:
-            return ` € ${value}`;
-        }
-      },
+      translate: (): string => '',
     },
   },
 };
@@ -119,7 +109,6 @@ export const ProductsCatalogStore = signalStore(
     getPaginatedProductsCatalogFilteredBy: rxMethod<ProductQueryViewModel>(
       pipe(
         distinctUntilChanged(),
-        skip(1),
         debounceTime(400),
         switchMap((query) => {
           return store.productsService
@@ -141,27 +130,53 @@ export const ProductsCatalogStore = signalStore(
         })
       )
     ),
-    getProductFilters: rxMethod<number | null>(
+    getProductFilters: rxMethod<
+      | (number | null)
+      | { categoryId: number; priceRange: PriceRangeViewModel }
+      | null
+    >(
       pipe(
-        filter((categoryId) => categoryId !== null),
-        switchMap((categoryId: number) => {
+        filter((trigger) => trigger !== null),
+        map((trigger) => {
+          let query: {
+            categoryId: number;
+            priceRange: PriceRangeViewModel | null;
+          } = { categoryId: -1, priceRange: null };
+          if (typeof trigger === 'number') {
+            query = { ...query, categoryId: trigger };
+          } else {
+            query = {
+              ...query,
+              categoryId: trigger.categoryId,
+              priceRange: trigger.priceRange,
+            };
+          }
+          return query;
+        }),
+        switchMap((trigger) => {
           return store.productsService
-            .getProductsCatalogFilters(categoryId)
+            .getProductsCatalogFilters({
+              categoryId: trigger.categoryId,
+              priceRange: trigger.priceRange,
+            })
             .pipe(
               distinctUntilChanged(),
               tapResponse({
                 next: (response) => {
-                  const productFilters = response.map((productFilter) =>
-                    productCatalogFilterToProductCatalogFilterViewModel(
-                      productFilter
-                    )
+                  const newlyFetchedProductFilters = response.map(
+                    (productFilter) =>
+                      productCatalogFilterToProductCatalogFilterViewModel(
+                        productFilter
+                      )
                   );
 
-                  return patchState(store, {
-                    productFilters,
+                  patchState(store, {
+                    productFilters: newlyFetchedProductFilters,
                     filtersForm: {
-                      dynamicFields:
-                        buildProductFiltersFormDynamicFields(productFilters),
+                      dynamicFields: buildProductFiltersFormDynamicFields(
+                        store.filtersForm(),
+                        newlyFetchedProductFilters
+                      ),
                     },
                   });
                 },
@@ -177,25 +192,24 @@ export const ProductsCatalogStore = signalStore(
     onProductFiltersFormChange: rxMethod<ProductFiltersForm | null>(
       pipe(
         filter((filters) => filters !== null),
+        distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
         tap((filters) => {
-          if (filters !== null) {
-            const filtersArray = Object.entries(filters.dynamicFields).map(
-              ([key, value]) => ({
-                attributeId: parseInt(key),
-                values: (Array.isArray(value) ? value : [value]) as number[],
-              })
-            );
-            patchState(store, {
-              filterQuery: {
-                ...store.filterQuery(),
-                filters: filtersArray,
-              },
-            });
-          }
+          const filtersArray = Object.entries(filters.dynamicFields).map(
+            ([key, value]) => ({
+              attributeId: parseInt(key),
+              values: (Array.isArray(value) ? value : [value]) as number[],
+            })
+          );
+          patchState(store, {
+            filterQuery: {
+              ...store.filterQuery(),
+              filters: filtersArray,
+            },
+          });
         })
       )
     ),
-    onPriceRangeUserChangeEnd: (changeContext: ChangeContext): void => {
+    onPriceRangeUserChangeEnd(changeContext: ChangeContext): void {
       const { value, highValue } = changeContext;
 
       if (!highValue) {
@@ -212,6 +226,17 @@ export const ProductsCatalogStore = signalStore(
           },
         },
       });
+
+      const categoryId = store.filterQuery().categoryId;
+
+      // product filters need to be updated when price range changes
+      // so we need to get the new product item counts for each filter
+      if (categoryId) {
+        this.getProductFilters({
+          categoryId,
+          priceRange: store.filterQuery().priceRange,
+        });
+      }
     },
     setCategoryId: (categoryId: number) => {
       patchState(store, {
@@ -244,6 +269,7 @@ export const ProductsCatalogStore = signalStore(
 );
 
 const buildProductFiltersFormDynamicFields = (
+  previousFiltersForm: ProductFiltersForm | null,
   productFilters: ProductFilterViewModel[]
 ): DynamicFields => {
   const dynamicFields: DynamicFields = {};
@@ -251,20 +277,21 @@ const buildProductFiltersFormDynamicFields = (
   for (const attr of productFilters) {
     switch (attr.inputType) {
       case 'checkbox':
-        dynamicFields[attr.attributeId] = [];
+        dynamicFields[attr.attributeId] =
+          previousFiltersForm?.dynamicFields[attr.attributeId] || [];
         break;
       case 'select':
         dynamicFields[attr.attributeId] = null;
         break;
-
       case 'radio':
-        dynamicFields[attr.attributeId] = [];
+        dynamicFields[attr.attributeId] =
+          previousFiltersForm?.dynamicFields[attr.attributeId] || [];
         break;
-
       default:
         dynamicFields[attr.attributeId] = null;
         break;
     }
   }
+
   return dynamicFields;
 };
