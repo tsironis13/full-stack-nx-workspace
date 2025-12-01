@@ -1,2 +1,7 @@
 <h1>Header</h1>
 <app-cart-icon></app-cart-icon>
+<p-button
+  [icon]="theme() === 'light' ? 'pi pi-moon' : 'pi pi-sun'"
+  [aria-label]="theme() === 'light' ? 'Toggle dark mode' : 'Toggle light mode'"
+  (onClick)="toggleTheme()"
+/>

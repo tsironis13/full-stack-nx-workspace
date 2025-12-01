@@ -4,7 +4,4 @@
 
 @use 'styles/app';
 
-:root {
-  --bg-slider-bar-selection: rgba(187 151 109);
-  --bg-slider-bar: rgba(187 151 109 / 0.2);
-}
+@custom-variant dark (&:where(.ecommerce-app-dark, .ecommerce-app-dark *));

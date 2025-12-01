@@ -1,12 +1,12 @@
 ::ng-deep {
   .slider-container {
     .ngx-slider .ngx-slider-bar {
-      background: var(--bg-slider-bar);
+      background: var(--p-primary-100);
       height: 4px;
     }
 
     .ngx-slider .ngx-slider-selection {
-      background: var(--bg-slider-bar-selection);
+      background: var(--p-primary-color);
     }
 
     &.square-pointer {
@@ -15,7 +15,7 @@
         height: 12px;
         border-radius: 0;
         top: -4px;
-        background-color: var(--bg-slider-bar-selection);
+        background-color: var(--p-primary-color);
       }
 
       :focus {
@@ -35,7 +35,7 @@
       font-weight: bold;
 
       &.ngx-slider-ceil {
-        color: var(--bg-slider-bar-selection);
+        color: var(--p-primary-color);
       }
     }
 
@@ -44,7 +44,7 @@
       height: 10px;
       margin-left: 4px;
       border-radius: 0;
-      background: var(--bg-slider-bar);
+      background: var(--p-primary-100);
       top: -1px;
     }
   }
