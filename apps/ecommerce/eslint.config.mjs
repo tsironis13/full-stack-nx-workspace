@@ -54,6 +54,7 @@ export default [
             {
               from: 'app',
               allow: [
+                ['themes'],
                 ['lib-api'],
                 ['app'],
                 ['env'],
@@ -192,6 +193,10 @@ export default [
         {
           type: 'env',
           pattern: 'environments',
+        },
+        {
+          type: 'themes',
+          pattern: 'themes',
         },
         // helper types
         {
