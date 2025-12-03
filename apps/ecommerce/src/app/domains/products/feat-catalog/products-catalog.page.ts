@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  effect,
   inject,
   WritableSignal,
 } from '@angular/core';
@@ -10,6 +11,7 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 import { Field, form } from '@angular/forms/signals';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
+import { ProgressSpinner } from 'primeng/progressspinner';
 
 import {
   ProductFiltersForm,
@@ -30,6 +32,7 @@ import {
   PriceRangeSliderComponent,
   PriceRangeDisplayComponent,
   PriceRangeDisplayTemplateDirective,
+  PaginatorComponent,
 } from '@full-stack-nx-workspace/shared';
 
 @Component({
@@ -56,6 +59,8 @@ import {
     PriceRangeSliderComponent,
     PriceRangeDisplayTemplateDirective,
     PriceRangeDisplayComponent,
+    PaginatorComponent,
+    ProgressSpinner,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -65,4 +70,8 @@ export class ProductsCatalogPage {
   protected readonly signalForm = form(
     this.productsCatalogStore.filtersForm as WritableSignal<ProductFiltersForm>
   );
+
+  x = effect(() => {
+    console.log(this.productsCatalogStore.requestStatus());
+  });
 }

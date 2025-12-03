@@ -21,3 +21,4 @@ export {
   PriceRangeDisplayTemplateDirective,
   PriceRangeDisplayComponent,
 } from './components/price-range-display/price-range-display.component';
+export { PaginatorComponent } from './components/paginator/paginator.component';

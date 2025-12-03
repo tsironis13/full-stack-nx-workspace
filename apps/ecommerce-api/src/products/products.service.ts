@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { desc } from 'drizzle-orm';
+import { desc, sql } from 'drizzle-orm';
 
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -32,7 +32,7 @@ type GroupedAttribute = {
 export class ProductsService {
   constructor(private readonly drizzleService: DrizzleService) {}
 
-  getPaginatedProductsCatalogFilteredBy(
+  async getPaginatedProductsCatalogFilteredBy(
     productsCatalogPostDto: ProductsCatalogPostDto
   ) {
     const productsQuery = getProductsCatalog(
@@ -40,12 +40,25 @@ export class ProductsService {
       productsCatalogPostDto
     );
 
-    return withPagination(
+    const totalResult = await this.drizzleService.db
+      .select({
+        total: sql<number>`COUNT(*)`.mapWith(Number),
+      })
+      .from(productsQuery.as('sub'));
+
+    const paginatedQuery = withPagination(
       productsQuery.$dynamic(),
       desc(products.id),
       productsCatalogPostDto.page,
       productsCatalogPostDto.limit
     );
+
+    const productsResult = await paginatedQuery;
+
+    return {
+      products: productsResult,
+      totalResults: totalResult[0].total,
+    };
   }
 
   async getProductsCatalogFilters(

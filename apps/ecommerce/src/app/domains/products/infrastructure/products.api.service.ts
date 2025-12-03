@@ -4,9 +4,9 @@ import { Observable } from 'rxjs';
 
 import {
   ProductsCatalogPostDto,
-  ProductDto,
   ProductCatalogFilterDto,
   ProductsCatalogFiltersPostDto,
+  ProductsCatalogDto,
 } from './products.api.model';
 
 @Injectable()
@@ -15,8 +15,8 @@ export class ProductsApiService {
 
   public getPaginatedProductsCatalogFilteredBy(
     productsCatalogPostDto: ProductsCatalogPostDto
-  ): Observable<ProductDto[]> {
-    return this.#http.post<ProductDto[]>(
+  ): Observable<ProductsCatalogDto> {
+    return this.#http.post<ProductsCatalogDto>(
       `/api/products/catalog/paginated`,
       productsCatalogPostDto
     );

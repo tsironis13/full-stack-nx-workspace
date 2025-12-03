@@ -9,7 +9,7 @@ import {
   productDtoToProductModel,
 } from './products.mapper';
 import {
-  Product,
+  ProductsCatalog,
   ProductCatalogFilter,
   ProductCatalogQuery,
   ProductCatalogFiltersQuery,
@@ -21,12 +21,19 @@ export class ProductsDataService {
 
   public getPaginatedProductsCatalogFilteredBy(
     productCatalogQuery: ProductCatalogQuery
-  ): Observable<Product[]> {
+  ): Observable<ProductsCatalog> {
     return this.#productsApiService
       .getPaginatedProductsCatalogFilteredBy(
         productCatalogQueryModelToProductCatalogPostDto(productCatalogQuery)
       )
-      .pipe(map((products) => products.map(productDtoToProductModel)));
+      .pipe(
+        map((productsCatalogDto) => {
+          return {
+            products: productsCatalogDto.products.map(productDtoToProductModel),
+            totalResults: productsCatalogDto.totalResults,
+          };
+        })
+      );
   }
 
   public getProductsCatalogFilters(

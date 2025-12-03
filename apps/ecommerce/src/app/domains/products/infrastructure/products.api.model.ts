@@ -6,6 +6,11 @@ export type ProductsCatalogPostDto = {
   priceRange: { min: number; max: number; overMax: boolean } | null; // if overMax is true, backend should interpret this as “search for anything above max value”
 };
 
+export type ProductsCatalogDto = {
+  products: ProductDto[];
+  totalResults: number;
+};
+
 export type ProductDto = {
   id: number;
   name: string;

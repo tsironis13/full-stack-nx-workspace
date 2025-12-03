@@ -38,12 +38,20 @@ import {
   productCatalogFilterToProductCatalogFilterViewModel,
   productToProductViewModel,
 } from './view-models/view-model.mapper';
+import {
+  setError,
+  setFulfilled,
+  setPending,
+  withRequestStatus,
+} from '../../../core/public-api';
 
 const maxPrice = 200;
 const minPrice = 0;
 
 type ProductsCatalogState = {
   products: ProductViewModel[]; // list of products to display in the catalog
+  totalResults: number;
+  totalItemsPerPageOptions: number[];
   productFilters: ProductFilterViewModel[]; //list of filters by attributes (width (cm), height (cm), etc. used to filter products)
   filterQuery: ProductQueryViewModel; // query to get the products catalog (page, limit, filters)
   filtersForm: ProductFiltersForm | null; // used as view model for the filters form
@@ -54,6 +62,8 @@ type ProductsCatalogState = {
 
 const initialState: ProductsCatalogState = {
   products: [],
+  totalResults: 0,
+  totalItemsPerPageOptions: [10, 20, 30],
   productFilters: [],
   filterQuery: {
     page: 1,
@@ -77,6 +87,7 @@ const initialState: ProductsCatalogState = {
 
 export const ProductsCatalogStore = signalStore(
   withState(initialState),
+  withRequestStatus(),
   withProps(() => ({
     productsService: inject(ProductsDataService),
     dispatcher: inject(Dispatcher),
@@ -109,21 +120,33 @@ export const ProductsCatalogStore = signalStore(
     getPaginatedProductsCatalogFilteredBy: rxMethod<ProductQueryViewModel>(
       pipe(
         distinctUntilChanged(),
+        tap(() => patchState(store, setPending())),
         debounceTime(400),
         switchMap((query) => {
           return store.productsService
             .getPaginatedProductsCatalogFilteredBy(query)
             .pipe(
               tapResponse({
-                next: (products) =>
-                  patchState(store, {
-                    products: products.map((product) =>
-                      productToProductViewModel(product, 0)
-                    ),
-                  }),
+                next: (productsCatalog) => {
+                  patchState(
+                    store,
+                    {
+                      products: productsCatalog.products.map((product) =>
+                        productToProductViewModel(product, 0)
+                      ),
+                      totalResults: productsCatalog.totalResults,
+                    },
+                    setFulfilled()
+                  );
+                },
                 error: (err) => {
-                  patchState(store, { products: [] });
+                  patchState(
+                    store,
+                    { products: [] },
+                    setError((err as Error).message)
+                  );
                   console.error(err);
+                  setError((err as Error).message);
                 },
               })
             );
@@ -246,11 +269,12 @@ export const ProductsCatalogStore = signalStore(
         },
       });
     },
-    changePage: (page: number) => {
+    changePage: ({ page, limit }: { page: number; limit: number }) => {
       patchState(store, {
         filterQuery: {
           ...store.filterQuery(),
           page: page,
+          limit: limit,
         },
       });
     },
