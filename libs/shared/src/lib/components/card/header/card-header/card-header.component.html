@@ -5,6 +5,7 @@
   <div
     class="absolute"
     [class.top-0]="actionsPlacement() === 'top'"
+    [class.top-[50%]]="actionsPlacement() === 'center'"
     [class.bottom-0]="actionsPlacement() === 'bottom'"
     [class.left-0]="actionsPosition() === 'left'"
     [class.right-0]="actionsPosition() === 'right'"

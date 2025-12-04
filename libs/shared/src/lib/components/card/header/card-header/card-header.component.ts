@@ -22,8 +22,10 @@ export class CardActionsTemplateDirective {}
   imports: [NgTemplateOutlet],
 })
 export class CardHeaderComponent {
-  public readonly actionsPlacement = input<'top' | 'bottom'>('bottom');
-  public readonly actionsPosition = input<'left' | 'right'>('right');
+  public readonly actionsPlacement = input<'top' | 'bottom' | 'center'>(
+    'bottom'
+  );
+  public readonly actionsPosition = input<'left' | 'right' | 'center'>('right');
   protected readonly cardHeaderContentTemplate = contentChild.required(
     CardHeaderContentTemplateDirective,
     {

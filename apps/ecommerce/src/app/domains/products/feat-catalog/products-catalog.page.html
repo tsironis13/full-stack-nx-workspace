@@ -81,21 +81,46 @@
     >
       @for (product of productsCatalogStore.products(); track $index) {
 
-      <app-card>
+      <app-card class="product-card">
         <ng-template cardHeader>
-          <app-card-header>
+          <app-card-header [actionsPlacement]="'center'">
             <ng-template cardHeaderContent>
-              <app-image
-                class="relative h-90 flex"
-                [image]="product.image"
-              ></app-image>
+              <div class="w-full h-full overflow-hidden">
+                <app-image
+                  class="relative h-90 flex product-card-image"
+                  [image]="product.image"
+                ></app-image>
+              </div>
             </ng-template>
             <ng-template cardHeaderActions>
-              <app-cart-quantity-control
-                [quantity]="product.quantity"
-                (addItemToCart)="productsCatalogStore.addItemToCart(product.id)"
-                (removeItemFromCart)="productsCatalogStore.removeItemFromCart(product.id)"
-              ></app-cart-quantity-control>
+              <div
+                class="header-actions-container absolute z-10 right-3 transform opacity-0 duration-300 transition-all flex flex-col items-end gap-3"
+              >
+                <div
+                  class="bg-white dark:bg-title dark:text-white bg-opacity-80 flex gap-2 p-[10px] text-base leading-none text-title rounded-[40px] h-[60px] overflow-hidden new-product-icon"
+                >
+                  <p-button icon="pi pi-heart" [rounded]="true" [text]="true" />
+                </div>
+                <div
+                  class="bg-white dark:bg-title dark:text-white bg-opacity-80 flex gap-2 p-[10px] text-base leading-none text-title rounded-[40px] h-[60px] overflow-hidden new-product-icon"
+                >
+                  <div class="flex items-center justify-center gap-2">
+                    <app-cart-quantity-control
+                      [quantity]="product.quantity"
+                      (addItemToCart)="productsCatalogStore.addItemToCart(product.id)"
+                      (removeItemFromCart)="productsCatalogStore.removeItemFromCart(product.id)"
+                    ></app-cart-quantity-control>
+                    @if (product.quantity === 0) {
+                    <span>Add to Cart</span>
+                    }
+                  </div>
+                </div>
+                <div
+                  class="bg-white dark:bg-title dark:text-white bg-opacity-80 flex gap-2 p-[10px] text-base leading-none text-title rounded-[40px] h-[60px] overflow-hidden new-product-icon"
+                >
+                  <p-button icon="pi pi-heart" [rounded]="true" [text]="true" />
+                </div>
+              </div>
             </ng-template>
           </app-card-header>
         </ng-template>

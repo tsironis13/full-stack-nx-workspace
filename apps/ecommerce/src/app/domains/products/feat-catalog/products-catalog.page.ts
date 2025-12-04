@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  effect,
   inject,
   WritableSignal,
 } from '@angular/core';
@@ -38,6 +37,7 @@ import {
 @Component({
   selector: 'app-products-catalog',
   templateUrl: './products-catalog.page.html',
+  styleUrls: ['./products-catalog.page.scss'],
   imports: [
     CardComponent,
     CurrencyPipe,
@@ -70,8 +70,4 @@ export class ProductsCatalogPage {
   protected readonly signalForm = form(
     this.productsCatalogStore.filtersForm as WritableSignal<ProductFiltersForm>
   );
-
-  x = effect(() => {
-    console.log(this.productsCatalogStore.requestStatus());
-  });
 }

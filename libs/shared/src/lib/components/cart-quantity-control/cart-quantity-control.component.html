@@ -1,19 +1,27 @@
 @if (quantity() > 0) {
-<p-button
-  icon="pi pi-minus"
-  aria-label="Remove from cart"
-  (onClick)="removeItemFromCart.emit()"
-/>
-{{ quantity() }}
-<p-button
-  icon="pi pi-plus"
-  aria-label="Add to cart"
-  (onClick)="addItemToCart.emit()"
-/>
+<div class="flex items-center justify-center gap-2">
+  <p-button
+    icon="pi pi-minus"
+    aria-label="Remove from cart"
+    [rounded]="rounded()"
+    [text]="text()"
+    (onClick)="removeItemFromCart.emit()"
+  />
+  <div>{{ quantity() }}</div>
+  <p-button
+    icon="pi pi-plus"
+    aria-label="Add to cart"
+    [rounded]="rounded()"
+    [text]="text()"
+    (onClick)="addItemToCart.emit()"
+  />
+</div>
 } @else {
 <p-button
   icon="pi pi-shopping-cart"
   aria-label="Add to cart"
+  [rounded]="rounded()"
+  [text]="text()"
   (onClick)="addItemToCart.emit()"
 />
 }

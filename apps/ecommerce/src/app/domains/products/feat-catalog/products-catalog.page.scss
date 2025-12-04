@@ -1,0 +1,41 @@
+.product-card {
+  .product-card-image {
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .new-product-icon {
+    cursor: pointer;
+
+    span {
+      flex: 1;
+      max-width: 0;
+      overflow: hidden;
+      transition: all 0.6s ease-in-out;
+      white-space: nowrap;
+      width: 0;
+      position: absolute;
+    }
+
+    &:hover {
+      span {
+        position: static;
+        max-width: 300px;
+        transition: all 0.8s ease-in-out;
+        width: auto;
+        opacity: 1;
+      }
+    }
+  }
+
+  &:hover {
+    .product-card-image {
+      transform: scale(1.1);
+      cursor: pointer;
+    }
+
+    .header-actions-container {
+      opacity: 1;
+      transform: translateY(-50%);
+    }
+  }
+}

@@ -10,7 +10,7 @@ export const productToProductViewModel = (
     name: product.name,
     image: {
       path: product.imageUrl,
-      priority: false,
+      priority: true,
       fill: true,
     },
     originalPrice: product.originalPrice,
