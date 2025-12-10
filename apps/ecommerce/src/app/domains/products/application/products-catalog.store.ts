@@ -43,7 +43,7 @@ import {
   setFulfilled,
   setPending,
   withRequestStatus,
-} from '../../../core/public-api';
+} from '@full-stack-nx-workspace/store';
 
 const maxPrice = 200;
 const minPrice = 0;

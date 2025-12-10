@@ -19,8 +19,11 @@
     "customConditions": ["development"],
     "baseUrl": ".",
     "paths": {
-      "@full-stack-nx-workspace/api": ["libs/api/src/index.ts"],
-      "@full-stack-nx-workspace/shared": ["libs/shared/src/lib/public-api.ts"]
+      "@full-stack-nx-workspace/api": ["libs/api/src/public-api.ts"],
+      "@full-stack-nx-workspace/shared": ["libs/shared/src/public-api.ts"],
+      "@full-stack-nx-workspace/auth": ["libs/auth/src/public-api.ts"],
+      "@full-stack-nx-workspace/auth-web": ["libs/auth-web/src/public-api.ts"],
+      "@full-stack-nx-workspace/store": ["libs/store/src/public-api.ts"]
     }
   }
 }

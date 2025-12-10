@@ -5,3 +5,21 @@
   [aria-label]="theme() === 'light' ? 'Toggle dark mode' : 'Toggle light mode'"
   (onClick)="toggleTheme()"
 />
+
+<p-button
+  icon="pi pi-shopping-cart"
+  aria-label="My Order"
+  (onClick)="myorder()"
+/>
+<div *authIf="'connected'; else notConnectedTemplate; pending: loadingTemplate">
+  <p>Welcome, user!</p>
+</div>
+
+<ng-template #loadingTemplate>
+  <p>Loading...</p>
+</ng-template>
+
+<ng-template #notConnectedTemplate>
+  <p>Please connect to access this content.</p>
+  <p-button icon="pi pi-user" aria-label="Login" (onClick)="login()" />
+</ng-template>

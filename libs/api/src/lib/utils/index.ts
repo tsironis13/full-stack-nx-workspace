@@ -1,1 +1,0 @@
-export { withPagination } from './pagination';

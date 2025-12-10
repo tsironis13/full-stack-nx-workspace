@@ -46,3 +46,5 @@ Thumbs.db
 test-output
 
 .angular
+
+vitest.config.*.timestamp*

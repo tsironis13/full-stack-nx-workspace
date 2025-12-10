@@ -82,6 +82,12 @@
         "jestConfig": "apps/ecommerce/jest.config.ts"
       }
     },
+    "vitest": {
+      "executor": "@analogjs/vitest-angular:test",
+      "options": {
+        "config": "vitest.config.mts"
+      }
+    },
     "serve-static": {
       "continuous": true,
       "executor": "@nx/web:file-server",

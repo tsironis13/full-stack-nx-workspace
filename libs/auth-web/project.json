@@ -1,0 +1,34 @@
+{
+  "name": "auth-web",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/auth-web/src",
+  "prefix": "lib",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/angular:ng-packagr-lite",
+      "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
+      "options": {
+        "project": "libs/auth-web/ng-package.json",
+        "tsConfig": "libs/auth-web/tsconfig.lib.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "libs/auth-web/tsconfig.lib.prod.json"
+        },
+        "development": {}
+      },
+      "defaultConfiguration": "production"
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "vitest": {
+      "executor": "@nx/vitest:test",
+      "options": {
+        "testMatch": "libs/auth-web/src/**/*.spec.ts"
+      }
+    }
+  }
+}

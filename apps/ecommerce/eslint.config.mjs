@@ -118,7 +118,7 @@ export default [
                 ['core-api'],
                 ['pattern-api'],
                 ['ui-api'],
-                ['lib'],
+                ['lib-api'],
                 [
                   'domain-feature',
                   { domain: '${from.domain}', feature: '${from.feature}' },
@@ -132,7 +132,7 @@ export default [
               allow: [
                 ['env'],
                 ['core-api'],
-                ['lib'],
+                ['lib-api'],
                 ['domain-application-anti-corruption-layer-api'],
                 [
                   'domain-application',
@@ -321,7 +321,7 @@ export default [
         {
           type: 'lib-api',
           mode: 'file',
-          pattern: 'libs/*/public-api.ts',
+          pattern: 'libs/*/src/public-api.ts',
           capture: ['lib'],
         },
         {
