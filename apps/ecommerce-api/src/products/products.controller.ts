@@ -13,10 +13,19 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductsCatalogPostDto } from './dto/products-catalog.post.dto';
 import { ProductsCatalogFiltersPostDto } from './dto/products-catalog-filters.post.dto';
+import { ProductEmbeddingService } from './product-embedding.service';
 
 @Controller('products')
 export class ProductsController {
-  constructor(private readonly productsService: ProductsService) {}
+  constructor(
+    private readonly productsService: ProductsService,
+    private readonly productEmbeddingService: ProductEmbeddingService
+  ) {}
+
+  @Get('/testEmbedProducts') // GET /products/testEmbedProducts
+  testEmbedProducts() {
+    return this.productEmbeddingService.embedAndStore();
+  }
 
   @Post('/catalog/paginated') // POST /products/catalog/paginated
   getPaginatedProductsCatalogFilteredBy(
