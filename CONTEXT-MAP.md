@@ -12,6 +12,17 @@ Each third column lists **Nx project IDs**: the `name` field from each projectâ€
 
 Add a new row here when a bounded context gets its own glossary (e.g. a separate product with different domain language).
 
+## Workspace engineering (system-wide)
+
+These documents apply across Nx apps and libraries. They are **not** domain `CONTEXT.md` files and do not define product language; they describe **how** the repo is shaped and built.
+
+| Document | Scope |
+| -------- | ----- |
+| [docs/front-end-infrastructure.md](./docs/front-end-infrastructure.md) | Angular apps, DDD-oriented layering, ESLint / module boundaries, shared `libs/` patterns for the monorepo front end. |
+| [docs/nestjs-architecture.md](./docs/nestjs-architecture.md) | NestJS + Drizzle, modular monolith / clean-architecture patterns for backend apps in this workspace. |
+
+Keep them at **`docs/<doc>.md`** (top-level under `docs/`), not under `docs/ecommerce/`, unless you later split a doc so it only applies to one product.
+
 ## Relationships
 
 - **Storefront vs business portal** â€” Both Angular apps implement the **E-commerce** context: the storefront (`ecommerce`) targets shoppers; the business portal (`business-portal`) targets **Admin User** workflows described in that context. They are different UIs over the same domain, not separate glossaries today.
@@ -25,5 +36,5 @@ Add a new row here when a bounded context gets its own glossary (e.g. a separate
 
 ## Discoverability
 
-1. Open this file to see which contexts exist and where language lives.
+1. Open this file to see which contexts exist, where language lives, and where system-wide engineering docs are.
 2. Edit the `CONTEXT.md` for the area you are working in; do not duplicate glossaries at the repo root.
