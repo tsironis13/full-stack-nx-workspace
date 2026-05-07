@@ -83,7 +83,6 @@ export default [
                 ['core-api'],
                 ['pattern-api'],
                 ['domain-routes', { domain: '!${from.domain}' }],
-                ['domain-data-api', { domain: '${from.domain}' }],
                 ['domain-feature', { domain: '${from.domain}' }],
                 ['domain-infrastructure-api', { domain: '${from.domain}' }],
                 ['domain-application-api', { domain: '${from.domain}' }],
@@ -100,16 +99,6 @@ export default [
             {
               from: ['domain-business'],
               allow: [['domain-business', { domain: '${from.domain}' }]],
-            },
-            {
-              from: ['domain-data'],
-              allow: [
-                ['env'],
-                ['core-api'],
-                ['domain-data', { domain: '${from.domain}' }],
-                ['domain-business-api', { domain: '${from.domain}' }],
-                ['domain-infrastructure-api', { domain: '${from.domain}' }],
-              ],
             },
             {
               from: ['domain-feature'],
@@ -138,19 +127,12 @@ export default [
                   'domain-application',
                   { domain: '${from.domain}', feature: '${from.feature}' },
                 ],
-                ['domain-data-api', { domain: '${from.domain}' }],
                 ['domain-business-api', { domain: '${from.domain}' }],
               ],
             },
             {
               from: ['domain-shared'],
-              allow: [
-                ['env'],
-                ['core-api'],
-                ['pattern-api'],
-                ['ui-api'],
-                ['domain-data-api', { domain: '${from.domain}' }],
-              ],
+              allow: [['env'], ['core-api'], ['pattern-api'], ['ui-api']],
             },
             {
               from: 'lib-api',
@@ -266,17 +248,6 @@ export default [
         {
           type: 'domain-presentation',
           pattern: 'domains/*/presentation',
-          capture: ['domain'],
-        },
-        {
-          type: 'domain-data-api',
-          mode: 'file',
-          pattern: 'domains/*/data/public-api.ts',
-          capture: ['domain'],
-        },
-        {
-          type: 'domain-data',
-          pattern: 'domains/*/data',
           capture: ['domain'],
         },
         {
