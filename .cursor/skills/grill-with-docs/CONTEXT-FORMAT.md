@@ -68,10 +68,14 @@ _Avoid_: Client, buyer, account
 - **Ordering ↔ Billing**: Shared types for `CustomerId` and `Money`
 ```
 
+**Nx or layered docs layout:** Keep the map at the workspace root; put each context file under `docs/<area>/CONTEXT.md` so it sits beside area docs (DB notes, APIs). Example entry:
+
+`- [E-commerce](./docs/ecommerce/CONTEXT.md) — catalog, carts, orders; Nx project IDs from each project.json name field: ecommerce, ecommerce-api, business-portal, …`
+
 The skill infers which structure applies:
 
 - If `CONTEXT-MAP.md` exists, read it to find contexts
 - If only a root `CONTEXT.md` exists, single context
-- If neither exists, create a root `CONTEXT.md` lazily when the first term is resolved
+- If neither exists, create a root `CONTEXT.md` lazily when the first term is resolved (or create `CONTEXT-MAP.md` plus the first `docs/<area>/CONTEXT.md` when adopting a multi-context layout)
 
 When multiple contexts exist, infer which one the current topic relates to. If unclear, ask.

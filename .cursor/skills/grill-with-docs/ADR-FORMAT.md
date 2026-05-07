@@ -4,6 +4,8 @@ ADRs live in `docs/adr/` and use sequential numbering: `0001-slug.md`, `0002-slu
 
 Create the `docs/adr/` directory lazily — only when the first ADR is needed.
 
+If a decision is **scoped to one domain context** (see `CONTEXT-MAP.md`) and does not belong at workspace level, you may use `docs/<area>/adr/` instead—for example `docs/ecommerce/adr/`. Prefer one numbering stream per directory; do not mix workspace and area ADRs in the same folder without a clear rule.
+
 ## Template
 
 ```md

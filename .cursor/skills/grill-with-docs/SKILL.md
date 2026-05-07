@@ -1,6 +1,6 @@
 ---
 name: grill-with-docs
-description: Grilling session that challenges your plan against the existing domain model, sharpens terminology, and updates documentation (CONTEXT.md, ADRs) inline as decisions crystallise. Use when user wants to stress-test a plan against their project's language and documented decisions.
+description: Grilling session that challenges your plan against the existing domain model, sharpens terminology, and updates documentation (CONTEXT-MAP.md, CONTEXT.md, ADRs) inline as decisions crystallise. Use when user wants to stress-test a plan against their project's language and documented decisions.
 ---
 
 <what-to-do>
@@ -17,7 +17,7 @@ If a question can be answered by exploring the codebase, explore the codebase in
 
 ## Domain awareness
 
-During codebase exploration, also look for existing documentation:
+During codebase exploration, also look for existing documentation. Start from the repo root: if `CONTEXT-MAP.md` exists, use it to locate the right `CONTEXT.md` for the topic.
 
 ### File structure
 
@@ -37,25 +37,64 @@ If a `CONTEXT-MAP.md` exists at the root, the repo has multiple contexts. The ma
 
 ```
 /
-├── CONTEXT-MAP.md
+├── CONTEXT-MAP.md                    ← one row per context: link + Nx project IDs
 ├── docs/
-│   └── adr/                          ← system-wide decisions
-├── src/
-│   ├── ordering/
-│   │   ├── CONTEXT.md
-│   │   └── docs/adr/                 ← context-specific decisions
-│   └── billing/
+│   ├── adr/                          ← workspace-wide ADRs
+│   └── <area>/
 │       ├── CONTEXT.md
-│       └── docs/adr/
+│       ├── …                         ← db, API docs, etc.
+│       └── adr/                      ← optional context-scoped ADRs
+├── apps/
+│   └── <app-name>/                   ← Nx: project id often matches folder
+└── libs/
+    └── <lib-name>/
+```
+
+**Nx monorepos:** Prefer `CONTEXT-MAP.md` at the workspace root and one `CONTEXT.md` per domain area under `docs/<area>/` (e.g. `docs/ecommerce/CONTEXT.md`), next to other domain docs like schema notes.
+
+In `CONTEXT-MAP.md`, for **each** context row, record the **Nx project IDs** that carry that domain: the `name` field from each relevant `project.json` / `package.json` (the same strings you use in `nx run <name>:<target>`, `nx graph`, and task inputs). That list is the link between “this glossary” and “this code”—folder names alone are not enough because roots can be renamed while project IDs stay stable. Optionally split the column into applications vs libraries when it gets long. Do not bury glossaries under `apps/<app>/src` unless a context is truly owned by a single app.
+
+Nx layout in the repo (how the map, language file, and Nx graph line up):
+
+```mermaid
+flowchart TB
+  MAP["CONTEXT-MAP.md — each context row lists: glossary link + Nx project IDs"]
+  subgraph lang [Domain language]
+    CTX["docs … /CONTEXT.md"]
+  end
+  subgraph impl [Code that implements that context]
+    APPS["applications — e.g. ecommerce, …-api"]
+    LIBS["libraries — e.g. store, api"]
+  end
+  MAP -->|file path in repo| CTX
+  MAP -->|"project.json name; nx run / nx graph"| APPS
+  MAP -->|"project.json name; nx run / nx graph"| LIBS
+```
+
+```
+/
+├── CONTEXT-MAP.md                    ← one row per context: link + Nx project IDs
+├── docs/
+│   ├── adr/                          ← workspace-wide ADRs
+│   └── <area>/
+│       ├── CONTEXT.md
+│       ├── …                         ← db, API docs, etc.
+│       └── adr/                      ← optional context-scoped ADRs
+├── apps/
+│   └── <app-name>/                   ← Nx: project id often matches folder
+└── libs/
+    └── <lib-name>/
 ```
 
 Create files lazily — only when you have something to write. If no `CONTEXT.md` exists, create one when the first term is resolved. If no `docs/adr/` exists, create it when the first ADR is needed.
+
+**Which `CONTEXT.md` to edit:** If `CONTEXT-MAP.md` exists, read it first and open the linked file for the topic at hand. If the topic spans contexts, update each affected `CONTEXT.md` or add a relationship row to `CONTEXT-MAP.md` when boundaries become clear.
 
 ## During the session
 
 ### Challenge against the glossary
 
-When the user uses a term that conflicts with the existing language in `CONTEXT.md`, call it out immediately. "Your glossary defines 'cancellation' as X, but you seem to mean Y — which is it?"
+When the user uses a term that conflicts with the existing language in the relevant `CONTEXT.md` (use `CONTEXT-MAP.md` at the repo root when present), call it out immediately. "Your glossary defines 'cancellation' as X, but you seem to mean Y — which is it?"
 
 ### Sharpen fuzzy language
 
@@ -71,7 +110,7 @@ When the user states how something works, check whether the code agrees. If you 
 
 ### Update CONTEXT.md inline
 
-When a term is resolved, update `CONTEXT.md` right there. Don't batch these up — capture them as they happen. Use the format in [CONTEXT-FORMAT.md](./CONTEXT-FORMAT.md).
+When a term is resolved, update the correct `CONTEXT.md` right there (resolve which file via `CONTEXT-MAP.md` when the repo uses a map). Don't batch these up — capture them as they happen. Use the format in [CONTEXT-FORMAT.md](./CONTEXT-FORMAT.md). If a boundary or relationship between contexts becomes clear, add a line to `CONTEXT-MAP.md` under **Relationships**.
 
 Don't couple `CONTEXT.md` to implementation details. Only include terms that are meaningful to domain experts.
 
