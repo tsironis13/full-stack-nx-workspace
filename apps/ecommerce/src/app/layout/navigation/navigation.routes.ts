@@ -4,13 +4,6 @@ export default [
   {
     path: '',
     component: NavigationComponent,
-    children: [
-      {
-        path: 'products',
-        loadChildren: () =>
-          import('../../domains/products/api/products.routes'),
-      },
-    ],
   },
   {
     path: '**',

@@ -6,7 +6,6 @@ import {
   signal,
 } from '@angular/core';
 
-import { CartIconComponent } from './cart-icon/cart-icon.component';
 import { ButtonModule } from 'primeng/button';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthIfDirective, AuthStore } from '@full-stack-nx-workspace/auth-web';
@@ -15,7 +14,7 @@ import { AuthIfDirective, AuthStore } from '@full-stack-nx-workspace/auth-web';
   selector: 'app-header',
   templateUrl: './header.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CartIconComponent, ButtonModule, AuthIfDirective],
+  imports: [ButtonModule, AuthIfDirective],
   host: {
     class: 'flex bg-white dark:bg-gray-900 h-20 fixed top-0 left-0 z-50 w-full',
   },
