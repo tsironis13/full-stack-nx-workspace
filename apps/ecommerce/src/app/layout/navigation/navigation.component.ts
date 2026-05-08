@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { RouterLink, RouterOutlet } from '@angular/router';
-import { ButtonModule } from 'primeng/button';
+import { RouterOutlet } from '@angular/router';
 
 import { HeaderComponent } from '../header/header.component';
 
@@ -8,6 +7,6 @@ import { HeaderComponent } from '../header/header.component';
   selector: 'app-navigation',
   templateUrl: './navigation.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterOutlet, HeaderComponent, ButtonModule, RouterLink],
+  imports: [RouterOutlet, HeaderComponent],
 })
 export class NavigationComponent {}

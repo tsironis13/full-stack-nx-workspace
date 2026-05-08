@@ -178,6 +178,32 @@ src/
 
 ---
 
+## Monorepo layout (`apps/ecommerce-api`)
+
+In this workspace the Nest app **`apps/ecommerce-api`** follows the same **modules → vertical slice** idea under a single `src/modules/` root (not a flat `controllers/` / `services/` tree at `src/`):
+
+```txt
+apps/ecommerce-api/src/
+├── app/
+│   └── app.module.ts          # imports feature modules from ../modules/*
+├── modules/
+│   └── <feature>/             # e.g. products, catalog, orders
+│       ├── <feature>.module.ts
+│       ├── presentation/      # controllers, request validation at HTTP boundary
+│       ├── application/       # use cases, orchestration; optional application/dto for response shapes
+│       ├── domain/            # types, enums, domain rules (no Nest/Drizzle imports)
+│       └── infrastructure/   # Drizzle repositories, persistence, external clients
+├── db/                        # Drizzle schema (shared database folder for the app)
+├── drizzle/
+└── main.ts
+```
+
+New backend capabilities **must** live under **`src/modules/<name>/`** with **`presentation/`**, **`application/`**, **`domain/`**, and **`infrastructure/`** folders as needed. Do **not** add ad-hoc `src/<topic>/` folders that mix layers in one directory.
+
+**DTO placement:** **Request** DTOs (body/query validation) belong in **`presentation/`**. **Response shapes** produced by use cases may live under **`application/dto/`** so **`application`** does not depend on **`presentation`**; controllers stay thin and call application services.
+
+---
+
 # Layer Breakdown
 
 # 1. Presentation Layer

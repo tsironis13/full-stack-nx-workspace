@@ -116,16 +116,24 @@ domains/<domain>/
     public-api.ts              # domain-application-api
     anti-corruption-layer.ts   # domain-application-anti-corruption-layer-api (explicit ACL surface)
     events.ts                  # NgRx Signals events (often re-exported via ACL for other domains)
-    *.facade.ts, *.store.ts, … # domain-application
+    *.facade.ts, …             # domain-application orchestration
+    *.store.ts                 # NgRx Signal Store (see below)—not raw HttpClient wrappers
   domain/
     public-api.ts              # domain-business-api
     *.model.ts                 # domain-business (pure domain types/rules)
   infrastructure/
     public-api.ts              # domain-infrastructure-api
-    *.service.ts, *.model.ts   # domain-infrastructure (HTTP, mapping to API DTOs)
+    *.service.ts               # HTTP / remote clients
+    *.model.ts                 # wire/API-only types (do not import from domain/)
   data/                        # optional mapping/cache helpers (still governed by feature/application imports)
   presentation/                # optional; path type exists in ESLint for future “presentation” slice
 ```
+
+**HTTP and stores (mandatory split):**
+
+- **`infrastructure/`** is the **only** place for **`HttpClient`**, REST/GraphQL clients, and other remote I/O services. Import those via **`domains/<domain>/infrastructure/public-api.ts`** (`domain-infrastructure-api`). Do not place API client classes under **`application/`**.
+- **`infrastructure/`** defines **wire / transport types** (for example `*.model.ts` describing JSON payloads and query param enums). It **must not** import **`domains/<domain>/domain/`** or **`domain-business-api`**; that keeps HTTP contracts independent from the domain model and avoids circular coupling.
+- **`application/`** maps wire types to **`domain/`** types (pure functions or small mappers next to stores) before state holds domain-shaped data. **`application/`** owns **NgRx Signal Store** (`signalStore` from **`@ngrx/signals`**) for feature or domain state, facades, and event wiring. Stores may depend on **`domain-infrastructure-api`** (same domain) and **`domain-business-api`**; they **must not** embed HTTP calls except by injecting infrastructure services typed against **`public-api.ts`** barrels.
 
 **Naming:** Features live under **`feat-*`** so the plugin can capture **`feature`** for rules that restrict cross-feature coupling inside the same domain.
 
@@ -146,7 +154,8 @@ core/<domain>/
     *.model.ts                   # types/rules at app-wide scope
   infrastructure/
     public-api.ts
-    *.service.ts, *.api.model.ts # HTTP/clients used by this core slice
+    *.service.ts
+    *.api.model.ts             # wire types for HTTP/persistence (mirror domains: infra does not import core/domain/)
 ```
 
 **`<domain>`** here is the same conceptual name you would use under **`domains/`** (for example **`cart`** → **`core/cart`**). Typically **`api/`** and **`feat-*`** remain under **`domains/`** because they belong to navigation and UX slices; **`core/<domain>/`** holds **shared state, domain logic, and integration** that genuinely spans the app.
@@ -220,7 +229,7 @@ These definitions come from `settings.boundaries.elements` in `apps/ecommerce/es
 | `domain-business-api`                          | `domains/*/domain/public-api.ts`                 | Domain model surface.                        |
 | `domain-business`                              | `domains/*/domain`                               | Pure domain.                                 |
 | `domain-infrastructure-api`                    | `domains/*/infrastructure/public-api.ts`         | Infrastructure surface.                      |
-| `domain-infrastructure`                        | `domains/*/infrastructure`                       | HTTP/clients/mappers.                        |
+| `domain-infrastructure`                        | `domains/*/infrastructure`                       | HTTP clients and **local wire/DTO types only** (no `domain/` imports). |
 | `domain-presentation-api`                      | `domains/*/presentation/public-api.ts`           | Reserved public slice (optional).            |
 | `domain-presentation`                          | `domains/*/presentation`                         | Reserved slice (optional).                   |
 | `lib-api`                                      | `libs/*/src/public-api.ts`                       | **(+ `lib`)** Library entry.                 |
@@ -241,16 +250,16 @@ The following is a concise reading of **`boundaries/element-types`** rules (not 
 - **`app`** → `themes`, `lib-api`, self, `env`, **`core-api`**, **`layout`**, **`ui-api`**, **`domain-routes`**.
 - **`pattern`** → `lib-api`, `env`, **`core-api`**, **`ui-api`**.
 - **`domain-routes`** → `lib-api`, `env`, **`core-api`**, **`pattern-api`**, other domains’ **`domain-routes`** only (**different** `domain`), same-domain **`domain-feature`**, **`domain-infrastructure-api`**, **`domain-application-api`**.
-- **`domain-infrastructure`** → `env`, **`core-api`**, same-domain **`domain-infrastructure`** only (no leaking infra across domains).
+- **`domain-infrastructure`** → `env`, **`core-api`**, same-domain **`domain-infrastructure`** only (no **`domain/`**, no cross-domain infra).
 - **`domain-business`** → same-domain **`domain-business`** only (pure domain isolation).
 - **`domain-feature`** → `env`, **`core-api`**, **`pattern-api`**, **`ui-api`**, `lib-api`, same **feature** only for other **`domain-feature`**, **`domain-application-api`**, **`domain-shared`** (same domain).
-- **`domain-application`** → `env`, **`core-api`**, `lib-api`, **`domain-application-anti-corruption-layer-api`**, same **feature** for **`domain-application`**, **`domain-business-api`** (same domain).
+- **`domain-application`** → `env`, **`core-api`**, `lib-api`, **`domain-application-anti-corruption-layer-api`**, same-domain **`domain-infrastructure-api`** (store injects API façade only through the infrastructure barrel), same **feature** for **`domain-application`**, **`domain-business-api`** (same domain).
 - **`domain-application-anti-corruption-layer-api`** → **`domain-application-api`** or self (ACL stays next to application).
 - **`domain-shared`** → `env`, **`core-api`**, **`pattern-api`**, **`ui-api`**.
 - **`lib-api`** → **`lib`** with matching **`app`** / **`lib`** capture (library internals stay inside the library).
 - **`lib`** → **`lib`** (same library).
 
-This yields the intended **hexagonal / clean architecture** flow inside each domain: **routes → feature UI → application → domain**, with **infrastructure** behind **`domain-infrastructure-api`** and **libraries** only via **`public-api.ts`**.
+This yields the intended **hexagonal / clean architecture** flow inside each domain: **routes → feature UI → application → domain**, with **infrastructure** exposing **wire-typed** clients behind **`domain-infrastructure-api`**, **application** translating wire → domain where needed, and **libraries** only via **`public-api.ts`**.
 
 ---
 
@@ -282,7 +291,7 @@ Top-level routes (`app.routes.ts`) typically lazy-load **layout** routes; layout
 ## Adding a new domain or feature (checklist)
 
 1. Create **`domains/<domain>/`** with **`api/`**, **`application/`**, **`domain/`**, **`infrastructure/`**, and **`feat-<name>/`** as needed.
-2. Add **`public-api.ts`** barrels at each layer boundary you intend others to import. If other domains must interact with this one, add **`application/events.ts`** (NgRx Signals events + reducers on the owning store) and **`application/anti-corruption-layer.ts`** (re-exports + read adapters); keep **`domain-application`** as the internal surface and **`anti-corruption-layer.ts`** as the only cross-domain import path.
+2. Add **`public-api.ts`** barrels at each layer boundary you intend others to import. Define **HTTP/wire types** under **`infrastructure/*.model.ts`** (no imports from **`domain/`**). Map wire → domain in **`application/`** (mappers, stores) before exposing domain-shaped state. If other domains must interact with this one, add **`application/events.ts`** (NgRx Signals events + reducers on the owning store) and **`application/anti-corruption-layer.ts`** (re-exports + read adapters); keep **`domain-application`** as the internal surface and **`anti-corruption-layer.ts`** as the only cross-domain import path.
 3. Wire **`domains/<domain>/api/*.routes.ts`** from **`layout`** or parent routes via **`loadChildren`** / **`import()`**.
 4. Prefer **`domain-shared`** only for UI reused **inside** the same domain.
 5. If **one piece of UI and business logic** is shared across contexts but **does not belong to a single domain**, add **`pattern/<name>/`** and expose **`pattern/**/public-api.ts`** (**`pattern-api`\*\*); see [Pattern folder](#pattern-folder).
@@ -295,3 +304,4 @@ Top-level routes (`app.routes.ts`) typically lazy-load **layout** routes; layout
 
 - Workspace ESLint base: `eslint.config.mjs`
 - Ecommerce DDD + Angular boundaries: `apps/ecommerce/eslint.config.mjs`
+- Backend modular slice layout (NestJS): `docs/nestjs-architecture.md`
