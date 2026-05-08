@@ -1,0 +1,115 @@
+<div class="catalog-browse">
+  <header class="catalog-browse__header">
+    <h2 class="catalog-browse__title">Κατάλογος</h2>
+    <p class="catalog-browse__subtitle">
+      Περιήγηση προϊόντων (κύρια επιλογή, τιμή, σελιδοποίηση)
+    </p>
+  </header>
+
+  <div class="catalog-browse__toolbar">
+    <div class="catalog-browse__field catalog-browse__field--search">
+      <label class="catalog-browse__label" for="catalog-search"
+        >Αναζήτηση ονόματος</label
+      >
+      <div class="catalog-browse__search-row">
+        <input
+          id="catalog-search"
+          type="search"
+          class="catalog-browse__input"
+          [ngModel]="searchDraft()"
+          (ngModelChange)="searchDraft.set($event)"
+          (keydown.enter)="applySearch()"
+          placeholder="Onoma proiontos"
+        />
+        <button
+          type="button"
+          class="catalog-browse__btn"
+          (click)="applySearch()"
+        >
+          Εφαρμογή
+        </button>
+      </div>
+    </div>
+    <div class="catalog-browse__field">
+      <label class="catalog-browse__label" for="catalog-sort">Ταξινόμηση</label>
+      <select
+        id="catalog-sort"
+        class="catalog-browse__select"
+        [ngModel]="store.sort()"
+        (ngModelChange)="onSortChange($event)"
+      >
+        @for (opt of sortOptions; track opt.value) {
+        <option [ngValue]="opt.value">{{ opt.label }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  @if (store.loading()) {
+  <div class="catalog-browse__state" role="status" aria-live="polite">
+    <p-progressSpinner
+      aria-hidden="true"
+      styleClass="catalog-browse__spinner"
+    />
+    <span>Φόρτωση καταλόγου…</span>
+  </div>
+  } @else if (store.error()) {
+  <div class="catalog-browse__state catalog-browse__state--error" role="alert">
+    <p>Δεν ήταν δυνατή η φόρτωση του καταλόγου. Δοκιμάστε ξανά.</p>
+    <button type="button" class="catalog-browse__btn" (click)="store.load()">
+      Επανάληψη
+    </button>
+  </div>
+  } @else if (store.data(); as catalog) {
+  <p class="catalog-browse__summary">
+    {{ rangeLabel(catalog.page, catalog.pageSize, catalog.total) }}
+  </p>
+
+  @if (catalog.items.length === 0) {
+  <p class="catalog-browse__empty" role="status">
+    Δεν βρέθηκαν προϊόντα. Δοκιμάστε άλλα κριτήρια αναζήτησης.
+  </p>
+  } @else {
+  <ul class="catalog-browse__grid">
+    @for (item of catalog.items; track item.productId) {
+    <li class="catalog-card">
+      <div class="catalog-card__media">
+        <img
+          class="catalog-card__img"
+          [src]="item.primaryImageUrl || placeholderImage"
+          [alt]="item.name ?? 'Προϊόν'"
+          [loading]="'lazy'"
+          (error)="onImageError($event)"
+        />
+      </div>
+      <div class="catalog-card__body">
+        <h3 class="catalog-card__name">{{ item.name ?? '—' }}</h3>
+        <p class="catalog-card__price">
+          {{
+            item.salePrice !== null && item.salePrice !== undefined
+              ? (item.salePrice
+                | currency: 'EUR' : 'symbol' : '1.2-2' : 'el-GR')
+              : '—'
+          }}
+        </p>
+        @if (item.additionalOptionsCount > 0) {
+        <p class="catalog-card__options">
+          +{{ item.additionalOptionsCount }} επιπλέον επιλογές
+        </p>
+        }
+      </div>
+    </li>
+    }
+  </ul>
+  }
+
+  <p-paginator
+    [first]="(catalog.page - 1) * catalog.pageSize"
+    [rows]="catalog.pageSize"
+    [totalRecords]="catalog.total"
+    [rowsPerPageOptions]="[12, 24, 48]"
+    (onPageChange)="onPageChange($event)"
+    styleClass="catalog-browse__paginator"
+  />
+  }
+</div>
