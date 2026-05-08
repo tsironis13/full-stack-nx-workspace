@@ -1,3 +1,13 @@
+/** Single root category row for storefront facets (wire contract). */
+export interface CatalogCategoryRootWire {
+  id: number;
+  name: string | null;
+}
+
+export interface CatalogCategoryRootsResponseWire {
+  roots: CatalogCategoryRootWire[];
+}
+
 /** Query sort values accepted by GET /api/products/catalog (wire contract). */
 export type CatalogListSortParam = 'newest' | 'price_asc' | 'price_desc';
 

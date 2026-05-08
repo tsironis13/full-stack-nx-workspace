@@ -3,6 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import type {
+  CatalogCategoryRootsResponseWire,
   CatalogListResponseWire,
   CatalogListSortParam,
 } from './catalog-api.model';
@@ -11,12 +12,14 @@ import type {
 export class CatalogApiService {
   private readonly http = inject(HttpClient);
   private readonly url = '/api/products/catalog';
+  private readonly categoryRootsUrl = '/api/products/catalog/category-roots';
 
   list(params: {
     page: number;
     pageSize: number;
     sort: CatalogListSortParam;
     q?: string;
+    categoryRootId?: number;
   }): Observable<CatalogListResponseWire> {
     let httpParams = new HttpParams()
       .set('page', String(params.page))
@@ -25,8 +28,23 @@ export class CatalogApiService {
     if (params.q) {
       httpParams = httpParams.set('q', params.q);
     }
+    if (
+      params.categoryRootId !== undefined &&
+      params.categoryRootId !== null
+    ) {
+      httpParams = httpParams.set(
+        'categoryRootId',
+        String(params.categoryRootId)
+      );
+    }
     return this.http.get<CatalogListResponseWire>(this.url, {
       params: httpParams,
     });
+  }
+
+  listCategoryRoots(): Observable<CatalogCategoryRootsResponseWire> {
+    return this.http.get<CatalogCategoryRootsResponseWire>(
+      this.categoryRootsUrl
+    );
   }
 }

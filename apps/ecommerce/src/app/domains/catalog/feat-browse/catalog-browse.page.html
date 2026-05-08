@@ -2,9 +2,53 @@
   <header class="catalog-browse__header">
     <h2 class="catalog-browse__title">Κατάλογος</h2>
     <p class="catalog-browse__subtitle">
-      Περιήγηση προϊόντων (κύρια επιλογή, τιμή, σελιδοποίηση)
+      Περιήγηση προϊόντων (κύρια κατηγορία, αναζήτηση ονόματος, ταξινόμηση,
+      σελιδοποίηση)
     </p>
   </header>
+
+  @if (store.categoryRootsLoading()) {
+  <p class="catalog-browse__facet-hint" role="status">Φόρτωση κατηγοριών…</p>
+  } @else if (store.categoryRootsError()) {
+  <p class="catalog-browse__facet-error" role="alert">
+    Δεν ήταν δυνατή η φόρτωση των κατηγοριών για το φίλτρο.
+  </p>
+  } @else if (store.categoryRoots().length > 0) {
+  <div
+    class="catalog-browse__facet"
+    role="group"
+    aria-label="Κύρια κατηγορία"
+  >
+    <span class="catalog-browse__facet-label">Κύρια κατηγορία</span>
+    <div class="catalog-browse__facet-chips">
+      <button
+        type="button"
+        class="catalog-browse__chip"
+        [class.catalog-browse__chip--active]="
+          store.selectedCategoryRootId() === null
+        "
+        (click)="selectCategoryRoot(null)"
+      >
+        Όλα
+      </button>
+      @for (root of store.categoryRoots(); track root.id) {
+      <button
+        type="button"
+        class="catalog-browse__chip"
+        [class.catalog-browse__chip--active]="
+          store.selectedCategoryRootId() === root.id
+        "
+        (click)="selectCategoryRoot(root.id)"
+      >
+        {{ root.name ?? '—' }}
+      </button>
+      }
+    </div>
+    <p class="catalog-browse__facet-help">
+      Εμφανίζονται προϊόντα στην επιλεγμένη ρίζα και τις υποκατηγορίες της.
+    </p>
+  </div>
+  }
 
   <div class="catalog-browse__toolbar">
     <div class="catalog-browse__field catalog-browse__field--search">
