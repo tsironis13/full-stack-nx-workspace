@@ -2,7 +2,10 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import type { CatalogListResponse, CatalogSort } from '../domain/public-api';
+import type {
+  CatalogListResponseWire,
+  CatalogListSortParam,
+} from './catalog-api.model';
 
 @Injectable({ providedIn: 'root' })
 export class CatalogApiService {
@@ -12,9 +15,9 @@ export class CatalogApiService {
   list(params: {
     page: number;
     pageSize: number;
-    sort: CatalogSort;
+    sort: CatalogListSortParam;
     q?: string;
-  }): Observable<CatalogListResponse> {
+  }): Observable<CatalogListResponseWire> {
     let httpParams = new HttpParams()
       .set('page', String(params.page))
       .set('pageSize', String(params.pageSize))
@@ -22,6 +25,8 @@ export class CatalogApiService {
     if (params.q) {
       httpParams = httpParams.set('q', params.q);
     }
-    return this.http.get<CatalogListResponse>(this.url, { params: httpParams });
+    return this.http.get<CatalogListResponseWire>(this.url, {
+      params: httpParams,
+    });
   }
 }

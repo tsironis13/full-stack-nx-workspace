@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { CatalogListService } from './catalog-list.service';
-import { CatalogRepository } from './catalog.repository';
-import { CatalogSort } from './catalog.types';
+import { CatalogRepository } from '../infrastructure/catalog.repository';
+import { CatalogSort } from '../domain/catalog.types';
 
 describe('CatalogListService', () => {
   let service: CatalogListService;

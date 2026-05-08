@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 
 import { DrizzleModule } from '../drizzle/drizzle.module';
-import { ProductsModule } from '../products/products.module';
+import { ProductsModule } from '../modules/products/products.module';
 import { AuthModule } from '../auth/auth.module';
 
 @Module({

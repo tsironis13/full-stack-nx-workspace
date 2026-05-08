@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { and, asc, count, desc, eq, ilike, isNull, sql } from 'drizzle-orm';
 
-import { products } from '../db/schema/products';
-import { productItems } from '../db/schema/product-items';
-import { DrizzleService } from '../drizzle/drizzle.service';
+import { productItems } from '../../../db/schema/product-items';
+import { products } from '../../../db/schema/products';
+import { DrizzleService } from '../../../drizzle/drizzle.service';
 
-import { CatalogSort } from './catalog.types';
+import { CatalogSort } from '../domain/catalog.types';
 
 export type CatalogListRow = {
   productId: number;

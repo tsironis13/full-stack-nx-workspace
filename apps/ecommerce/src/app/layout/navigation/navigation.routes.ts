@@ -7,15 +7,7 @@ export default [
     children: [
       {
         path: 'catalog',
-        loadChildren: () =>
-          import('../../domains/catalog/api/catalog.routes').then(
-            (m) => m.default
-          ),
-      },
-      {
-        path: '',
-        pathMatch: 'full',
-        redirectTo: 'catalog',
+        loadChildren: () => import('../../domains/catalog/api/catalog.routes'),
       },
     ],
   },

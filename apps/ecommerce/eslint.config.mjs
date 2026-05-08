@@ -123,6 +123,7 @@ export default [
                 ['core-api'],
                 ['lib-api'],
                 ['domain-application-anti-corruption-layer-api'],
+                ['domain-infrastructure-api', { domain: '${from.domain}' }],
                 [
                   'domain-application',
                   { domain: '${from.domain}', feature: '${from.feature}' },

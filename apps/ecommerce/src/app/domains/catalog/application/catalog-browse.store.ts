@@ -1,40 +1,70 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { tapResponse } from '@ngrx/operators';
+import { patchState, signalStore, withMethods, withProps, withState } from '@ngrx/signals';
+import { inject } from '@angular/core';
 
-import { CatalogApiService } from './catalog-api.service';
 import type { CatalogListResponse, CatalogSort } from '../domain/public-api';
+import { mapCatalogListFromWire } from './catalog-list.mapper';
+import { CatalogApiService } from '../infrastructure/public-api';
 
-@Injectable()
-export class CatalogBrowseStore {
-  private readonly api = inject(CatalogApiService);
+type CatalogBrowseState = {
+  page: number;
+  pageSize: number;
+  sort: CatalogSort;
+  searchQuery: string;
+  loading: boolean;
+  error: string | null;
+  data: CatalogListResponse | null;
+};
 
-  readonly page = signal(1);
-  readonly pageSize = signal(12);
-  readonly sort = signal<CatalogSort>('newest');
-  readonly searchQuery = signal('');
+const initialState: CatalogBrowseState = {
+  page: 1,
+  pageSize: 12,
+  sort: 'newest',
+  searchQuery: '',
+  loading: false,
+  error: null,
+  data: null,
+};
 
-  readonly loading = signal(false);
-  readonly error = signal<string | null>(null);
-  readonly data = signal<CatalogListResponse | null>(null);
-
-  load(): void {
-    this.loading.set(true);
-    this.error.set(null);
-    this.api
-      .list({
-        page: this.page(),
-        pageSize: this.pageSize(),
-        sort: this.sort(),
-        q: this.searchQuery() || undefined,
-      })
-      .subscribe({
-        next: (res) => {
-          this.data.set(res);
-          this.loading.set(false);
-        },
-        error: () => {
-          this.error.set('catalog.loadError');
-          this.loading.set(false);
-        },
-      });
-  }
-}
+export const CatalogBrowseStore = signalStore(
+  withState(initialState),
+  withProps(() => ({
+    api: inject(CatalogApiService),
+  })),
+  withMethods((store) => ({
+    load() {
+      patchState(store, { loading: true, error: null });
+      store.api
+        .list({
+          page: store.page(),
+          pageSize: store.pageSize(),
+          sort: store.sort(),
+          q: store.searchQuery().trim() || undefined,
+        })
+        .pipe(
+          tapResponse({
+            next: (res) =>
+              patchState(store, {
+                data: mapCatalogListFromWire(res),
+                loading: false,
+              }),
+            error: () =>
+              patchState(store, { error: 'catalog.loadError', loading: false }),
+          })
+        )
+        .subscribe();
+    },
+    setPage(page: number) {
+      patchState(store, { page });
+    },
+    setPageSize(pageSize: number) {
+      patchState(store, { pageSize });
+    },
+    setSort(sort: CatalogSort) {
+      patchState(store, { sort });
+    },
+    setSearchQuery(searchQuery: string) {
+      patchState(store, { searchQuery });
+    },
+  }))
+);

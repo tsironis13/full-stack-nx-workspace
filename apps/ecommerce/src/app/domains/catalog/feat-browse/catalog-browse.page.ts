@@ -54,22 +54,22 @@ export class CatalogBrowsePageComponent implements OnInit {
   }
 
   protected applySearch(): void {
-    this.store.searchQuery.set(this.searchDraft().trim());
-    this.store.page.set(1);
+    this.store.setSearchQuery(this.searchDraft().trim());
+    this.store.setPage(1);
     this.store.load();
   }
 
   protected onSortChange(value: CatalogSort): void {
-    this.store.sort.set(value);
-    this.store.page.set(1);
+    this.store.setSort(value);
+    this.store.setPage(1);
     this.store.load();
   }
 
   protected onPageChange(state: PaginatorState): void {
     const nextPage = (state.page ?? 0) + 1;
     const rows = state.rows ?? this.store.pageSize();
-    this.store.page.set(nextPage);
-    this.store.pageSize.set(rows);
+    this.store.setPage(nextPage);
+    this.store.setPageSize(rows);
     this.store.load();
   }
 

@@ -7,8 +7,8 @@ import {
   Query,
 } from '@nestjs/common';
 
-import { CatalogListService } from './catalog-list.service';
-import { CatalogSort } from './catalog.types';
+import { CatalogListService } from '../../application/catalog-list.service';
+import { CatalogSort } from '../../domain/catalog.types';
 
 @Controller('products')
 export class CatalogController {

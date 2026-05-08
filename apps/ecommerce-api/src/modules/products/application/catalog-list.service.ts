@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
-import { CatalogRepository } from './catalog.repository';
-import { CatalogListQuery } from './catalog.types';
+import { CatalogRepository } from '../infrastructure/catalog.repository';
+import { CatalogListQuery } from '../domain/catalog.types';
 import { CatalogListResponseDto } from './dto/catalog-list-response.dto';
 
 @Injectable()
