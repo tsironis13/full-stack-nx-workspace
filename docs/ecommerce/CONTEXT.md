@@ -14,6 +14,8 @@ The primary catalog entity representing shared product information and marketing
 
 A Product is not directly purchasable; purchasable behavior belongs to Product Items.
 
+**Storefront catalog search (v1):** Text search matches **`products.name`** only.
+
 Avoid:
 
 - Item
@@ -34,6 +36,8 @@ Avoid:
 - SKU Item
 - Inventory Item
 
+On the storefront, describe purchasable differences using **options** (for example color and size), or neutral phrases such as **more options**; do not use *variant* in customer-facing wording.
+
 ---
 
 ## Main Product Item
@@ -50,6 +54,32 @@ Avoid:
 
 - Primary Variant
 - Featured SKU
+
+---
+
+## Storefront catalog sort (v1)
+
+- **Newest:** By **`products.created_at`** (newest first uses descending order).
+- **Price (low to high / high to low):** By **Sale Price** on the **Main Product Item** for each **Product**, consistent with listing display.
+- **Not offered:** **Highest rated** — deferred together with product rating (see **Product rating (storefront catalog v1)** under Flagged ambiguities). **Most popular** — deferred until the domain defines a measurable popularity signal.
+
+---
+
+## Storefront catalog price filter (v1)
+
+**Price range** compares against **Sale Price** on the **Main Product Item** only—the same basis as listing cards and catalog sort. Pricing on other **Product Items** does not determine whether the **Product** matches the range.
+
+---
+
+## Storefront catalog attribute filters (v1)
+
+Facets such as size and color use the **attribute** data tied to **Product Items** (and category–attribute rules where the schema defines them). Options are **dynamic**: the storefront offers values that still occur on **Product Items** belonging to the **current** filtered **Product** result set—no fixed hardcoded lists for those dimensions in the UI.
+
+---
+
+## Storefront catalog URL state (v1)
+
+Search text, facet selection, sort, and pagination are **not** required to serialize to the URL. Refreshing or sharing a generic catalog URL does not need to restore the same result set for v1.
 
 ---
 
@@ -93,6 +123,8 @@ Avoid:
 A top-level Category with no parent Category.
 
 Used as the primary storefront navigation layer.
+
+On the storefront catalog, a category facet may list **Root Categories** only. Selecting a Root Category includes **Products** in that Category and in any **Child Category** beneath it (subtree inclusion), until the shopper refines to a specific nested **Category** if that interaction exists.
 
 Avoid:
 
@@ -375,6 +407,8 @@ A Cart belongs to either:
 - A Guest User session
 - A Registered User
 
+On the storefront catalog, adding to the **Cart** from a product listing or grid uses the **Main Product Item** by default—the same unit used for the listing’s price and primary image. The product detail flow may allow choosing a different **Product Item** before adding.
+
 Avoid:
 
 - Basket
@@ -398,6 +432,10 @@ Avoid:
 A saved collection of Products or Product Items a User intends to revisit later.
 
 Belongs to a Registered User.
+
+On the storefront, Guest Users may see wishlist controls; persisting selections requires completing sign-in or registration first.
+
+Adding from a product listing or catalog grid saves the **Main Product Item** by default—the same unit used for the listing’s price and primary image. The product detail flow may allow choosing a different **Product Item** before adding.
 
 Avoid:
 
@@ -791,3 +829,9 @@ Archived means hidden from active storefront views but retained in the database.
 Deleted means permanently removed.
 
 These represent different lifecycle states and should not share UI labels.
+
+---
+
+## Product rating (storefront catalog v1)
+
+**Resolved (deferred):** Star ratings and rating-based filtering are **out of scope** for the current catalog work. Until this note is replaced, storefront listings must not depend on persisted rating or review data. When rating is in scope, define how **Rating** relates to **Product** and any future **Review** (or editorial) sources.
