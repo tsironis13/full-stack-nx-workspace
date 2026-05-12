@@ -17,7 +17,7 @@ import {
   PriceRangeSliderComponent,
 } from '@full-stack-nx-workspace/shared';
 
-import { CatalogBrowseStore, type CatalogSort } from '../application/public-api';
+import { CatalogBrowseStore, type AttributeFacet, type CatalogSort } from '../application/public-api';
 
 const PRICE_SLIDER_FLOOR = 0;
 const PRICE_SLIDER_CEIL = 10_000;
@@ -153,5 +153,21 @@ export class CatalogBrowsePageComponent implements OnInit {
     const from = (page - 1) * pageSize + 1;
     const to = Math.min(page * pageSize, total);
     return `Εμφάνιση ${from}–${to} από ${total} προϊόντα`;
+  }
+
+  protected isFacetValueSelected(facet: AttributeFacet, valueId: number): boolean {
+    return this.store.selectedAttributeFilters()[facet.attributeId] === valueId;
+  }
+
+  protected onFacetValueChange(
+    facet: AttributeFacet,
+    valueId: number,
+    checked: boolean
+  ): void {
+    this.store.setAttributeFilter(facet.attributeId, checked ? valueId : null);
+  }
+
+  protected hasActiveAttributeFilters(): boolean {
+    return Object.keys(this.store.selectedAttributeFilters()).length > 0;
   }
 }

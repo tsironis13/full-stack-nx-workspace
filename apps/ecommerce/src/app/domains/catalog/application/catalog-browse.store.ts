@@ -11,7 +11,7 @@ import {
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { pipe, switchMap, tap } from 'rxjs';
 
-import type { CatalogListResponse, CatalogSort } from '../domain/public-api';
+import type { AttributeFacet, CatalogListResponse, CatalogSort } from '../domain/public-api';
 import { mapCatalogListFromWire } from './catalog-list.mapper';
 import { CatalogApiService } from '../infrastructure/public-api';
 
@@ -25,6 +25,11 @@ type CatalogBrowseState = {
   salePriceMin: number | null;
   /** Inclusive max **Sale Price** (main item); `null` = no upper bound. */
   salePriceMax: number | null;
+  /**
+   * Active attribute filters: map of `attributeId` → selected `valueId`.
+   * v1 is single-select per attribute (AND across attributes).
+   */
+  selectedAttributeFilters: Record<number, number>;
   categoryRoots: { id: number; name: string | null }[];
   categoryRootsLoading: boolean;
   categoryRootsError: string | null;
@@ -41,6 +46,7 @@ const initialState: CatalogBrowseState = {
   selectedCategoryRootId: null,
   salePriceMin: null,
   salePriceMax: null,
+  selectedAttributeFilters: {},
   categoryRoots: [],
   categoryRootsLoading: false,
   categoryRootsError: null,
@@ -51,8 +57,10 @@ const initialState: CatalogBrowseState = {
 
 export const CatalogBrowseStore = signalStore(
   withState(initialState),
-  withComputed(({ searchQuery }) => ({
+  withComputed(({ searchQuery, data }) => ({
     trimmedSearchQuery: computed(() => searchQuery().trim()),
+    /** Dynamic attribute facets from the latest catalog response. */
+    facets: computed((): AttributeFacet[] => data()?.facets ?? []),
   })),
   withProps(() => ({
     api: inject(CatalogApiService),
@@ -64,6 +72,7 @@ export const CatalogBrowseStore = signalStore(
         switchMap(() => {
           const q = store.trimmedSearchQuery();
           const categoryRootId = store.selectedCategoryRootId();
+          const filters = store.selectedAttributeFilters();
           return store.api
             .list({
               page: store.page(),
@@ -74,6 +83,8 @@ export const CatalogBrowseStore = signalStore(
                 categoryRootId === null ? undefined : categoryRootId,
               salePriceMin: store.salePriceMin(),
               salePriceMax: store.salePriceMax(),
+              attributeFilters:
+                Object.keys(filters).length > 0 ? filters : undefined,
             })
             .pipe(
               tapResponse({
@@ -141,6 +152,7 @@ export const CatalogBrowseStore = signalStore(
         }
         patchState(store, {
           selectedCategoryRootId: categoryRootId,
+          selectedAttributeFilters: {},
           page: 1,
         });
         load();
@@ -151,6 +163,30 @@ export const CatalogBrowseStore = signalStore(
           salePriceMax,
           page: 1,
         });
+        load();
+      },
+      /**
+       * Set (or clear) the selected value for one attribute facet.
+       * Passing `valueId = null` clears that attribute's filter.
+       * v1: single-select per attribute.
+       */
+      setAttributeFilter(attributeId: number, valueId: number | null) {
+        const current = store.selectedAttributeFilters();
+        if (valueId === null) {
+          const updated = { ...current };
+          delete updated[attributeId];
+          patchState(store, { selectedAttributeFilters: updated, page: 1 });
+        } else {
+          patchState(store, {
+            selectedAttributeFilters: { ...current, [attributeId]: valueId },
+            page: 1,
+          });
+        }
+        load();
+      },
+      /** Clear all active attribute filters and reload. */
+      clearAttributeFilters() {
+        patchState(store, { selectedAttributeFilters: {}, page: 1 });
         load();
       },
     };

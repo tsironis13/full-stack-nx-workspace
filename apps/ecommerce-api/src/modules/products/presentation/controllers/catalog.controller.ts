@@ -36,7 +36,13 @@ export class CatalogController {
     @Query('categoryRootId', new ParseIntPipe({ optional: true }))
     categoryRootId?: number,
     @Query('minSalePrice') minSalePrice?: string,
-    @Query('maxSalePrice') maxSalePrice?: string
+    @Query('maxSalePrice') maxSalePrice?: string,
+    /**
+     * Attribute filter(s) in `"attributeId:valueId"` format. May appear multiple
+     * times for different attributes (AND semantics). v1 is single-select per
+     * attribute. Example: `?attributeFilter=1:5&attributeFilter=2:10`
+     */
+    @Query('attributeFilter') attributeFilter?: string | string[]
   ) {
     return this.catalogListService.list({
       page: Math.max(1, page),
@@ -46,6 +52,7 @@ export class CatalogController {
       categoryRootId,
       minSalePrice,
       maxSalePrice,
+      rawAttributeFilters: attributeFilter,
     });
   }
 }

@@ -10,9 +10,27 @@ export interface CatalogListItem {
   additionalOptionsCount: number;
 }
 
+/** One selectable value within a dynamic attribute facet. */
+export interface AttributeFacetValue {
+  valueId: number;
+  value: string | null;
+}
+
+/**
+ * Dynamic attribute facet — attribute name plus the distinct values present on
+ * Product Items belonging to products in the current result set.
+ */
+export interface AttributeFacet {
+  attributeId: number;
+  name: string | null;
+  values: AttributeFacetValue[];
+}
+
 export interface CatalogListResponse {
   items: CatalogListItem[];
   total: number;
   page: number;
   pageSize: number;
+  /** Dynamic attribute facets for the current filtered result set. */
+  facets: AttributeFacet[];
 }

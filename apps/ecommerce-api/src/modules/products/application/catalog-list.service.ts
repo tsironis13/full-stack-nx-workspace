@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 
 import { CatalogRepository } from '../infrastructure/catalog.repository';
 import {
+  AttributeFilter,
   CatalogListQuery,
   CatalogListServiceInput,
 } from '../domain/catalog.types';
@@ -37,15 +38,25 @@ export class CatalogListService {
       query.maxSalePrice
     );
 
-    const { rows, total } = await this.catalogRepository.findCatalogPage({
-      page,
-      pageSize,
-      sort,
+    const attributeFilters = this.parseAttributeFilters(query.rawAttributeFilters);
+
+    const facetParams = {
       q: query.q,
       categoryRootId: query.categoryRootId,
       salePriceMin,
       salePriceMax,
-    });
+      attributeFilters,
+    };
+
+    const [{ rows, total }, facets] = await Promise.all([
+      this.catalogRepository.findCatalogPage({
+        page,
+        pageSize,
+        sort,
+        ...facetParams,
+      }),
+      this.catalogRepository.findAttributeFacets(facetParams),
+    ]);
 
     return {
       items: rows.map((r) => ({
@@ -60,6 +71,7 @@ export class CatalogListService {
       total,
       page,
       pageSize,
+      facets,
     };
   }
 
@@ -99,5 +111,42 @@ export class CatalogListService {
       throw new BadRequestException(`${queryKey} must be >= 0`);
     }
     return n;
+  }
+
+  /**
+   * Parses raw `attributeFilter` query params (format: `"${attributeId}:${valueId}"`)
+   * into `AttributeFilter[]`. v1: single-select per attribute — if the same
+   * attributeId appears multiple times the last value wins.
+   */
+  parseAttributeFilters(
+    raw: string | string[] | undefined
+  ): AttributeFilter[] | undefined {
+    if (!raw) {
+      return undefined;
+    }
+    const entries = Array.isArray(raw) ? raw : [raw];
+    const filters: AttributeFilter[] = [];
+    for (const entry of entries) {
+      const parts = entry.split(':');
+      if (parts.length !== 2) {
+        throw new BadRequestException(
+          `attributeFilter values must be in "attributeId:valueId" format; got "${entry}"`
+        );
+      }
+      const attributeId = parseInt(parts[0], 10);
+      const valueId = parseInt(parts[1], 10);
+      if (!Number.isFinite(attributeId) || attributeId <= 0) {
+        throw new BadRequestException(
+          `attributeFilter attributeId must be a positive integer; got "${parts[0]}"`
+        );
+      }
+      if (!Number.isFinite(valueId) || valueId <= 0) {
+        throw new BadRequestException(
+          `attributeFilter valueId must be a positive integer; got "${parts[1]}"`
+        );
+      }
+      filters.push({ attributeId, valueId });
+    }
+    return filters.length > 0 ? filters : undefined;
   }
 }
