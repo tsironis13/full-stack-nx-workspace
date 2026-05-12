@@ -7,245 +7,74 @@
     </p>
   </header>
 
-  @if (store.categoryRootsLoading()) {
-  <p class="catalog-browse__facet-hint" role="status">Φόρτωση κατηγοριών…</p>
-  } @else if (store.categoryRootsError()) {
-  <p class="catalog-browse__facet-error" role="alert">
-    Δεν ήταν δυνατή η φόρτωση των κατηγοριών για το φίλτρο.
-  </p>
-  } @else if (store.categoryRoots().length > 0) {
-  <div
-    class="catalog-browse__facet"
-    role="group"
-    aria-label="Κύρια κατηγορία"
-  >
-    <span class="catalog-browse__facet-label">Κύρια κατηγορία</span>
-    <div class="catalog-browse__facet-chips">
-      <button
-        type="button"
-        class="catalog-browse__chip"
-        [class.catalog-browse__chip--active]="
-          store.selectedCategoryRootId() === null
-        "
-        (click)="selectCategoryRoot(null)"
-      >
-        Όλα
-      </button>
-      @for (root of store.categoryRoots(); track root.id) {
-      <button
-        type="button"
-        class="catalog-browse__chip"
-        [class.catalog-browse__chip--active]="
-          store.selectedCategoryRootId() === root.id
-        "
-        (click)="selectCategoryRoot(root.id)"
-      >
-        {{ root.name ?? '—' }}
-      </button>
-      }
-    </div>
-    <p class="catalog-browse__facet-help">
-      Εμφανίζονται προϊόντα στην επιλεγμένη ρίζα και τις υποκατηγορίες της.
-    </p>
-  </div>
-  }
+  <app-catalog-category-facet
+    [roots]="store.categoryRoots()"
+    [loading]="store.categoryRootsLoading()"
+    [error]="store.categoryRootsError()"
+    [selectedId]="store.selectedCategoryRootId()"
+    (categorySelected)="store.setCategoryRoot($event)"
+  />
 
-  <div class="catalog-browse__toolbar">
-    <div class="catalog-browse__field catalog-browse__field--search">
-      <label class="catalog-browse__label" for="catalog-search"
-        >Αναζήτηση ονόματος</label
-      >
-      <div class="catalog-browse__search-row">
-        <input
-          id="catalog-search"
-          type="search"
-          class="catalog-browse__input"
-          [ngModel]="searchDraft()"
-          (ngModelChange)="searchDraft.set($event)"
-          (keydown.enter)="applySearch()"
-          placeholder="Onoma proiontos"
-        />
-        <button
-          type="button"
-          class="catalog-browse__btn"
-          (click)="applySearch()"
-        >
-          Εφαρμογή
-        </button>
-      </div>
-    </div>
-    <div class="catalog-browse__field">
-      <label class="catalog-browse__label" for="catalog-sort">Ταξινόμηση</label>
-      <select
-        id="catalog-sort"
-        class="catalog-browse__select"
-        [ngModel]="store.sort()"
-        (ngModelChange)="onSortChange($event)"
-      >
-        @for (opt of sortOptions; track opt.value) {
-        <option [ngValue]="opt.value">{{ opt.label }}</option>
-        }
-      </select>
-    </div>
-  </div>
+  <app-catalog-browse-toolbar
+    [sort]="store.sort()"
+    [sortOptions]="sortOptions"
+    (searchApplied)="onSearchApplied($event)"
+    (sortChanged)="onSortChange($event)"
+  />
 
-  <div
-    class="catalog-browse__price-band"
-    role="group"
-    aria-label="Εύρος τιμής πώλησης (κύριο προϊόν)"
-  >
-    <span class="catalog-browse__facet-label">Εύρος τιμής πώλησης (EUR)</span>
-      <div class="catalog-browse__price-slider-wrap">
-        <app-price-range-slider
-          class="catalog-browse__price-slider"
-          [min]="priceSliderLow()"
-          [max]="priceSliderHigh()"
-          [options]="priceSliderOptions"
-          (userChangeEnd)="onPriceSliderUserChangeEnd($event)"
-        >
-          <ng-template priceRangeDisplay let-ctx>
-            <app-price-range-display
-              [minRange]="ctx.minRange"
-              [maxRange]="ctx.maxRange"
-              [maxValue]="ctx.maxValue"
-            />
-          </ng-template>
-        </app-price-range-slider>
-      </div>
-    <div class="catalog-browse__price-actions catalog-browse__price-actions--below-slider">
-      <button
-        type="button"
-        class="catalog-browse__btn"
-        (click)="applyPriceFilter()"
-      >
-        Εφαρμογή τιμών
-      </button>
-      <button
-        type="button"
-        class="catalog-browse__btn catalog-browse__btn--secondary"
-        (click)="clearPriceFilter()"
-      >
-        Καθαρισμός
-      </button>
-    </div>
-    @if (priceFilterError(); as priceErr) {
-    <p class="catalog-browse__facet-error" role="alert">{{ priceErr }}</p>
-    }
-    <p class="catalog-browse__facet-help">
-      Ο συρτής ορίζει εύρος 0–10&nbsp;000&nbsp;€ (προσέγγιση). Όταν η ελάχιστη
-      είναι στο 0 ή η μέγιστη στο άνω όριο, το αντίστοιγο όριο δεν εφαρμόζεται
-      στο API. Η τιμή είναι η <strong>τιμή πώλησης</strong> του
-      <strong>κύριου προϊόντος</strong>, όπως στις κάρτες και την ταξινόμηση·
-      άλλες επιλογές του ίδιου προϊόντος δεν αλλάζουν το φίλτρο.
-    </p>
-  </div>
+  <app-catalog-price-band
+    [salePriceMin]="store.salePriceMin()"
+    [salePriceMax]="store.salePriceMax()"
+    (priceRangeChanged)="store.setSalePriceRange($event.min, $event.max)"
+  />
 
   @if (store.facets().length > 0) {
-  <div class="catalog-browse__attribute-facets">
-    @if (hasActiveAttributeFilters()) {
-    <div class="catalog-browse__facet-actions">
-      <button
-        type="button"
-        class="catalog-browse__btn catalog-browse__btn--secondary catalog-browse__btn--sm"
-        (click)="store.clearAttributeFilters()"
-      >
-        Καθαρισμός φίλτρων ιδιοτήτων
-      </button>
-    </div>
-    }
-    @for (facet of store.facets(); track facet.attributeId) {
-    <div
-      class="catalog-browse__facet"
-      role="group"
-      [attr.aria-label]="facet.name ?? 'Ιδιότητα'"
-    >
-      <span class="catalog-browse__facet-label">{{ facet.name ?? '—' }}</span>
-      <ul class="catalog-browse__facet-values" role="list">
-        @for (val of facet.values; track val.valueId) {
-        <li class="catalog-browse__facet-value">
-          <label class="catalog-browse__facet-value-label">
-            <input
-              type="checkbox"
-              class="catalog-browse__facet-checkbox"
-              [checked]="isFacetValueSelected(facet, val.valueId)"
-              (change)="onFacetValueChange(facet, val.valueId, $any($event.target).checked)"
-              [attr.aria-label]="(facet.name ?? 'Ιδιότητα') + ': ' + (val.value ?? '—')"
-            />
-            <span>{{ val.value ?? '—' }}</span>
-          </label>
-        </li>
-        }
-      </ul>
-    </div>
-    }
-  </div>
+    <app-catalog-attribute-facets
+      [facets]="store.facets()"
+      [selectedFilters]="store.selectedAttributeFilters()"
+      (valueChanged)="store.setAttributeFilter($event.attributeId, $event.valueId)"
+      (filtersCleared)="store.clearAttributeFilters()"
+    />
   }
 
   @if (store.loading()) {
-  <div class="catalog-browse__state" role="status" aria-live="polite">
-    <p-progressSpinner
-      aria-hidden="true"
-      styleClass="catalog-browse__spinner"
-    />
-    <span>Φόρτωση καταλόγου…</span>
-  </div>
+    <div class="catalog-browse__state" role="status" aria-live="polite">
+      <p-progressSpinner aria-hidden="true" styleClass="catalog-browse__spinner" />
+      <span>Φόρτωση καταλόγου…</span>
+    </div>
   } @else if (store.error()) {
-  <div class="catalog-browse__state catalog-browse__state--error" role="alert">
-    <p>Δεν ήταν δυνατή η φόρτωση του καταλόγου. Δοκιμάστε ξανά.</p>
-    <button type="button" class="catalog-browse__btn" (click)="store.load()">
-      Επανάληψη
-    </button>
-  </div>
+    <div class="catalog-browse__state catalog-browse__state--error" role="alert">
+      <p>Δεν ήταν δυνατή η φόρτωση του καταλόγου. Δοκιμάστε ξανά.</p>
+      <button type="button" class="catalog-browse__btn" (click)="store.load()">
+        Επανάληψη
+      </button>
+    </div>
   } @else if (store.data(); as catalog) {
-  <p class="catalog-browse__summary">
-    {{ rangeLabel(catalog.page, catalog.pageSize, catalog.total) }}
-  </p>
+    <p class="catalog-browse__summary">
+      {{ rangeLabel(catalog.page, catalog.pageSize, catalog.total) }}
+    </p>
 
-  @if (catalog.items.length === 0) {
-  <p class="catalog-browse__empty" role="status">
-    Δεν βρέθηκαν προϊόντα. Δοκιμάστε άλλα κριτήρια αναζήτησης.
-  </p>
-  } @else {
-  <ul class="catalog-browse__grid">
-    @for (item of catalog.items; track item.productId) {
-    <li class="catalog-card">
-      <div class="catalog-card__media">
-        <img
-          class="catalog-card__img"
-          [src]="item.primaryImageUrl || placeholderImage"
-          [alt]="item.name ?? 'Προϊόν'"
-          [loading]="'lazy'"
-          (error)="onImageError($event)"
-        />
-      </div>
-      <div class="catalog-card__body">
-        <h3 class="catalog-card__name">{{ item.name ?? '—' }}</h3>
-        <p class="catalog-card__price">
-          {{
-            item.salePrice !== null && item.salePrice !== undefined
-              ? (item.salePrice
-                | currency: 'EUR' : 'symbol' : '1.2-2' : 'el-GR')
-              : '—'
-          }}
-        </p>
-        @if (item.additionalOptionsCount > 0) {
-        <p class="catalog-card__options">
-          +{{ item.additionalOptionsCount }} επιπλέον επιλογές
-        </p>
+    @if (catalog.items.length === 0) {
+      <p class="catalog-browse__empty" role="status">
+        Δεν βρέθηκαν προϊόντα. Δοκιμάστε άλλα κριτήρια αναζήτησης.
+      </p>
+    } @else {
+      <ul class="catalog-browse__grid">
+        @for (item of catalog.items; track item.productId) {
+          <li class="catalog-card">
+            <app-catalog-product-card [item]="item" />
+          </li>
         }
-      </div>
-    </li>
+      </ul>
     }
-  </ul>
-  }
 
-  <p-paginator
-    [first]="(catalog.page - 1) * catalog.pageSize"
-    [rows]="catalog.pageSize"
-    [totalRecords]="catalog.total"
-    [rowsPerPageOptions]="[12, 24, 48]"
-    (onPageChange)="onPageChange($event)"
-    styleClass="catalog-browse__paginator"
-  />
+    <p-paginator
+      [first]="(catalog.page - 1) * catalog.pageSize"
+      [rows]="catalog.pageSize"
+      [totalRecords]="catalog.total"
+      [rowsPerPageOptions]="[12, 24, 48]"
+      (onPageChange)="onPageChange($event)"
+      styleClass="catalog-browse__paginator"
+    />
   }
 </div>
