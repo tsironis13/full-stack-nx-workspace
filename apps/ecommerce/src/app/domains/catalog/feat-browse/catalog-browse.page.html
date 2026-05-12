@@ -2,8 +2,8 @@
   <header class="catalog-browse__header">
     <h2 class="catalog-browse__title">Κατάλογος</h2>
     <p class="catalog-browse__subtitle">
-      Περιήγηση προϊόντων (κύρια κατηγορία, αναζήτηση ονόματος, ταξινόμηση,
-      σελιδοποίηση)
+      Περιήγηση προϊόντων (κύρια κατηγορία, αναζήτηση ονόματος, εύρος τιμής
+      πώλησης, ταξινόμηση, σελιδοποίηση)
     </p>
   </header>
 
@@ -87,6 +87,57 @@
         }
       </select>
     </div>
+  </div>
+
+  <div
+    class="catalog-browse__price-band"
+    role="group"
+    aria-label="Εύρος τιμής πώλησης (κύριο προϊόν)"
+  >
+    <span class="catalog-browse__facet-label">Εύρος τιμής πώλησης (EUR)</span>
+      <div class="catalog-browse__price-slider-wrap">
+        <app-price-range-slider
+          class="catalog-browse__price-slider"
+          [min]="priceSliderLow()"
+          [max]="priceSliderHigh()"
+          [options]="priceSliderOptions"
+          (userChangeEnd)="onPriceSliderUserChangeEnd($event)"
+        >
+          <ng-template priceRangeDisplay let-ctx>
+            <app-price-range-display
+              [minRange]="ctx.minRange"
+              [maxRange]="ctx.maxRange"
+              [maxValue]="ctx.maxValue"
+            />
+          </ng-template>
+        </app-price-range-slider>
+      </div>
+    <div class="catalog-browse__price-actions catalog-browse__price-actions--below-slider">
+      <button
+        type="button"
+        class="catalog-browse__btn"
+        (click)="applyPriceFilter()"
+      >
+        Εφαρμογή τιμών
+      </button>
+      <button
+        type="button"
+        class="catalog-browse__btn catalog-browse__btn--secondary"
+        (click)="clearPriceFilter()"
+      >
+        Καθαρισμός
+      </button>
+    </div>
+    @if (priceFilterError(); as priceErr) {
+    <p class="catalog-browse__facet-error" role="alert">{{ priceErr }}</p>
+    }
+    <p class="catalog-browse__facet-help">
+      Ο συρτής ορίζει εύρος 0–10&nbsp;000&nbsp;€ (προσέγγιση). Όταν η ελάχιστη
+      είναι στο 0 ή η μέγιστη στο άνω όριο, το αντίστοιγο όριο δεν εφαρμόζεται
+      στο API. Η τιμή είναι η <strong>τιμή πώλησης</strong> του
+      <strong>κύριου προϊόντος</strong>, όπως στις κάρτες και την ταξινόμηση·
+      άλλες επιλογές του ίδιου προϊόντος δεν αλλάζουν το φίλτρο.
+    </p>
   </div>
 
   @if (store.loading()) {

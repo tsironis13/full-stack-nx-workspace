@@ -34,7 +34,9 @@ export class CatalogController {
     sort: CatalogSort,
     @Query('q') q?: string,
     @Query('categoryRootId', new ParseIntPipe({ optional: true }))
-    categoryRootId?: number
+    categoryRootId?: number,
+    @Query('minSalePrice') minSalePrice?: string,
+    @Query('maxSalePrice') maxSalePrice?: string
   ) {
     return this.catalogListService.list({
       page: Math.max(1, page),
@@ -42,6 +44,8 @@ export class CatalogController {
       sort,
       q: q?.trim() || undefined,
       categoryRootId,
+      minSalePrice,
+      maxSalePrice,
     });
   }
 }

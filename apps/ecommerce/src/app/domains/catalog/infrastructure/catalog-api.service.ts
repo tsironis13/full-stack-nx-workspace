@@ -20,6 +20,8 @@ export class CatalogApiService {
     sort: CatalogListSortParam;
     q?: string;
     categoryRootId?: number;
+    salePriceMin?: number | null;
+    salePriceMax?: number | null;
   }): Observable<CatalogListResponseWire> {
     let httpParams = new HttpParams()
       .set('page', String(params.page))
@@ -35,6 +37,24 @@ export class CatalogApiService {
       httpParams = httpParams.set(
         'categoryRootId',
         String(params.categoryRootId)
+      );
+    }
+    if (
+      params.salePriceMin !== undefined &&
+      params.salePriceMin !== null
+    ) {
+      httpParams = httpParams.set(
+        'minSalePrice',
+        String(params.salePriceMin)
+      );
+    }
+    if (
+      params.salePriceMax !== undefined &&
+      params.salePriceMax !== null
+    ) {
+      httpParams = httpParams.set(
+        'maxSalePrice',
+        String(params.salePriceMax)
       );
     }
     return this.http.get<CatalogListResponseWire>(this.url, {

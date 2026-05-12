@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { and, asc, count, desc, eq, ilike, isNull, sql } from 'drizzle-orm';
+import { and, asc, count, desc, eq, gte, ilike, isNull, lte, sql } from 'drizzle-orm';
 
 import { productCategories } from '../../../db/schema/product-categories';
 import { productItems } from '../../../db/schema/product-items';
@@ -63,8 +63,11 @@ export class CatalogRepository {
     sort: CatalogSort;
     q?: string;
     categoryRootId?: number;
+    salePriceMin?: number;
+    salePriceMax?: number;
   }): Promise<{ rows: CatalogListRow[]; total: number }> {
-    const { page, pageSize, sort, q, categoryRootId } = params;
+    const { page, pageSize, sort, q, categoryRootId, salePriceMin, salePriceMax } =
+      params;
     const offset = (page - 1) * pageSize;
 
     const joinMainItem = and(
@@ -80,6 +83,12 @@ export class CatalogRepository {
     }
     if (categoryRootId !== undefined) {
       filters.push(categorySubtreeIncludesRootCondition(categoryRootId));
+    }
+    if (salePriceMin !== undefined) {
+      filters.push(gte(productItems.salePrice, salePriceMin));
+    }
+    if (salePriceMax !== undefined) {
+      filters.push(lte(productItems.salePrice, salePriceMax));
     }
 
     const whereClause = and(...filters);
