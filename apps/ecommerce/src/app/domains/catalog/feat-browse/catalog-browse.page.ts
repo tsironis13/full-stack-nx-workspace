@@ -30,6 +30,10 @@ export class CatalogBrowsePageComponent implements OnInit {
   /** Bound to search input before apply. */
   readonly searchDraft = signal('');
 
+  readonly priceMinDraft = signal('');
+  readonly priceMaxDraft = signal('');
+  readonly priceFilterError = signal<string | null>(null);
+
   protected readonly sortOptions: { value: CatalogSort; label: string }[] = [
     { value: 'newest', label: 'Νεότερα' },
     { value: 'price_asc', label: 'Τιμή (αύξουσα)' },
@@ -62,6 +66,73 @@ export class CatalogBrowsePageComponent implements OnInit {
     this.store.setSearchQuery(this.searchDraft().trim());
     this.store.setPage(1);
     this.store.load();
+  }
+
+  protected onPriceMinChange(value: string | number | null): void {
+    this.priceMinDraft.set(this.coerceDraftString(value));
+  }
+
+  protected onPriceMaxChange(value: string | number | null): void {
+    this.priceMaxDraft.set(this.coerceDraftString(value));
+  }
+
+  private coerceDraftString(value: string | number | null): string {
+    if (value === null || value === '') {
+      return '';
+    }
+    return String(value);
+  }
+
+  protected applyPriceFilter(): void {
+    this.priceFilterError.set(null);
+
+    const minStr = this.priceMinDraft().trim();
+    const maxStr = this.priceMaxDraft().trim();
+
+    let salePriceMin: number | null = null;
+    let salePriceMax: number | null = null;
+
+    if (minStr) {
+      const n = Number(minStr.replace(',', '.'));
+      if (!Number.isFinite(n) || n < 0) {
+        this.priceFilterError.set(
+          'Η ελάχιστη τιμή πρέπει να είναι μη αρνητικός πραγματικός αριθμός.'
+        );
+        return;
+      }
+      salePriceMin = n;
+    }
+
+    if (maxStr) {
+      const n = Number(maxStr.replace(',', '.'));
+      if (!Number.isFinite(n) || n < 0) {
+        this.priceFilterError.set(
+          'Η μέγιστη τιμή πρέπει να είναι μη αρνητικός πραγματικός αριθμός.'
+        );
+        return;
+      }
+      salePriceMax = n;
+    }
+
+    if (
+      salePriceMin !== null &&
+      salePriceMax !== null &&
+      salePriceMin > salePriceMax
+    ) {
+      this.priceFilterError.set(
+        'Η ελάχιστη τιμή δεν μπορεί να υπερβαίνει τη μέγιστη.'
+      );
+      return;
+    }
+
+    this.store.setSalePriceRange(salePriceMin, salePriceMax);
+  }
+
+  protected clearPriceFilter(): void {
+    this.priceFilterError.set(null);
+    this.priceMinDraft.set('');
+    this.priceMaxDraft.set('');
+    this.store.setSalePriceRange(null, null);
   }
 
   protected onSortChange(value: CatalogSort): void {

@@ -60,6 +60,8 @@ describe('CatalogListService', () => {
       sort: CatalogSort.newest,
       q: undefined,
       categoryRootId: undefined,
+      salePriceMin: undefined,
+      salePriceMax: undefined,
     });
     expect(res.total).toBe(2);
     expect(res.items).toHaveLength(1);
@@ -92,7 +94,75 @@ describe('CatalogListService', () => {
       sort: CatalogSort.price_asc,
       q: 'blue',
       categoryRootId: 7,
+      salePriceMin: undefined,
+      salePriceMax: undefined,
     });
+  });
+
+  it('passes sale price bounds with search, category, and sort (slices 02–04)', async () => {
+    isActiveRootCategory.mockResolvedValue(true);
+    findCatalogPage.mockResolvedValue({ total: 0, rows: [] });
+
+    await service.list({
+      page: 1,
+      pageSize: 12,
+      sort: CatalogSort.price_desc,
+      q: 'coat',
+      categoryRootId: 3,
+      minSalePrice: '10.5',
+      maxSalePrice: '99',
+    });
+
+    expect(isActiveRootCategory).toHaveBeenCalledWith(3);
+    expect(findCatalogPage).toHaveBeenCalledWith({
+      page: 1,
+      pageSize: 12,
+      sort: CatalogSort.price_desc,
+      q: 'coat',
+      categoryRootId: 3,
+      salePriceMin: 10.5,
+      salePriceMax: 99,
+    });
+  });
+
+  it('rejects minSalePrice greater than maxSalePrice', async () => {
+    await expect(
+      service.list({
+        page: 1,
+        pageSize: 12,
+        sort: CatalogSort.newest,
+        minSalePrice: '50',
+        maxSalePrice: '20',
+      })
+    ).rejects.toBeInstanceOf(BadRequestException);
+
+    expect(findCatalogPage).not.toHaveBeenCalled();
+  });
+
+  it('rejects non-finite minSalePrice', async () => {
+    await expect(
+      service.list({
+        page: 1,
+        pageSize: 12,
+        sort: CatalogSort.newest,
+        minSalePrice: 'x',
+      })
+    ).rejects.toBeInstanceOf(BadRequestException);
+
+    expect(findCatalogPage).not.toHaveBeenCalled();
+  });
+
+  it('rejects negative maxSalePrice', async () => {
+    await expect(
+      service.list({
+        page: 1,
+        pageSize: 12,
+        sort: CatalogSort.newest,
+        maxSalePrice: '-1',
+      })
+    ).rejects.toBeInstanceOf(BadRequestException);
+
+    expect(findCatalogPage).not.toHaveBeenCalled();
   });
 
   it('rejects a categoryRootId that is not an active root category', async () => {

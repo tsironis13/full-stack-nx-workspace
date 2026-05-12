@@ -21,6 +21,10 @@ type CatalogBrowseState = {
   sort: CatalogSort;
   searchQuery: string;
   selectedCategoryRootId: number | null;
+  /** Inclusive min **Sale Price** (main item); `null` = no lower bound. */
+  salePriceMin: number | null;
+  /** Inclusive max **Sale Price** (main item); `null` = no upper bound. */
+  salePriceMax: number | null;
   categoryRoots: { id: number; name: string | null }[];
   categoryRootsLoading: boolean;
   categoryRootsError: string | null;
@@ -35,6 +39,8 @@ const initialState: CatalogBrowseState = {
   sort: 'newest',
   searchQuery: '',
   selectedCategoryRootId: null,
+  salePriceMin: null,
+  salePriceMax: null,
   categoryRoots: [],
   categoryRootsLoading: false,
   categoryRootsError: null,
@@ -66,6 +72,8 @@ export const CatalogBrowseStore = signalStore(
               q: q || undefined,
               categoryRootId:
                 categoryRootId === null ? undefined : categoryRootId,
+              salePriceMin: store.salePriceMin(),
+              salePriceMax: store.salePriceMax(),
             })
             .pipe(
               tapResponse({
@@ -133,6 +141,14 @@ export const CatalogBrowseStore = signalStore(
         }
         patchState(store, {
           selectedCategoryRootId: categoryRootId,
+          page: 1,
+        });
+        load();
+      },
+      setSalePriceRange(salePriceMin: number | null, salePriceMax: number | null) {
+        patchState(store, {
+          salePriceMin,
+          salePriceMax,
           page: 1,
         });
         load();

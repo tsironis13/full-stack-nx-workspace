@@ -2,8 +2,8 @@
   <header class="catalog-browse__header">
     <h2 class="catalog-browse__title">Κατάλογος</h2>
     <p class="catalog-browse__subtitle">
-      Περιήγηση προϊόντων (κύρια κατηγορία, αναζήτηση ονόματος, ταξινόμηση,
-      σελιδοποίηση)
+      Περιήγηση προϊόντων (κύρια κατηγορία, αναζήτηση ονόματος, εύρος τιμής
+      πώλησης, ταξινόμηση, σελιδοποίηση)
     </p>
   </header>
 
@@ -87,6 +87,70 @@
         }
       </select>
     </div>
+  </div>
+
+  <div
+    class="catalog-browse__price-band"
+    role="group"
+    aria-label="Εύρος τιμής πώλησης (κύριο προϊόν)"
+  >
+    <span class="catalog-browse__facet-label">Εύρος τιμής πώλησης (EUR)</span>
+    <div class="catalog-browse__price-row">
+      <div class="catalog-browse__field catalog-browse__field--price">
+        <label class="catalog-browse__label" for="catalog-price-min"
+          >Ελάχιστη</label
+        >
+        <input
+          id="catalog-price-min"
+          type="number"
+          min="0"
+          step="any"
+          class="catalog-browse__input"
+          [class.catalog-browse__input--invalid]="priceFilterError()"
+          [ngModel]="priceMinDraft()"
+          (ngModelChange)="onPriceMinChange($event)"
+        />
+      </div>
+      <div class="catalog-browse__field catalog-browse__field--price">
+        <label class="catalog-browse__label" for="catalog-price-max"
+          >Μέγιστη</label
+        >
+        <input
+          id="catalog-price-max"
+          type="number"
+          min="0"
+          step="any"
+          class="catalog-browse__input"
+          [class.catalog-browse__input--invalid]="priceFilterError()"
+          [ngModel]="priceMaxDraft()"
+          (ngModelChange)="onPriceMaxChange($event)"
+        />
+      </div>
+      <div class="catalog-browse__price-actions">
+        <button
+          type="button"
+          class="catalog-browse__btn"
+          (click)="applyPriceFilter()"
+        >
+          Εφαρμογή τιμών
+        </button>
+        <button
+          type="button"
+          class="catalog-browse__btn catalog-browse__btn--secondary"
+          (click)="clearPriceFilter()"
+        >
+          Καθαρισμός
+        </button>
+      </div>
+    </div>
+    @if (priceFilterError(); as priceErr) {
+    <p class="catalog-browse__facet-error" role="alert">{{ priceErr }}</p>
+    }
+    <p class="catalog-browse__facet-help">
+      Η τιμή είναι η <strong>τιμή πώλησης</strong> του
+      <strong>κύριου προϊόντος</strong>, όπως στις κάρτες και την ταξινόμηση·
+      άλλες επιλογές του ίδιου προϊόντος δεν αλλάζουν το φίλτρο.
+    </p>
   </div>
 
   @if (store.loading()) {
