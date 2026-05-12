@@ -43,7 +43,12 @@ export class CatalogBrowsePageComponent implements OnInit {
     );
 
   ngOnInit(): void {
+    this.store.loadCategoryRoots();
     this.store.load();
+  }
+
+  protected selectCategoryRoot(categoryRootId: number | null): void {
+    this.store.setCategoryRoot(categoryRootId);
   }
 
   protected onImageError(event: Event): void {

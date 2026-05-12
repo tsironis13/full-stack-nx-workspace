@@ -1,12 +1,13 @@
+import { computed, inject } from '@angular/core';
 import {
   patchState,
   signalStore,
+  withComputed,
   withMethods,
   withProps,
   withState,
 } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { inject } from '@angular/core';
 import { distinctUntilChanged, pipe, switchMap, tap } from 'rxjs';
 import { tapResponse } from '@ngrx/operators';
 
@@ -40,6 +41,11 @@ const initialState: AuthState = {
 export const AuthStore = signalStore(
   withState(initialState),
   withRequestStatus(),
+  withComputed(({ authUser, session }) => ({
+    isAuthenticated: computed(
+      () => authUser() !== null && session() !== null
+    ),
+  })),
   withProps(() => ({
     authService: inject(AuthDataService),
   })),
@@ -52,23 +58,18 @@ export const AuthStore = signalStore(
           return store.authService.loginWithEmailAndPassword(query).pipe(
             tapResponse({
               next: ({ authUser, session }) => {
-                console.log(authUser);
                 patchState(
                   store,
-                  {
-                    authUser: authUser,
-                    session: session,
-                  },
+                  { authUser, session },
                   setFulfilled()
                 );
               },
               error: (err) => {
                 patchState(
                   store,
-                  { authUser: null },
+                  { authUser: null, session: null },
                   setError((err as Error).message)
                 );
-                console.error(err);
               },
             })
           );
