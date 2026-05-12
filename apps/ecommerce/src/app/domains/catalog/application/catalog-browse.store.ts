@@ -1,6 +1,15 @@
+import { computed, inject } from '@angular/core';
 import { tapResponse } from '@ngrx/operators';
-import { patchState, signalStore, withMethods, withProps, withState } from '@ngrx/signals';
-import { inject } from '@angular/core';
+import {
+  patchState,
+  signalStore,
+  withComputed,
+  withMethods,
+  withProps,
+  withState,
+} from '@ngrx/signals';
+import { rxMethod } from '@ngrx/signals/rxjs-interop';
+import { pipe, switchMap, tap } from 'rxjs';
 
 import type { CatalogListResponse, CatalogSort } from '../domain/public-api';
 import { mapCatalogListFromWire } from './catalog-list.mapper';
@@ -36,62 +45,76 @@ const initialState: CatalogBrowseState = {
 
 export const CatalogBrowseStore = signalStore(
   withState(initialState),
+  withComputed(({ searchQuery }) => ({
+    trimmedSearchQuery: computed(() => searchQuery().trim()),
+  })),
   withProps(() => ({
     api: inject(CatalogApiService),
   })),
   withMethods((store) => {
-    const fetchCatalog = () => {
-      patchState(store, { loading: true, error: null });
-      store.api
-        .list({
-          page: store.page(),
-          pageSize: store.pageSize(),
-          sort: store.sort(),
-          q: store.searchQuery().trim() || undefined,
-          categoryRootId:
-            store.selectedCategoryRootId() === null
-              ? undefined
-              : store.selectedCategoryRootId()!,
+    const load = rxMethod<void>(
+      pipe(
+        tap(() => patchState(store, { loading: true, error: null })),
+        switchMap(() => {
+          const q = store.trimmedSearchQuery();
+          const categoryRootId = store.selectedCategoryRootId();
+          return store.api
+            .list({
+              page: store.page(),
+              pageSize: store.pageSize(),
+              sort: store.sort(),
+              q: q || undefined,
+              categoryRootId:
+                categoryRootId === null ? undefined : categoryRootId,
+            })
+            .pipe(
+              tapResponse({
+                next: (res) =>
+                  patchState(store, {
+                    data: mapCatalogListFromWire(res),
+                    loading: false,
+                  }),
+                error: () =>
+                  patchState(store, {
+                    error: 'catalog.loadError',
+                    loading: false,
+                  }),
+              })
+            );
         })
-        .pipe(
-          tapResponse({
-            next: (res) =>
-              patchState(store, {
-                data: mapCatalogListFromWire(res),
-                loading: false,
-              }),
-            error: () =>
-              patchState(store, {
-                error: 'catalog.loadError',
-                loading: false,
-              }),
+      )
+    );
+
+    const loadCategoryRoots = rxMethod<void>(
+      pipe(
+        tap(() =>
+          patchState(store, {
+            categoryRootsLoading: true,
+            categoryRootsError: null,
           })
+        ),
+        switchMap(() =>
+          store.api.listCategoryRoots().pipe(
+            tapResponse({
+              next: (res) =>
+                patchState(store, {
+                  categoryRoots: res.roots,
+                  categoryRootsLoading: false,
+                }),
+              error: () =>
+                patchState(store, {
+                  categoryRootsError: 'catalog.categoryRootsLoadError',
+                  categoryRootsLoading: false,
+                }),
+            })
+          )
         )
-        .subscribe();
-    };
+      )
+    );
 
     return {
-      load: fetchCatalog,
-      loadCategoryRoots() {
-        patchState(store, {
-          categoryRootsLoading: true,
-          categoryRootsError: null,
-        });
-        store.api.listCategoryRoots().pipe(
-          tapResponse({
-            next: (res) =>
-              patchState(store, {
-                categoryRoots: res.roots,
-                categoryRootsLoading: false,
-              }),
-            error: () =>
-              patchState(store, {
-                categoryRootsError: 'catalog.categoryRootsLoadError',
-                categoryRootsLoading: false,
-              }),
-          })
-        ).subscribe();
-      },
+      load,
+      loadCategoryRoots,
       setPage(page: number) {
         patchState(store, { page });
       },
@@ -112,7 +135,7 @@ export const CatalogBrowseStore = signalStore(
           selectedCategoryRootId: categoryRootId,
           page: 1,
         });
-        fetchCatalog();
+        load();
       },
     };
   })
