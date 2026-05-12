@@ -7,10 +7,20 @@ import {
   signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ChangeContext, Options } from '@angular-slider/ngx-slider';
 import { PaginatorModule, PaginatorState } from 'primeng/paginator';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
+import {
+  PriceRangeDisplayComponent,
+  PriceRangeDisplayTemplateDirective,
+  PriceRangeSliderComponent,
+} from '@full-stack-nx-workspace/shared';
+
 import { CatalogBrowseStore, type CatalogSort } from '../application/public-api';
+
+const PRICE_SLIDER_FLOOR = 0;
+const PRICE_SLIDER_CEIL = 10_000;
 
 @Component({
   selector: 'app-catalog-browse-page',
@@ -21,6 +31,9 @@ import { CatalogBrowseStore, type CatalogSort } from '../application/public-api'
     CurrencyPipe,
     FormsModule,
     PaginatorModule,
+    PriceRangeDisplayComponent,
+    PriceRangeDisplayTemplateDirective,
+    PriceRangeSliderComponent,
     ProgressSpinnerModule,
   ],
 })
@@ -30,8 +43,16 @@ export class CatalogBrowsePageComponent implements OnInit {
   /** Bound to search input before apply. */
   readonly searchDraft = signal('');
 
-  readonly priceMinDraft = signal('');
-  readonly priceMaxDraft = signal('');
+  /** Slider bounds (EUR inclusive). Unbounded filter uses floor/ceil. */
+  readonly priceSliderOptions: Options = {
+    floor: PRICE_SLIDER_FLOOR,
+    ceil: PRICE_SLIDER_CEIL,
+    step: 1,
+    enforceRange: true,
+  };
+
+  readonly priceSliderLow = signal(PRICE_SLIDER_FLOOR);
+  readonly priceSliderHigh = signal(PRICE_SLIDER_CEIL);
   readonly priceFilterError = signal<string | null>(null);
 
   protected readonly sortOptions: { value: CatalogSort; label: string }[] = [
@@ -47,6 +68,7 @@ export class CatalogBrowsePageComponent implements OnInit {
     );
 
   ngOnInit(): void {
+    this.syncPriceSliderFromStore();
     this.store.loadCategoryRoots();
     this.store.load();
   }
@@ -68,71 +90,42 @@ export class CatalogBrowsePageComponent implements OnInit {
     this.store.load();
   }
 
-  protected onPriceMinChange(value: string | number | null): void {
-    this.priceMinDraft.set(this.coerceDraftString(value));
-  }
-
-  protected onPriceMaxChange(value: string | number | null): void {
-    this.priceMaxDraft.set(this.coerceDraftString(value));
-  }
-
-  private coerceDraftString(value: string | number | null): string {
-    if (value === null || value === '') {
-      return '';
-    }
-    return String(value);
+  protected onPriceSliderUserChangeEnd(ctx: ChangeContext): void {
+    this.priceSliderLow.set(ctx.value);
+    this.priceSliderHigh.set(ctx.highValue ?? PRICE_SLIDER_CEIL);
   }
 
   protected applyPriceFilter(): void {
     this.priceFilterError.set(null);
 
-    const minStr = this.priceMinDraft().trim();
-    const maxStr = this.priceMaxDraft().trim();
+    const low = this.priceSliderLow();
+    const high = this.priceSliderHigh();
 
-    let salePriceMin: number | null = null;
-    let salePriceMax: number | null = null;
-
-    if (minStr) {
-      const n = Number(minStr.replace(',', '.'));
-      if (!Number.isFinite(n) || n < 0) {
-        this.priceFilterError.set(
-          'Η ελάχιστη τιμή πρέπει να είναι μη αρνητικός πραγματικός αριθμός.'
-        );
-        return;
-      }
-      salePriceMin = n;
-    }
-
-    if (maxStr) {
-      const n = Number(maxStr.replace(',', '.'));
-      if (!Number.isFinite(n) || n < 0) {
-        this.priceFilterError.set(
-          'Η μέγιστη τιμή πρέπει να είναι μη αρνητικός πραγματικός αριθμός.'
-        );
-        return;
-      }
-      salePriceMax = n;
-    }
-
-    if (
-      salePriceMin !== null &&
-      salePriceMax !== null &&
-      salePriceMin > salePriceMax
-    ) {
+    if (low > high) {
       this.priceFilterError.set(
         'Η ελάχιστη τιμή δεν μπορεί να υπερβαίνει τη μέγιστη.'
       );
       return;
     }
 
+    const salePriceMin = low > PRICE_SLIDER_FLOOR ? low : null;
+    const salePriceMax = high < PRICE_SLIDER_CEIL ? high : null;
+
     this.store.setSalePriceRange(salePriceMin, salePriceMax);
   }
 
   protected clearPriceFilter(): void {
     this.priceFilterError.set(null);
-    this.priceMinDraft.set('');
-    this.priceMaxDraft.set('');
+    this.priceSliderLow.set(PRICE_SLIDER_FLOOR);
+    this.priceSliderHigh.set(PRICE_SLIDER_CEIL);
     this.store.setSalePriceRange(null, null);
+  }
+
+  private syncPriceSliderFromStore(): void {
+    const min = this.store.salePriceMin();
+    const max = this.store.salePriceMax();
+    this.priceSliderLow.set(min ?? PRICE_SLIDER_FLOOR);
+    this.priceSliderHigh.set(max ?? PRICE_SLIDER_CEIL);
   }
 
   protected onSortChange(value: CatalogSort): void {

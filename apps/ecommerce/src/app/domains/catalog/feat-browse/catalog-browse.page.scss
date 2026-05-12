@@ -96,16 +96,12 @@
   border-bottom: 1px solid var(--p-content-border-color, #e5e7eb);
 }
 
-.catalog-browse__price-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-100, 1rem);
-  align-items: flex-end;
+.catalog-browse__price-slider-wrap {
+  margin-bottom: 0.75rem;
 }
 
-.catalog-browse__field--price {
-  min-width: 7rem;
-  flex: 0 1 auto;
+.catalog-browse__price-slider {
+  display: block;
 }
 
 .catalog-browse__price-actions {
@@ -113,6 +109,10 @@
   flex-wrap: wrap;
   gap: 0.5rem;
   align-items: center;
+}
+
+.catalog-browse__price-actions--below-slider {
+  margin-top: 0.25rem;
 }
 
 .catalog-browse__input--invalid {

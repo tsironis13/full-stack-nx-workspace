@@ -5,7 +5,6 @@ import {
   input,
   linkedSignal,
   output,
-  signal,
   TemplateRef,
 } from '@angular/core';
 import {
@@ -43,7 +42,7 @@ export class PriceRangeSliderComponent {
     read: TemplateRef<PriceRangeDisplayContext>,
   });
 
-  protected readonly minRangeValue = signal<number>(0);
+  protected readonly minRangeValue = linkedSignal(() => this.min());
   protected readonly maxRangeValue = linkedSignal(() => this.max());
 
   protected onChange(changeContext: ChangeContext): void {
