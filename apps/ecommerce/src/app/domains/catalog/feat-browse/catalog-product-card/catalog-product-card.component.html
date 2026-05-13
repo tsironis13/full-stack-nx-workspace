@@ -21,4 +21,22 @@
       +{{ item().additionalOptionsCount }} επιπλέον επιλογές
     </p>
   }
+  <div class="catalog-card__cart" role="group" [attr.aria-label]="'Ποσότητα για ' + (item().name ?? 'προϊόν')">
+    <button
+      type="button"
+      class="catalog-card__cart-btn catalog-card__cart-btn--minus"
+      aria-label="Μείωση ποσότητας"
+      [disabled]="cartQuantity() === 0"
+      (click)="onDecrementFromCart()"
+    >−</button>
+    <span class="catalog-card__cart-qty" aria-live="polite" aria-atomic="true">
+      {{ cartQuantity() }}
+    </span>
+    <button
+      type="button"
+      class="catalog-card__cart-btn catalog-card__cart-btn--plus"
+      aria-label="Αύξηση ποσότητας"
+      (click)="onAddToCart()"
+    >+</button>
+  </div>
 </div>

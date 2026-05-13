@@ -35,3 +35,43 @@
   font-size: 0.8rem;
   color: var(--p-text-muted-color, #6b7280);
 }
+
+.catalog-card__cart {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.catalog-card__cart-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid var(--p-primary-color, #6366f1);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--p-primary-color, #6366f1);
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+
+  &:hover:not([disabled]) {
+    background: var(--p-primary-color, #6366f1);
+    color: #fff;
+  }
+
+  &[disabled] {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+}
+
+.catalog-card__cart-qty {
+  min-width: 1.5rem;
+  text-align: center;
+  font-weight: 600;
+  font-size: 1rem;
+}

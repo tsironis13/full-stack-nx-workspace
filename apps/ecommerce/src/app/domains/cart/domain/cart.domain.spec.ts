@@ -88,4 +88,43 @@ describe('tryParseClientCartEnvelope', () => {
     expect(v?.items).toHaveLength(1);
     expect(v?.items[0].quantity).toBe(2);
   });
+
+  it('coerces string productId and mainProductItemId to numbers', () => {
+    const v = tryParseClientCartEnvelope({
+      schemaVersion: CLIENT_CART_SCHEMA_VERSION,
+      items: [
+        {
+          quantity: 1,
+          productId: '7',
+          mainProductItemId: '99',
+          name: 'String IDs',
+          salePrice: 5,
+          originalPrice: null,
+          primaryImageUrl: null,
+        },
+      ],
+    });
+    expect(v).not.toBeNull();
+    expect(v?.items[0].productId).toBe(7);
+    expect(v?.items[0].mainProductItemId).toBe(99);
+  });
+
+  it('returns null when productId is a non-numeric string', () => {
+    expect(
+      tryParseClientCartEnvelope({
+        schemaVersion: CLIENT_CART_SCHEMA_VERSION,
+        items: [
+          {
+            quantity: 1,
+            productId: 'abc',
+            mainProductItemId: 1,
+            name: null,
+            salePrice: null,
+            originalPrice: null,
+            primaryImageUrl: null,
+          },
+        ],
+      })
+    ).toBeNull();
+  });
 });

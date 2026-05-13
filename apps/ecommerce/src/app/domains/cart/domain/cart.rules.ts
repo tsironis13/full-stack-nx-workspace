@@ -2,8 +2,8 @@ import type { CatalogBrowseCartAddInput, CatalogCartLineSnapshot } from './cart.
 
 function snapshotFromRow(row: CatalogBrowseCartAddInput): Omit<CatalogCartLineSnapshot, 'quantity'> {
   return {
-    productId: row.productId,
-    mainProductItemId: row.mainProductItemId,
+    productId: Number(row.productId),
+    mainProductItemId: Number(row.mainProductItemId),
     name: row.name,
     salePrice: row.salePrice,
     originalPrice: row.originalPrice,

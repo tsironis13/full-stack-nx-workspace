@@ -16,13 +16,34 @@ function parsePositiveIntQty(value: unknown): number | null {
   return n;
 }
 
+/**
+ * Accept a numeric ID stored as either a JS `number` or a numeric `string`
+ * (e.g. when an older serialisation path coerced the value to a string).
+ * Returns the integer value, or `null` if the input cannot be a valid ID.
+ */
+function parseId(value: unknown): number | null {
+  if (typeof value === 'number') {
+    if (!Number.isFinite(value) || !Number.isInteger(value)) {
+      return null;
+    }
+    return value;
+  }
+  if (typeof value === 'string' && value.trim() !== '') {
+    const n = Number(value);
+    if (Number.isFinite(n) && Number.isInteger(n)) {
+      return n;
+    }
+  }
+  return null;
+}
+
 function parseLine(el: unknown): CatalogCartLineSnapshot | null {
   if (!isRecord(el)) {
     return null;
   }
-  const productId = el['productId'];
-  const mainProductItemId = el['mainProductItemId'];
-  if (typeof productId !== 'number' || typeof mainProductItemId !== 'number') {
+  const productId = parseId(el['productId']);
+  const mainProductItemId = parseId(el['mainProductItemId']);
+  if (productId === null || mainProductItemId === null) {
     return null;
   }
   const quantity = parsePositiveIntQty(el['quantity']);

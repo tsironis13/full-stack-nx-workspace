@@ -9,6 +9,8 @@ import {
   withProps,
   withState,
 } from '@ngrx/signals';
+import { Events, on, withEffects, withReducer } from '@ngrx/signals/events';
+import { tap } from 'rxjs';
 
 import { LocalStorageFacade } from '../../../core/public-api';
 import {
@@ -23,6 +25,7 @@ import {
   removeLineByMainProductItemId,
   tryParseClientCartEnvelope,
 } from '../domain/public-api';
+import { cartCatalogEvents } from './events';
 
 type GuestCartState = {
   items: CatalogCartLineSnapshot[];
@@ -41,6 +44,21 @@ function loadGuestCartItems(
   return tryParseClientCartEnvelope(raw)?.items ?? [];
 }
 
+function persistItems(
+  storage: LocalStorageFacade,
+  platformId: object,
+  items: CatalogCartLineSnapshot[]
+): void {
+  if (!isPlatformBrowser(platformId)) {
+    return;
+  }
+  const envelope: ClientCartEnvelopeV1 = {
+    schemaVersion: CLIENT_CART_SCHEMA_VERSION,
+    items,
+  };
+  storage.setJson(GUEST_CART_LOCAL_STORAGE_KEY, envelope);
+}
+
 export const GuestCartStore = signalStore(
   { providedIn: 'root' },
   withState(emptyState),
@@ -49,53 +67,73 @@ export const GuestCartStore = signalStore(
     platformId: inject(PLATFORM_ID),
   })),
   withComputed(({ items }) => ({
-    totalUnitCount: computed(() => items().reduce((sum, l) => sum + l.quantity, 0)),
+    totalUnitCount: computed(() =>
+      items().reduce((sum, l) => sum + l.quantity, 0)
+    ),
   })),
-  withMethods((store) => {
-    const persist = (): void => {
-      if (!isPlatformBrowser(store.platformId)) {
-        return;
-      }
-      const envelope: ClientCartEnvelopeV1 = {
-        schemaVersion: CLIENT_CART_SCHEMA_VERSION,
-        items: store.items(),
-      };
-      store.storage.setJson(GUEST_CART_LOCAL_STORAGE_KEY, envelope);
-    };
-
-    return {
-      addFromBrowseRow(row: CatalogBrowseCartAddInput, quantity = 1) {
-        patchState(store, (s) => ({
-          items: addOrMergeLines(s.items, row, quantity),
-        }));
-        persist();
-      },
-      incrementLine(mainProductItemId: number) {
-        patchState(store, (s) => ({
-          items: incrementLineQuantity(s.items, mainProductItemId),
-        }));
-        persist();
-      },
-      decrementLine(mainProductItemId: number) {
-        patchState(store, (s) => ({
-          items: decrementLineQuantityOrRemove(s.items, mainProductItemId),
-        }));
-        persist();
-      },
-      removeLine(mainProductItemId: number) {
-        patchState(store, (s) => ({
-          items: removeLineByMainProductItemId(s.items, mainProductItemId),
-        }));
-        persist();
-      },
-      /** Re-read persisted guest cart (tests / rare recovery). */
-      rehydrateFromStorage() {
-        patchState(store, {
-          items: loadGuestCartItems(store.storage, store.platformId),
-        });
-      },
-    };
-  }),
+  withMethods((store) => ({
+    addFromBrowseRow(row: CatalogBrowseCartAddInput, quantity = 1) {
+      patchState(store, (s) => ({
+        items: addOrMergeLines(s.items, row, quantity),
+      }));
+      persistItems(store.storage, store.platformId, store.items());
+    },
+    incrementLine(mainProductItemId: number) {
+      patchState(store, (s) => ({
+        items: incrementLineQuantity(s.items, mainProductItemId),
+      }));
+      persistItems(store.storage, store.platformId, store.items());
+    },
+    decrementLine(mainProductItemId: number) {
+      patchState(store, (s) => ({
+        items: decrementLineQuantityOrRemove(s.items, mainProductItemId),
+      }));
+      persistItems(store.storage, store.platformId, store.items());
+    },
+    removeLine(mainProductItemId: number) {
+      patchState(store, (s) => ({
+        items: removeLineByMainProductItemId(s.items, mainProductItemId),
+      }));
+      persistItems(store.storage, store.platformId, store.items());
+    },
+    /** Re-read persisted guest cart (tests / rare recovery). */
+    rehydrateFromStorage() {
+      patchState(store, {
+        items: loadGuestCartItems(store.storage, store.platformId),
+      });
+    },
+  })),
+  /**
+   * Event-driven reducers: handle **Catalog → Cart** ACL events without Catalog
+   * importing the store directly. Persistence runs in `withEffects` below.
+   */
+  withReducer(
+    on(
+      cartCatalogEvents.addFromBrowse,
+      ({ payload }) =>
+        (state: GuestCartState) => ({
+          items: addOrMergeLines(state.items, payload, 1),
+        })
+    ),
+    on(
+      cartCatalogEvents.decrementItem,
+      ({ payload }) =>
+        (state: GuestCartState) => ({
+          items: decrementLineQuantityOrRemove(
+            state.items,
+            payload.mainProductItemId
+          ),
+        })
+    )
+  ),
+  /** Persist to localStorage after each catalog event has updated state. */
+  withEffects((store, events = inject(Events)) => ({
+    persistOnCatalogEvents$: events
+      .on(cartCatalogEvents.addFromBrowse, cartCatalogEvents.decrementItem)
+      .pipe(
+        tap(() => persistItems(store.storage, store.platformId, store.items()))
+      ),
+  })),
   withHooks({
     onInit(store) {
       patchState(store, {
