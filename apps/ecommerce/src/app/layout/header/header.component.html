@@ -9,8 +9,8 @@
 <span class="header__cart-wrapper">
   <p-button
     icon="pi pi-shopping-cart"
-    aria-label="My Order"
-    (onClick)="myorder()"
+    aria-label="Άνοιγμα καλαθιού"
+    (onClick)="openCartDrawer()"
   />
   @if (cartRead.totalUnitCount() > 0) {
     <span class="header__cart-badge" aria-label="{{ cartRead.totalUnitCount() }} αντικείμενα στο καλάθι">
@@ -18,6 +18,7 @@
     </span>
   }
 </span>
+
 <div *authIf="'connected'; else notConnectedTemplate; pending: loadingTemplate">
   <p>Welcome, user!</p>
 </div>

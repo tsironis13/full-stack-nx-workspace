@@ -9,6 +9,10 @@ export default [
         path: 'catalog',
         loadChildren: () => import('../../domains/catalog/api/catalog.routes'),
       },
+      {
+        path: 'cart',
+        loadChildren: () => import('../../domains/cart/api/cart.routes'),
+      },
     ],
   },
   {

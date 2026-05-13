@@ -3,6 +3,7 @@ import {
   Component,
   effect,
   inject,
+  output,
   signal,
 } from '@angular/core';
 
@@ -28,6 +29,9 @@ export class HeaderComponent {
   readonly authStore = inject(AuthStore);
   protected readonly cartRead = inject(CartAclReadAdapter);
 
+  /** Emitted when the user clicks the cart icon so the parent shell can open the drawer. */
+  readonly cartIconClick = output<void>();
+
   readonly onThemeChange = effect(() => {
     document.documentElement.classList.toggle(
       'ecommerce-app-dark',
@@ -37,6 +41,10 @@ export class HeaderComponent {
 
   public toggleTheme(): void {
     this.theme.update((theme) => (theme === 'light' ? 'dark' : 'light'));
+  }
+
+  public openCartDrawer(): void {
+    this.cartIconClick.emit();
   }
 
   httpClient = inject(HttpClient);

@@ -1,0 +1,65 @@
+<div class="cart-page">
+  <h1 class="cart-page__title">Καλάθι αγορών</h1>
+
+  @if (store.items().length === 0) {
+    <div class="cart-page__empty">
+      <p class="cart-page__empty-text">Το καλάθι σας είναι άδειο.</p>
+      <p-button
+        label="Συνέχεια αγορών"
+        icon="pi pi-arrow-left"
+        [routerLink]="['/catalog']"
+        severity="secondary"
+      />
+    </div>
+  } @else {
+    <ul class="cart-page__items" aria-label="Προϊόντα στο καλάθι">
+      @for (line of store.items(); track line.mainProductItemId) {
+        <li class="cart-item">
+          @if (line.primaryImageUrl) {
+            <img
+              class="cart-item__image"
+              [src]="line.primaryImageUrl"
+              [alt]="line.name ?? 'Προϊόν'"
+              width="80"
+              height="80"
+            />
+          }
+          <div class="cart-item__details">
+            <p class="cart-item__name">{{ line.name }}</p>
+            <p class="cart-item__price">{{ formatPrice(line.salePrice ?? line.originalPrice) }}</p>
+          </div>
+          <div class="cart-item__controls">
+            <app-cart-quantity-control
+              [quantity]="line.quantity"
+              (addItemToCart)="onIncrement(line.mainProductItemId)"
+              (removeItemFromCart)="onDecrement(line.mainProductItemId)"
+            />
+            <p-button
+              icon="pi pi-trash"
+              [text]="true"
+              severity="danger"
+              size="small"
+              aria-label="Αφαίρεση προϊόντος"
+              (onClick)="onRemove(line.mainProductItemId)"
+            />
+          </div>
+          <p class="cart-item__subtotal">
+            {{ lineSubtotal(line.salePrice, line.originalPrice, line.quantity) }}
+          </p>
+        </li>
+      }
+    </ul>
+
+    <div class="cart-page__summary">
+      <p class="cart-page__total">
+        Σύνολο: <strong>{{ formattedSubtotal() }}</strong>
+      </p>
+      <p-button
+        label="Συνέχεια αγορών"
+        icon="pi pi-arrow-left"
+        [routerLink]="['/catalog']"
+        severity="secondary"
+      />
+    </div>
+  }
+</div>

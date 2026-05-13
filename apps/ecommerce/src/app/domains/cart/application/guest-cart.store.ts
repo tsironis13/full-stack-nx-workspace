@@ -25,7 +25,7 @@ import {
   removeLineByMainProductItemId,
   tryParseClientCartEnvelope,
 } from '../domain/public-api';
-import { cartCatalogEvents } from './events';
+import { cartCatalogEvents, cartUiEvents } from './events';
 
 type GuestCartState = {
   items: CatalogCartLineSnapshot[];
@@ -104,8 +104,9 @@ export const GuestCartStore = signalStore(
     },
   })),
   /**
-   * Event-driven reducers: handle **Catalog → Cart** ACL events without Catalog
-   * importing the store directly. Persistence runs in `withEffects` below.
+   * Event-driven reducers: handle **Catalog → Cart** and **CartUI → Cart** ACL
+   * events without consumers importing the store directly. Persistence runs in
+   * `withEffects` below.
    */
   withReducer(
     on(
@@ -124,12 +125,45 @@ export const GuestCartStore = signalStore(
             payload.mainProductItemId
           ),
         })
+    ),
+    on(
+      cartUiEvents.incrementItem,
+      ({ payload }) =>
+        (state: GuestCartState) => ({
+          items: incrementLineQuantity(state.items, payload.mainProductItemId),
+        })
+    ),
+    on(
+      cartUiEvents.decrementOrRemoveItem,
+      ({ payload }) =>
+        (state: GuestCartState) => ({
+          items: decrementLineQuantityOrRemove(
+            state.items,
+            payload.mainProductItemId
+          ),
+        })
+    ),
+    on(
+      cartUiEvents.removeItem,
+      ({ payload }) =>
+        (state: GuestCartState) => ({
+          items: removeLineByMainProductItemId(
+            state.items,
+            payload.mainProductItemId
+          ),
+        })
     )
   ),
-  /** Persist to localStorage after each catalog event has updated state. */
+  /** Persist to localStorage after each event has updated state. */
   withEffects((store, events = inject(Events)) => ({
-    persistOnCatalogEvents$: events
-      .on(cartCatalogEvents.addFromBrowse, cartCatalogEvents.decrementItem)
+    persistOnCartEvents$: events
+      .on(
+        cartCatalogEvents.addFromBrowse,
+        cartCatalogEvents.decrementItem,
+        cartUiEvents.incrementItem,
+        cartUiEvents.decrementOrRemoveItem,
+        cartUiEvents.removeItem
+      )
       .pipe(
         tap(() => persistItems(store.storage, store.platformId, store.items()))
       ),

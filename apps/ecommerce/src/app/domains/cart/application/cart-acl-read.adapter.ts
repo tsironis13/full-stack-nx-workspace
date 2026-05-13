@@ -1,5 +1,6 @@
 import { computed, inject, Injectable } from '@angular/core';
 
+import type { CatalogCartLineSnapshot } from '../domain/public-api';
 import { GuestCartStore } from './guest-cart.store';
 
 /**
@@ -26,4 +27,23 @@ export class CartAclReadAdapter {
     }
     return m;
   });
+
+  /**
+   * Full list of **Cart Item** snapshots for display in the drawer and other
+   * layout-level surfaces. The snapshot shape is stable across store refactors.
+   */
+  readonly items: () => CatalogCartLineSnapshot[] = this.store.items;
+
+  /**
+   * Cart-level subtotal: sum of `(salePrice ?? originalPrice ?? 0) × quantity`
+   * across all **Cart Items**. Indicative only — no tax or shipping included.
+   */
+  readonly cartSubtotal = computed(() =>
+    this.store
+      .items()
+      .reduce(
+        (sum, l) => sum + (l.salePrice ?? l.originalPrice ?? 0) * l.quantity,
+        0
+      )
+  );
 }

@@ -17,3 +17,20 @@ export const cartCatalogEvents = eventGroup({
     decrementItem: type<{ mainProductItemId: number }>(),
   },
 });
+
+/**
+ * Events dispatched by **Cart UI surfaces** (drawer, cart page via layout shell)
+ * to mutate **Cart** state. The ACL re-exports these so that layout-level
+ * components can dispatch them without importing `GuestCartStore` directly.
+ */
+export const cartUiEvents = eventGroup({
+  source: 'CartUI',
+  events: {
+    /** Increment the quantity of a **Cart Item** by 1. */
+    incrementItem: type<{ mainProductItemId: number }>(),
+    /** Decrement the quantity of a **Cart Item** by 1; removes line when qty reaches 1. */
+    decrementOrRemoveItem: type<{ mainProductItemId: number }>(),
+    /** Remove a **Cart Item** line entirely regardless of quantity. */
+    removeItem: type<{ mainProductItemId: number }>(),
+  },
+});
