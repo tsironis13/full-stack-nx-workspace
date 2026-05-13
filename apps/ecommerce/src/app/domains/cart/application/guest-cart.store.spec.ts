@@ -255,5 +255,35 @@ describe('GuestCartStore', () => {
       expect(store.items()).toHaveLength(0);
       expect(store.totalUnitCount()).toBe(0);
     });
+
+    it('clearCart event resets items to empty array', () => {
+      store.addFromBrowseRow(
+        { productId: 1, mainProductItemId: 11, name: 'H', salePrice: 5, originalPrice: null, primaryImageUrl: null },
+        2
+      );
+      store.addFromBrowseRow(
+        { productId: 2, mainProductItemId: 22, name: 'I', salePrice: 10, originalPrice: null, primaryImageUrl: null },
+        1
+      );
+      expect(store.items()).toHaveLength(2);
+
+      dispatcher.dispatch(cartUiEvents.clearCart());
+
+      expect(store.items()).toHaveLength(0);
+      expect(store.totalUnitCount()).toBe(0);
+    });
+
+    it('clearCart event clears the guest cart entry in localStorage', () => {
+      store.addFromBrowseRow(
+        { productId: 1, mainProductItemId: 55, name: 'J', salePrice: 3, originalPrice: null, primaryImageUrl: null },
+        1
+      );
+
+      dispatcher.dispatch(cartUiEvents.clearCart());
+
+      const raw = localStorage.getItem(GUEST_CART_LOCAL_STORAGE_KEY);
+      const parsed = raw ? JSON.parse(raw) : null;
+      expect(parsed?.items).toEqual([]);
+    });
   });
 });

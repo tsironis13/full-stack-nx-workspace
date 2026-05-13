@@ -154,6 +154,7 @@ export const GuestCartStore = signalStore(
         payload.mainProductItemId,
       ),
     })),
+    on(cartUiEvents.clearCart, () => () => ({ items: [] })),
   ),
   /** Persist to localStorage after each event has updated state. */
   withEventHandlers((store, events = inject(Events)) => ({
@@ -164,6 +165,7 @@ export const GuestCartStore = signalStore(
         cartUiEvents.incrementItem,
         cartUiEvents.decrementOrRemoveItem,
         cartUiEvents.removeItem,
+        cartUiEvents.clearCart,
       )
       .pipe(
         tap(() => persistItems(store.storage, store.platformId, store.items())),
