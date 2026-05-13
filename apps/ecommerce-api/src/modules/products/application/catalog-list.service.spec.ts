@@ -8,13 +8,18 @@ import { CatalogSort } from '../domain/catalog.types';
 describe('CatalogListService', () => {
   let service: CatalogListService;
   const findCatalogPage = jest.fn();
+  const findAttributeFacets = jest.fn();
   const isActiveRootCategory = jest.fn();
   const findActiveRootCategories = jest.fn();
 
   beforeEach(async () => {
     findCatalogPage.mockReset();
+    findAttributeFacets.mockReset();
     isActiveRootCategory.mockReset();
     findActiveRootCategories.mockReset();
+
+    findAttributeFacets.mockResolvedValue([]);
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CatalogListService,
@@ -22,6 +27,7 @@ describe('CatalogListService', () => {
           provide: CatalogRepository,
           useValue: {
             findCatalogPage,
+            findAttributeFacets,
             isActiveRootCategory,
             findActiveRootCategories,
           },
@@ -32,7 +38,7 @@ describe('CatalogListService', () => {
     service = module.get(CatalogListService);
   });
 
-  it('maps repository rows into response DTOs', async () => {
+  it('maps repository rows into response DTOs including empty facets', async () => {
     findCatalogPage.mockResolvedValue({
       total: 2,
       rows: [
@@ -62,6 +68,14 @@ describe('CatalogListService', () => {
       categoryRootId: undefined,
       salePriceMin: undefined,
       salePriceMax: undefined,
+      attributeFilters: undefined,
+    });
+    expect(findAttributeFacets).toHaveBeenCalledWith({
+      q: undefined,
+      categoryRootId: undefined,
+      salePriceMin: undefined,
+      salePriceMax: undefined,
+      attributeFilters: undefined,
     });
     expect(res.total).toBe(2);
     expect(res.items).toHaveLength(1);
@@ -72,6 +86,42 @@ describe('CatalogListService', () => {
       salePrice: 12.5,
       primaryImageUrl: 'https://example.com/a.jpg',
       additionalOptionsCount: 2,
+    });
+    expect(res.facets).toEqual([]);
+  });
+
+  it('returns facets from the repository in the response', async () => {
+    findCatalogPage.mockResolvedValue({ total: 1, rows: [] });
+    findAttributeFacets.mockResolvedValue([
+      {
+        attributeId: 1,
+        name: 'Color',
+        values: [
+          { valueId: 10, value: 'Red' },
+          { valueId: 11, value: 'Blue' },
+        ],
+      },
+      {
+        attributeId: 2,
+        name: 'Size',
+        values: [{ valueId: 20, value: 'M' }],
+      },
+    ]);
+
+    const res = await service.list({
+      page: 1,
+      pageSize: 12,
+      sort: CatalogSort.newest,
+    });
+
+    expect(res.facets).toHaveLength(2);
+    expect(res.facets[0]).toMatchObject({
+      attributeId: 1,
+      name: 'Color',
+      values: [
+        { valueId: 10, value: 'Red' },
+        { valueId: 11, value: 'Blue' },
+      ],
     });
   });
 
@@ -96,6 +146,7 @@ describe('CatalogListService', () => {
       categoryRootId: 7,
       salePriceMin: undefined,
       salePriceMax: undefined,
+      attributeFilters: undefined,
     });
   });
 
@@ -122,7 +173,81 @@ describe('CatalogListService', () => {
       categoryRootId: 3,
       salePriceMin: 10.5,
       salePriceMax: 99,
+      attributeFilters: undefined,
     });
+  });
+
+  it('parses single attribute filter and passes to repository', async () => {
+    findCatalogPage.mockResolvedValue({ total: 0, rows: [] });
+
+    await service.list({
+      page: 1,
+      pageSize: 12,
+      sort: CatalogSort.newest,
+      rawAttributeFilters: '1:10',
+    });
+
+    const expectedFilter = [{ attributeId: 1, valueId: 10 }];
+    expect(findCatalogPage).toHaveBeenCalledWith(
+      expect.objectContaining({ attributeFilters: expectedFilter })
+    );
+    expect(findAttributeFacets).toHaveBeenCalledWith(
+      expect.objectContaining({ attributeFilters: expectedFilter })
+    );
+  });
+
+  it('parses multiple attribute filters (AND across attributes)', async () => {
+    findCatalogPage.mockResolvedValue({ total: 0, rows: [] });
+
+    await service.list({
+      page: 1,
+      pageSize: 12,
+      sort: CatalogSort.newest,
+      rawAttributeFilters: ['1:10', '2:20'],
+    });
+
+    const expectedFilters = [
+      { attributeId: 1, valueId: 10 },
+      { attributeId: 2, valueId: 20 },
+    ];
+    expect(findCatalogPage).toHaveBeenCalledWith(
+      expect.objectContaining({ attributeFilters: expectedFilters })
+    );
+  });
+
+  it('rejects a malformed attributeFilter (missing colon)', async () => {
+    await expect(
+      service.list({
+        page: 1,
+        pageSize: 12,
+        sort: CatalogSort.newest,
+        rawAttributeFilters: '1-10',
+      })
+    ).rejects.toBeInstanceOf(BadRequestException);
+
+    expect(findCatalogPage).not.toHaveBeenCalled();
+  });
+
+  it('rejects attributeFilter with non-integer attributeId', async () => {
+    await expect(
+      service.list({
+        page: 1,
+        pageSize: 12,
+        sort: CatalogSort.newest,
+        rawAttributeFilters: 'abc:10',
+      })
+    ).rejects.toBeInstanceOf(BadRequestException);
+  });
+
+  it('rejects attributeFilter with non-positive valueId', async () => {
+    await expect(
+      service.list({
+        page: 1,
+        pageSize: 12,
+        sort: CatalogSort.newest,
+        rawAttributeFilters: '1:0',
+      })
+    ).rejects.toBeInstanceOf(BadRequestException);
   });
 
   it('rejects minSalePrice greater than maxSalePrice', async () => {

@@ -1,0 +1,24 @@
+<div class="catalog-card__media">
+  <img
+    class="catalog-card__img"
+    [src]="item().primaryImageUrl || placeholderImage"
+    [alt]="item().name ?? 'Προϊόν'"
+    loading="lazy"
+    (error)="onImageError($event)"
+  />
+</div>
+<div class="catalog-card__body">
+  <h3 class="catalog-card__name">{{ item().name ?? '—' }}</h3>
+  <p class="catalog-card__price">
+    {{
+      item().salePrice !== null && item().salePrice !== undefined
+        ? (item().salePrice | currency: 'EUR' : 'symbol' : '1.2-2' : 'el-GR')
+        : '—'
+    }}
+  </p>
+  @if (item().additionalOptionsCount > 0) {
+    <p class="catalog-card__options">
+      +{{ item().additionalOptionsCount }} επιπλέον επιλογές
+    </p>
+  }
+</div>

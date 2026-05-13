@@ -22,6 +22,8 @@ export class CatalogApiService {
     categoryRootId?: number;
     salePriceMin?: number | null;
     salePriceMax?: number | null;
+    /** Active attribute filters: map of attributeId → selected valueId. */
+    attributeFilters?: Record<number, number>;
   }): Observable<CatalogListResponseWire> {
     let httpParams = new HttpParams()
       .set('page', String(params.page))
@@ -56,6 +58,14 @@ export class CatalogApiService {
         'maxSalePrice',
         String(params.salePriceMax)
       );
+    }
+    if (params.attributeFilters) {
+      for (const [attributeId, valueId] of Object.entries(params.attributeFilters)) {
+        httpParams = httpParams.append(
+          'attributeFilter',
+          `${attributeId}:${valueId}`
+        );
+      }
     }
     return this.http.get<CatalogListResponseWire>(this.url, {
       params: httpParams,

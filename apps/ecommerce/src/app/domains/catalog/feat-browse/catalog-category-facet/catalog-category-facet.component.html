@@ -1,0 +1,34 @@
+@if (loading()) {
+  <p class="catalog-browse__facet-hint" role="status">Φόρτωση κατηγοριών…</p>
+} @else if (error()) {
+  <p class="catalog-browse__facet-error" role="alert">
+    Δεν ήταν δυνατή η φόρτωση των κατηγοριών για το φίλτρο.
+  </p>
+} @else if (roots().length > 0) {
+  <div class="catalog-browse__facet" role="group" aria-label="Κύρια κατηγορία">
+    <span class="catalog-browse__facet-label">Κύρια κατηγορία</span>
+    <div class="catalog-browse__facet-chips">
+      <button
+        type="button"
+        class="catalog-browse__chip"
+        [class.catalog-browse__chip--active]="selectedId() === null"
+        (click)="categorySelected.emit(null)"
+      >
+        Όλα
+      </button>
+      @for (root of roots(); track root.id) {
+        <button
+          type="button"
+          class="catalog-browse__chip"
+          [class.catalog-browse__chip--active]="selectedId() === root.id"
+          (click)="categorySelected.emit(root.id)"
+        >
+          {{ root.name ?? '—' }}
+        </button>
+      }
+    </div>
+    <p class="catalog-browse__facet-help">
+      Εμφανίζονται προϊόντα στην επιλεγμένη ρίζα και τις υποκατηγορίες της.
+    </p>
+  </div>
+}

@@ -1,0 +1,60 @@
+.catalog-browse__price-band {
+  margin-bottom: var(--spacing-100, 1rem);
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--p-content-border-color, #e5e7eb);
+}
+
+.catalog-browse__facet-label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.catalog-browse__price-slider-wrap {
+  margin-bottom: 0.75rem;
+}
+
+.catalog-browse__price-slider {
+  display: block;
+}
+
+.catalog-browse__price-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.catalog-browse__price-actions--below-slider {
+  margin-top: 0.25rem;
+}
+
+.catalog-browse__btn {
+  min-height: 2.5rem;
+  padding: 0 1rem;
+  border-radius: var(--p-border-radius-md, 6px);
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  background: var(--p-primary-color, #2563eb);
+  color: var(--p-primary-contrast-color, #fff);
+}
+
+.catalog-browse__btn--secondary {
+  background: var(--p-content-background, #fff);
+  color: inherit;
+  border: 1px solid var(--p-content-border-color, #e5e7eb);
+}
+
+.catalog-browse__facet-error {
+  margin: 0 0 var(--spacing-100, 1rem);
+  font-size: 0.9rem;
+  color: var(--p-red-500, #b91c1c);
+}
+
+.catalog-browse__facet-help {
+  margin: 0.5rem 0 0;
+  font-size: 0.8rem;
+  color: var(--p-text-muted-color, #6b7280);
+}

@@ -1,0 +1,38 @@
+<div class="catalog-browse__attribute-facets">
+  @if (hasActiveFilters()) {
+    <div class="catalog-browse__facet-actions">
+      <button
+        type="button"
+        class="catalog-browse__btn catalog-browse__btn--secondary catalog-browse__btn--sm"
+        (click)="filtersCleared.emit()"
+      >
+        Καθαρισμός φίλτρων ιδιοτήτων
+      </button>
+    </div>
+  }
+  @for (facet of facets(); track facet.attributeId) {
+    <div
+      class="catalog-browse__facet"
+      role="group"
+      [attr.aria-label]="facet.name ?? 'Ιδιότητα'"
+    >
+      <span class="catalog-browse__facet-label">{{ facet.name ?? '—' }}</span>
+      <ul class="catalog-browse__facet-values" role="list">
+        @for (val of facet.values; track val.valueId) {
+          <li class="catalog-browse__facet-value">
+            <label class="catalog-browse__facet-value-label">
+              <input
+                type="checkbox"
+                class="catalog-browse__facet-checkbox"
+                [checked]="isSelected(facet.attributeId, val.valueId)"
+                (change)="onCheckboxChange(facet.attributeId, val.valueId, $any($event.target).checked)"
+                [attr.aria-label]="(facet.name ?? 'Ιδιότητα') + ': ' + (val.value ?? '—')"
+              />
+              <span>{{ val.value ?? '—' }}</span>
+            </label>
+          </li>
+        }
+      </ul>
+    </div>
+  }
+</div>

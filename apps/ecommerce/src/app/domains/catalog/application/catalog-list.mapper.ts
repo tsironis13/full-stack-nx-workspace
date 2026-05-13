@@ -17,5 +17,13 @@ export function mapCatalogListFromWire(
     total: wire.total,
     page: wire.page,
     pageSize: wire.pageSize,
+    facets: (wire.facets ?? []).map((facet) => ({
+      attributeId: facet.attributeId,
+      name: facet.name,
+      values: facet.values.map((v) => ({
+        valueId: v.valueId,
+        value: v.value,
+      })),
+    })),
   };
 }

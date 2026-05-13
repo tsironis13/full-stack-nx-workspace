@@ -22,9 +22,24 @@ export interface CatalogListItemWire {
   additionalOptionsCount: number;
 }
 
+/** One selectable value within an attribute facet (wire contract). */
+export interface AttributeFacetValueWire {
+  valueId: number;
+  value: string | null;
+}
+
+/** Dynamic attribute facet as returned by the API (wire contract). */
+export interface AttributeFacetWire {
+  attributeId: number;
+  name: string | null;
+  values: AttributeFacetValueWire[];
+}
+
 export interface CatalogListResponseWire {
   items: CatalogListItemWire[];
   total: number;
   page: number;
   pageSize: number;
+  /** Dynamic attribute facets computed from the current filtered result set. */
+  facets: AttributeFacetWire[];
 }

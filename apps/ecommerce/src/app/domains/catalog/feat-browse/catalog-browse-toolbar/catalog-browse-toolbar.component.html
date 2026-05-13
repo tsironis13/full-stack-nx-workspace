@@ -1,0 +1,32 @@
+<div class="catalog-browse__toolbar">
+  <div class="catalog-browse__field catalog-browse__field--search">
+    <label class="catalog-browse__label" for="catalog-search">Αναζήτηση ονόματος</label>
+    <div class="catalog-browse__search-row">
+      <input
+        id="catalog-search"
+        type="search"
+        class="catalog-browse__input"
+        [ngModel]="searchDraft()"
+        (ngModelChange)="searchDraft.set($event)"
+        (keydown.enter)="onApply()"
+        placeholder="Onoma proiontos"
+      />
+      <button type="button" class="catalog-browse__btn" (click)="onApply()">
+        Εφαρμογή
+      </button>
+    </div>
+  </div>
+  <div class="catalog-browse__field">
+    <label class="catalog-browse__label" for="catalog-sort">Ταξινόμηση</label>
+    <select
+      id="catalog-sort"
+      class="catalog-browse__select"
+      [ngModel]="sort()"
+      (ngModelChange)="sortChanged.emit($event)"
+    >
+      @for (opt of sortOptions(); track opt.value) {
+        <option [ngValue]="opt.value">{{ opt.label }}</option>
+      }
+    </select>
+  </div>
+</div>

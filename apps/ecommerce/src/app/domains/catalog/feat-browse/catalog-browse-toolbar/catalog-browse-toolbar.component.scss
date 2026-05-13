@@ -1,0 +1,59 @@
+.catalog-browse__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-100, 1rem);
+  align-items: flex-end;
+  margin-bottom: var(--spacing-100, 1rem);
+}
+
+.catalog-browse__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 12rem;
+}
+
+.catalog-browse__field--search {
+  flex: 1 1 16rem;
+}
+
+.catalog-browse__label {
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.catalog-browse__search-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.catalog-browse__input {
+  flex: 1 1 12rem;
+  min-height: 2.5rem;
+  padding: 0 0.75rem;
+  border-radius: var(--p-border-radius-md, 6px);
+  border: 1px solid var(--p-content-border-color, #e5e7eb);
+  background: var(--p-content-background, #fff);
+  color: inherit;
+}
+
+.catalog-browse__select {
+  min-height: 2.5rem;
+  padding: 0 0.75rem;
+  border-radius: var(--p-border-radius-md, 6px);
+  border: 1px solid var(--p-content-border-color, #e5e7eb);
+  background: var(--p-content-background, #fff);
+  color: inherit;
+}
+
+.catalog-browse__btn {
+  min-height: 2.5rem;
+  padding: 0 1rem;
+  border-radius: var(--p-border-radius-md, 6px);
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  background: var(--p-primary-color, #2563eb);
+  color: var(--p-primary-contrast-color, #fff);
+}
