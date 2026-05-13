@@ -9,7 +9,12 @@ import {
   withProps,
   withState,
 } from '@ngrx/signals';
-import { Events, on, withEffects, withReducer } from '@ngrx/signals/events';
+import {
+  Events,
+  on,
+  withEventHandlers,
+  withReducer,
+} from '@ngrx/signals/events';
 import { tap } from 'rxjs';
 
 import { LocalStorageFacade } from '../../../core/public-api';
@@ -35,7 +40,7 @@ const emptyState: GuestCartState = { items: [] };
 
 function loadGuestCartItems(
   storage: LocalStorageFacade,
-  platformId: object
+  platformId: object,
 ): CatalogCartLineSnapshot[] {
   if (!isPlatformBrowser(platformId)) {
     return [];
@@ -47,7 +52,7 @@ function loadGuestCartItems(
 function persistItems(
   storage: LocalStorageFacade,
   platformId: object,
-  items: CatalogCartLineSnapshot[]
+  items: CatalogCartLineSnapshot[],
 ): void {
   if (!isPlatformBrowser(platformId)) {
     return;
@@ -68,7 +73,7 @@ export const GuestCartStore = signalStore(
   })),
   withComputed(({ items }) => ({
     totalUnitCount: computed(() =>
-      items().reduce((sum, l) => sum + l.quantity, 0)
+      items().reduce((sum, l) => sum + l.quantity, 0),
     ),
   })),
   withMethods((store) => ({
@@ -114,7 +119,7 @@ export const GuestCartStore = signalStore(
       ({ payload }) =>
         (state: GuestCartState) => ({
           items: addOrMergeLines(state.items, payload, 1),
-        })
+        }),
     ),
     on(
       cartCatalogEvents.decrementItem,
@@ -122,16 +127,16 @@ export const GuestCartStore = signalStore(
         (state: GuestCartState) => ({
           items: decrementLineQuantityOrRemove(
             state.items,
-            payload.mainProductItemId
+            payload.mainProductItemId,
           ),
-        })
+        }),
     ),
     on(
       cartUiEvents.incrementItem,
       ({ payload }) =>
         (state: GuestCartState) => ({
           items: incrementLineQuantity(state.items, payload.mainProductItemId),
-        })
+        }),
     ),
     on(
       cartUiEvents.decrementOrRemoveItem,
@@ -139,33 +144,29 @@ export const GuestCartStore = signalStore(
         (state: GuestCartState) => ({
           items: decrementLineQuantityOrRemove(
             state.items,
-            payload.mainProductItemId
+            payload.mainProductItemId,
           ),
-        })
+        }),
     ),
-    on(
-      cartUiEvents.removeItem,
-      ({ payload }) =>
-        (state: GuestCartState) => ({
-          items: removeLineByMainProductItemId(
-            state.items,
-            payload.mainProductItemId
-          ),
-        })
-    )
+    on(cartUiEvents.removeItem, ({ payload }) => (state: GuestCartState) => ({
+      items: removeLineByMainProductItemId(
+        state.items,
+        payload.mainProductItemId,
+      ),
+    })),
   ),
   /** Persist to localStorage after each event has updated state. */
-  withEffects((store, events = inject(Events)) => ({
+  withEventHandlers((store, events = inject(Events)) => ({
     persistOnCartEvents$: events
       .on(
         cartCatalogEvents.addFromBrowse,
         cartCatalogEvents.decrementItem,
         cartUiEvents.incrementItem,
         cartUiEvents.decrementOrRemoveItem,
-        cartUiEvents.removeItem
+        cartUiEvents.removeItem,
       )
       .pipe(
-        tap(() => persistItems(store.storage, store.platformId, store.items()))
+        tap(() => persistItems(store.storage, store.platformId, store.items())),
       ),
   })),
   withHooks({
@@ -174,5 +175,5 @@ export const GuestCartStore = signalStore(
         items: loadGuestCartItems(store.storage, store.platformId),
       });
     },
-  })
+  }),
 );

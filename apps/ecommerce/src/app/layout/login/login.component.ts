@@ -6,7 +6,7 @@ import {
   WritableSignal,
 } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
-import { form, Field, required, email } from '@angular/forms/signals';
+import { form, FormField, required, email } from '@angular/forms/signals';
 import { InputTextModule } from 'primeng/inputtext';
 import { CardModule } from 'primeng/card';
 import { FloatLabel } from 'primeng/floatlabel';
@@ -18,7 +18,7 @@ import { AuthStore } from '@full-stack-nx-workspace/auth-web';
   selector: 'app-login',
   templateUrl: './login.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ButtonModule, InputTextModule, Field, CardModule, FloatLabel],
+  imports: [ButtonModule, InputTextModule, FormField, CardModule, FloatLabel],
 })
 export class LoginComponent {
   protected readonly authStore = inject(AuthStore);
@@ -43,7 +43,7 @@ export class LoginComponent {
       required(schemaPath.email, { message: 'Email is required' });
       email(schemaPath.email, { message: 'Enter a valid email address' });
       required(schemaPath.password, { message: 'Password is required' });
-    }
+    },
   );
 
   protected login(): void {
