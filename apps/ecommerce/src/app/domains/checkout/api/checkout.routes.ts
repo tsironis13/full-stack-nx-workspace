@@ -9,4 +9,11 @@ export default [
         (m) => m.CheckoutPageComponent
       ),
   },
+  {
+    path: 'confirmation',
+    loadComponent: () =>
+      import('../feat-checkout/checkout-confirmation.component').then(
+        (m) => m.CheckoutConfirmationComponent
+      ),
+  },
 ];

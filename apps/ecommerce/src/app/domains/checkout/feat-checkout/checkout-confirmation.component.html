@@ -1,0 +1,48 @@
+<div class="confirmation-page">
+  @if (confirmedOrder()) {
+    <div class="confirmation-page__content">
+      <div class="confirmation-page__icon" aria-hidden="true">
+        <i class="pi pi-check-circle"></i>
+      </div>
+
+      <h1 class="confirmation-page__title">Η παραγγελία σας καταχωρήθηκε!</h1>
+      <p class="confirmation-page__subtitle">
+        Σας ευχαριστούμε για την αγορά σας. Θα λάβετε επιβεβαίωση σύντομα.
+      </p>
+
+      <div class="confirmation-page__details">
+        <div class="confirmation-detail">
+          <span class="confirmation-detail__label">Αριθμός παραγγελίας</span>
+          <strong class="confirmation-detail__value">#{{ confirmedOrder()!.orderId }}</strong>
+        </div>
+        <div class="confirmation-detail">
+          <span class="confirmation-detail__label">Κατάσταση</span>
+          <strong class="confirmation-detail__value confirmation-detail__value--confirmed">
+            Επιβεβαιωμένη
+          </strong>
+        </div>
+        <div class="confirmation-detail">
+          <span class="confirmation-detail__label">Σύνολο</span>
+          <strong class="confirmation-detail__value">
+            {{ formatEur(confirmedOrder()!.totalAmount) }}
+          </strong>
+        </div>
+        <div class="confirmation-detail">
+          <span class="confirmation-detail__label">Ημερομηνία</span>
+          <span class="confirmation-detail__value">
+            {{ formatDate(confirmedOrder()!.createdAt) }}
+          </span>
+        </div>
+      </div>
+
+      <div class="confirmation-page__actions">
+        <p-button
+          label="Συνέχεια αγορών"
+          icon="pi pi-arrow-left"
+          severity="secondary"
+          [routerLink]="['/catalog']"
+        />
+      </div>
+    </div>
+  }
+</div>
