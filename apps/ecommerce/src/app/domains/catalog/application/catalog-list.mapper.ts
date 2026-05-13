@@ -6,22 +6,22 @@ export function mapCatalogListFromWire(
 ): CatalogListResponse {
   return {
     items: wire.items.map((item) => ({
-      productId: item.productId,
+      productId: Number(item.productId),
       name: item.name,
-      mainProductItemId: item.mainProductItemId,
+      mainProductItemId: Number(item.mainProductItemId),
       salePrice: item.salePrice,
       originalPrice: item.originalPrice,
       primaryImageUrl: item.primaryImageUrl,
-      additionalOptionsCount: item.additionalOptionsCount,
+      additionalOptionsCount: Number(item.additionalOptionsCount),
     })),
-    total: wire.total,
-    page: wire.page,
-    pageSize: wire.pageSize,
+    total: Number(wire.total),
+    page: Number(wire.page),
+    pageSize: Number(wire.pageSize),
     facets: (wire.facets ?? []).map((facet) => ({
-      attributeId: facet.attributeId,
+      attributeId: Number(facet.attributeId),
       name: facet.name,
       values: facet.values.map((v) => ({
-        valueId: v.valueId,
+        valueId: Number(v.valueId),
         value: v.value,
       })),
     })),
