@@ -177,14 +177,14 @@ ESLint encodes that file as **`domain-application-anti-corruption-layer-api`**. 
 1. **Slices of domain state (read side)**  
    The owning domain keeps full state and rules inside **`application/`** (for example a **`signalStore`**). The ACL exposes **narrow, stable read APIs**—often injectable **adapters** that forward **computed signals** or small methods—so outsiders see cart totals, badges, or quantities **without** importing **`CartStore`** (or equivalent) by type. That protects invariants and lets the domain rename or refactor internal application code without breaking every consumer.
 
-2. **Cross-domain commands via NgRx Signals events**  
-   When another domain needs to **cause** a change (not own the cart’s data model), communication goes through **[@ngrx/signals/events](https://ngrx.io/guide/signals/events)**:
+2. **Cross-domain commands via NgRx Signal Store events**  
+   When another domain needs to **mutate** state owned elsewhere (for example **Catalog** changing **Cart** quantities), **writes** go **only** through [NgRx Signal Store — Events](https://ngrx.io/guide/signals/signal-store/events) (see also [@ngrx/signals/events](https://ngrx.io/guide/signals/events) for **`event(...)`** primitives):
 
-   - **`domains/<domain>/application/events.ts`** defines **`event(...)`** descriptors (typed payloads).
-   - The owning **`signalStore`** registers **`withReducer(on(...))`** handlers for those events.
-   - **`anti-corruption-layer.ts`** **re-exports** the events (and any adapter classes) so foreign code imports **only** the ACL path and uses **`dispatcher.dispatch(event(payload))`** (or the project’s equivalent) instead of calling store methods on another domain’s implementation.
+   - **`domains/<domain>/application/events.ts`** defines **`event(...)`** descriptors (typed payloads); the owning domain is the **only** place that decides which events outside contexts may dispatch.
+   - The owning **`signalStore`** registers **`withReducer(on(...))`** handlers for those events (Signal Store pattern).
+   - **`anti-corruption-layer.ts`** **re-exports** the events (and read adapters) so foreign code imports **only** the ACL path and uses **`dispatcher.dispatch(event(payload))`** (or the project’s equivalent). **Consumers must not** call another domain’s **`signalStore`** methods or import its internal **`application`** store type for those mutations.
 
-   This keeps coupling **event-shaped and explicit**: consumers depend on message names and payloads, not on another domain’s internal method surface.
+   This keeps coupling **event-shaped and explicit**: consumers depend on message names and payloads, not on another domain’s internal method surface. **All** cross-domain **command** entry points the owner allows must appear as **events** on the ACL—not as ad-hoc public store APIs.
 
 ### When to keep state in the domain vs move it under `core`
 
@@ -197,7 +197,7 @@ The second case avoids pretending a globally shared store is still “private”
 
 ### Rules of thumb
 
-- **Do not** inject another domain’s **`signalStore`** / facade from outside that domain; use the ACL adapter or dispatched events.
+- **Do not** inject another domain’s **`signalStore`** / facade from outside that domain for **mutations**; use dispatched **ACL‑re‑exported events**. Use **ACL read adapters** for projections.
 - **Do** define events next to the reducer that owns them; **re-export** from **`anti-corruption-layer.ts`** for cross-domain imports.
 - **Promote to `core/<domain>/`** (with **`application`**, **`domain`**, **`infrastructure`** mirroring `domains/`) when consumers need the **entire** state shape and an ACL would duplicate the store anyway.
 

@@ -88,6 +88,10 @@ When your output names a domain concept (issue title, refactor proposal, hypothe
 
 If the concept you need isn't in the glossary yet, that's a signal — either you're inventing language the project doesn't use (reconsider) or there's a real gap (note it for `/grill-with-docs`).
 
+## Angular cross-domain writes (ecommerce-style)
+
+When one **`domains/<bounded-context>/`** slice must **change state owned by another** (for example **Catalog** updating **Cart**), use **NgRx Signal Store [Events](https://ngrx.io/guide/signals/signal-store/events)** and **`anti-corruption-layer.ts`** as in **`docs/front-end-infrastructure.md`**: the **owning** context defines and re-exports **events** for dispatch; **consumers** dispatch those events only—they do not call the owner’s internal **`signalStore`** API for those writes.
+
 ## Flag ADR conflicts
 
 If your output contradicts an existing ADR, surface it explicitly rather than silently overriding:

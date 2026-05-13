@@ -34,6 +34,7 @@ Use **Nx project IDs** and **domain glossary terms** from the relevant `CONTEXT.
 
    - Which **vertical slices** under **`domains/<domain>/`** matter: lazy **`api/*.routes.ts`**, **`feat-*`**, **`application/`** (stores, facades, ACL), **`domain/`**, **`infrastructure/`** — or shell pieces under **`layout/`**, **`pattern/`**, **`core/`**, **`ui/`**.
    - Prefer describing **stable façade surfaces** (barrels like **`domain-application-api`**, **`pattern-api`**, **`lib-api`**) over listing deep internal files.
+   - When one domain triggers mutations in another (**Catalog → Cart**, etc.), spell out **[NgRx Signal Store Events](https://ngrx.io/guide/signals/signal-store/events)** as the cross-domain write path: owning domain publishes **re-exported events** via **`anti-corruption-layer.ts`**; consumers **dispatch only** — see **`docs/front-end-infrastructure.md`**.
 
    **NestJS (back end)**
 

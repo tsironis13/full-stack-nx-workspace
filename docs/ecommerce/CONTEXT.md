@@ -409,6 +409,8 @@ A Cart belongs to either:
 
 On the storefront catalog, adding to the **Cart** from a product listing or grid uses the **Main Product Item** by default—the same unit used for the listing’s price and primary image. The product detail flow may allow choosing a different **Product Item** before adding.
 
+A **Product** may surface that other **Product Items** exist (e.g. more sizes or colours); that does **not** block add-to-cart from the grid—the **Main Product Item** is still the default unit for that action.
+
 Avoid:
 
 - Basket
@@ -615,6 +617,7 @@ Avoid:
 
 - A Guest User may create a temporary Cart
 - A Registered User may persist Cart state across sessions
+- A **Guest User** **Cart** and a signed-in **Registered User** **Cart** do not share contents under those two modes of browsing; when the shopper completes sign-in, **Cart Items** from the guest **Cart** **merge** into that **Registered User**'s **Cart** using the same behavior as adding the same **Product Item** again from the storefront (one line per **Product Item**, quantities combined; indicative presentation per **Cart rules**), after which the guest **Cart** is cleared
 - Orders must belong to a Registered User or persisted guest checkout identity
 - Admin Users may access management functionality unavailable to storefront Users
 
@@ -643,6 +646,9 @@ Avoid:
 
 - A Cart must contain at least one Cart Item before Checkout
 - Cart Item quantity must be greater than zero
+- Lowering quantity past one removes the **Cart Item**—the storefront does not retain zero-quantity lines
+- When adding the same **Product Item** again merges quantities into one **Cart Item**, indicative presentation for that line (including captured price and primary image shown in the **Cart**) **refreshes** from that add—the latest storefront interaction replaces the older snapshot on that row
+- Amounts shown for **Cart Items** in the storefront reflect the last captured offer for each line until **Checkout**; totals become authoritative only when **Checkout** establishes the **Order**
 
 ---
 

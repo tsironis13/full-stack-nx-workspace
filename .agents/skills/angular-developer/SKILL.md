@@ -61,6 +61,10 @@ When managing state and data reactivity, use Angular Signals and consult the fol
 - **Async Reactivity (`resource`)**: Fetching asynchronous data directly into signal state. Read [resource.md](references/resource.md)
 - **Side Effects (`effect`)**: Logging, third-party DOM manipulation (`afterRenderEffect`), and when NOT to use effects. Read [effects.md](references/effects.md)
 
+### Nx workspaces: bounded contexts (`domains/*`)
+
+When one feature spans multiple **bounded contexts** in the same Angular app (**ecommerce**‑style **`domains/<name>/`** layout), prefer **NgRx Signal Store [Events](https://ngrx.io/guide/signals/signal-store/events)** for **cross-domain writes**: the **owning** context’s **`signalStore`** reduces **`event(...)`** payloads; **`anti-corruption-layer.ts`** re-exports the events for foreign dispatch. **Do not** inject another domain’s internal **`signalStore`** from a consumer feature to call imperative methods—**dispatch** only the events the owner exposes. **Reads** for other contexts use **ACL** adapters (computed signals), not direct store imports. Align with the host repo’s **`docs/front-end-infrastructure.md`** when present.
+
 ## Forms
 
 In most cases for new apps, **prefer signal forms**. When making a forms decision, analyze the project and consider the following guidelines:

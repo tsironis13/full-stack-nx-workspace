@@ -31,6 +31,15 @@ Slices may be 'HITL' or 'AFK'. HITL slices require human interaction, such as an
 - Prefer many thin slices over few thick ones
 </vertical-slice-rules>
 
+### Cross-domain communication (Angular / NgRx)
+
+When a slice touches **more than one** bounded context under **`domains/<name>/`** (for example **Catalog** driving **Cart** mutations), describe integration in the issue using this workspace’s rule:
+
+- **Writes** from the consumer domain to the owner domain go **only** through **NgRx Signal Store [Events](https://ngrx.io/guide/signals/signal-store/events)**: the **owning** context defines **`event(...)`** payloads, handles them with **`withReducer(on(...))`**, and **re-exports** dispatchable events from **`anti-corruption-layer.ts`**. Consumer domains **dispatch** those events and **must not** call the owner’s **`signalStore`** methods or import store types.
+- **Reads** exposed to outsiders use the **ACL**’s narrow adapters / signals (`docs/front-end-infrastructure.md` — Anti-corruption layer).
+
+Call this out in **What to build** / **Acceptance criteria** when relevant so agents do not “reach through” with ad-hoc façade calls.
+
 ### 4. Quiz the user
 
 Present the proposed breakdown as a numbered list. For each slice, show:
