@@ -1,0 +1,68 @@
+<p-drawer
+  [(visible)]="visible"
+  header="Καλάθι αγορών"
+  position="right"
+  styleClass="cart-drawer"
+>
+  @if (cartRead.items().length === 0) {
+    <div class="cart-drawer__empty">
+      <p class="cart-drawer__empty-text">Το καλάθι σας είναι άδειο.</p>
+      <p-button
+        label="Συνέχεια αγορών"
+        icon="pi pi-arrow-left"
+        severity="secondary"
+        (onClick)="visible.set(false)"
+      />
+    </div>
+  } @else {
+    <ul class="cart-drawer__items" aria-label="Προϊόντα στο καλάθι">
+      @for (line of cartRead.items(); track line.mainProductItemId) {
+        <li class="cart-drawer__item">
+          @if (line.primaryImageUrl) {
+            <img
+              class="cart-drawer__item-image"
+              [src]="line.primaryImageUrl"
+              [alt]="line.name ?? 'Προϊόν'"
+              width="56"
+              height="56"
+            />
+          }
+          <div class="cart-drawer__item-details">
+            <p class="cart-drawer__item-name">{{ line.name }}</p>
+            <p class="cart-drawer__item-price">{{ formatPrice(line.salePrice ?? line.originalPrice) }}</p>
+            <div class="cart-drawer__item-controls">
+              <app-cart-quantity-control
+                [quantity]="line.quantity"
+                (addItemToCart)="onIncrement(line.mainProductItemId)"
+                (removeItemFromCart)="onDecrement(line.mainProductItemId)"
+              />
+              <p-button
+                icon="pi pi-trash"
+                [text]="true"
+                severity="danger"
+                size="small"
+                aria-label="Αφαίρεση προϊόντος"
+                (onClick)="onRemove(line.mainProductItemId)"
+              />
+            </div>
+          </div>
+          <p class="cart-drawer__item-subtotal">
+            {{ lineSubtotal(line.salePrice, line.originalPrice, line.quantity) }}
+          </p>
+        </li>
+      }
+    </ul>
+
+    <div class="cart-drawer__footer">
+      <p class="cart-drawer__total">
+        Σύνολο: <strong>{{ formattedSubtotal() }}</strong>
+      </p>
+      <p-button
+        label="Προβολή καλαθιού"
+        icon="pi pi-shopping-cart"
+        styleClass="w-full"
+        (onClick)="goToCart()"
+      />
+    </div>
+  }
+</p-drawer>

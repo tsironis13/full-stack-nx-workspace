@@ -8,7 +8,7 @@ import {
   GUEST_CART_LOCAL_STORAGE_KEY,
 } from '../domain/public-api';
 import { GuestCartStore } from './guest-cart.store';
-import { cartCatalogEvents } from './events';
+import { cartCatalogEvents, cartUiEvents } from './events';
 
 describe('GuestCartStore', () => {
   let store: InstanceType<typeof GuestCartStore>;
@@ -195,6 +195,62 @@ describe('GuestCartStore', () => {
       );
 
       dispatcher.dispatch(cartCatalogEvents.decrementItem({ mainProductItemId: 88 }));
+
+      expect(store.items()).toHaveLength(0);
+      expect(store.totalUnitCount()).toBe(0);
+    });
+  });
+
+  describe('cartUiEvents', () => {
+    let dispatcher: Dispatcher;
+
+    beforeEach(() => {
+      dispatcher = TestBed.inject(Dispatcher);
+    });
+
+    it('incrementItem event increments quantity and persists', () => {
+      store.addFromBrowseRow(
+        { productId: 1, mainProductItemId: 11, name: 'D', salePrice: 2, originalPrice: null, primaryImageUrl: null },
+        1
+      );
+
+      dispatcher.dispatch(cartUiEvents.incrementItem({ mainProductItemId: 11 }));
+
+      expect(store.items()[0].quantity).toBe(2);
+      const raw = localStorage.getItem(GUEST_CART_LOCAL_STORAGE_KEY);
+      const parsed = raw ? JSON.parse(raw) : null;
+      expect(parsed?.items?.[0]?.quantity).toBe(2);
+    });
+
+    it('decrementOrRemoveItem event decrements quantity', () => {
+      store.addFromBrowseRow(
+        { productId: 1, mainProductItemId: 22, name: 'E', salePrice: 3, originalPrice: null, primaryImageUrl: null },
+        3
+      );
+
+      dispatcher.dispatch(cartUiEvents.decrementOrRemoveItem({ mainProductItemId: 22 }));
+
+      expect(store.items()[0].quantity).toBe(2);
+    });
+
+    it('decrementOrRemoveItem event at qty 1 removes the line', () => {
+      store.addFromBrowseRow(
+        { productId: 1, mainProductItemId: 33, name: 'F', salePrice: 1, originalPrice: null, primaryImageUrl: null },
+        1
+      );
+
+      dispatcher.dispatch(cartUiEvents.decrementOrRemoveItem({ mainProductItemId: 33 }));
+
+      expect(store.items()).toHaveLength(0);
+    });
+
+    it('removeItem event removes the line entirely', () => {
+      store.addFromBrowseRow(
+        { productId: 1, mainProductItemId: 44, name: 'G', salePrice: 4, originalPrice: null, primaryImageUrl: null },
+        5
+      );
+
+      dispatcher.dispatch(cartUiEvents.removeItem({ mainProductItemId: 44 }));
 
       expect(store.items()).toHaveLength(0);
       expect(store.totalUnitCount()).toBe(0);
