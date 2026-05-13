@@ -13,6 +13,11 @@ export default [
         path: 'cart',
         loadChildren: () => import('../../domains/cart/api/cart.routes'),
       },
+      {
+        path: 'checkout',
+        loadChildren: () =>
+          import('../../domains/checkout/api/checkout.routes'),
+      },
     ],
   },
   {
