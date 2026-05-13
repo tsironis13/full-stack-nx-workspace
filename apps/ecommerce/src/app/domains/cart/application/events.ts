@@ -32,5 +32,7 @@ export const cartUiEvents = eventGroup({
     decrementOrRemoveItem: type<{ mainProductItemId: number }>(),
     /** Remove a **Cart Item** line entirely regardless of quantity. */
     removeItem: type<{ mainProductItemId: number }>(),
+    /** Clear all **Cart Items** — used by Checkout after a successful order. */
+    clearCart: type<void>(),
   },
 });
