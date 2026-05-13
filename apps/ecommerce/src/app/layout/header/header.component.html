@@ -19,8 +19,6 @@
   }
 </span>
 
-<app-cart-drawer [(visible)]="cartDrawerVisible" />
-
 <div *authIf="'connected'; else notConnectedTemplate; pending: loadingTemplate">
   <p>Welcome, user!</p>
 </div>

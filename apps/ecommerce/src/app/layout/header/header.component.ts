@@ -3,6 +3,7 @@ import {
   Component,
   effect,
   inject,
+  output,
   signal,
 } from '@angular/core';
 
@@ -11,24 +12,25 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthIfDirective, AuthStore } from '@full-stack-nx-workspace/auth-web';
 
 import { CartAclReadAdapter } from '../../domains/cart/application/anti-corruption-layer';
-import { CartDrawerComponent } from '../cart-drawer/cart-drawer.component';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ButtonModule, AuthIfDirective, CartDrawerComponent],
+  imports: [ButtonModule, AuthIfDirective],
   host: {
     class: 'flex bg-white dark:bg-gray-900 h-20 fixed top-0 left-0 z-50 w-full',
   },
 })
 export class HeaderComponent {
   protected readonly theme = signal<'light' | 'dark'>('light');
-  protected readonly cartDrawerVisible = signal(false);
 
   readonly authStore = inject(AuthStore);
   protected readonly cartRead = inject(CartAclReadAdapter);
+
+  /** Emitted when the user clicks the cart icon so the parent shell can open the drawer. */
+  readonly cartIconClick = output<void>();
 
   readonly onThemeChange = effect(() => {
     document.documentElement.classList.toggle(
@@ -42,7 +44,7 @@ export class HeaderComponent {
   }
 
   public openCartDrawer(): void {
-    this.cartDrawerVisible.set(true);
+    this.cartIconClick.emit();
   }
 
   httpClient = inject(HttpClient);

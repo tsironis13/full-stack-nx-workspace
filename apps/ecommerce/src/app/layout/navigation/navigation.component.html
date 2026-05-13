@@ -1,4 +1,5 @@
-<app-header></app-header>
+<app-header (cartIconClick)="cartDrawerVisible.set(true)"></app-header>
+<app-cart-drawer [(visible)]="cartDrawerVisible" />
 <div class="pt-(--spacing-120)">
   <router-outlet></router-outlet>
 </div>
