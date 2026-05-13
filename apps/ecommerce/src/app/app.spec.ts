@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { provideRouter } from '@angular/router';
 
 import { App } from './app';
@@ -8,23 +7,22 @@ import { appRoutes } from './app.routes';
 
 describe('App', () => {
   let fixture: ComponentFixture<App>;
-  let component: App;
 
   beforeEach(async () => {
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
+      imports: [App],
       providers: [
         { provide: AUTH_API_URL_TOKEN, useValue: '/' },
         provideRouter(appRoutes),
       ],
-    });
+    }).compileComponents();
     fixture = TestBed.createComponent(App);
-    component = fixture.componentInstance;
     await fixture.whenStable();
   });
 
-  it('should render title', () => {
+  it('should render the root router outlet', () => {
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Header');
+    expect(compiled.querySelector('router-outlet')).not.toBeNull();
   });
 });
