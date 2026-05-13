@@ -456,10 +456,25 @@ Includes:
 - Payment
 - Order confirmation
 
+**Checkout (v1):** A single-page flow. All inputs (Shipping Address, payment details, order summary) appear on one page. Available to both Guest Users and Registered Users. Navigating to `/checkout` requires a non-empty Cart.
+
 Avoid:
 
 - Purchase Flow
 - Payment Flow
+
+---
+
+## Guest Checkout Identity
+
+The minimal identity used when a Guest User places an Order: an email address entered at checkout time.
+
+No Customer Account is created. The Order is stored against the email alone. The Guest User cannot view the Order after leaving the confirmation screen unless account creation is added later.
+
+Avoid:
+
+- Anonymous Checkout
+- Temporary Account
 
 ---
 
@@ -473,7 +488,9 @@ Contains snapshots of:
 - Pricing
 - Quantities
 
-Belongs to a User.
+Belongs to either a Registered User (identified by `user_id`) or a Guest Checkout Identity (identified by `guest_email`). Exactly one of these must be present.
+
+**Order Status (v1):** `pending` → `confirmed` → `cancelled`.
 
 Avoid:
 
@@ -502,6 +519,8 @@ Avoid:
 ## Payment
 
 A financial transaction associated with an Order.
+
+**Payment Status (v1):** `pending` only — payment processing is mocked. Real gateway integration is deferred.
 
 Avoid:
 
@@ -618,7 +637,8 @@ Avoid:
 - A Guest User may create a temporary Cart
 - A Registered User may persist Cart state across sessions
 - A **Guest User** **Cart** and a signed-in **Registered User** **Cart** do not share contents under those two modes of browsing; when the shopper completes sign-in, **Cart Items** from the guest **Cart** **merge** into that **Registered User**'s **Cart** using the same behavior as adding the same **Product Item** again from the storefront (one line per **Product Item**, quantities combined; indicative presentation per **Cart rules**), after which the guest **Cart** is cleared
-- Orders must belong to a Registered User or persisted guest checkout identity
+- A Guest User may place an Order using a Guest Checkout Identity (email-only); no account is created
+- Orders must belong to a Registered User or a Guest Checkout Identity
 - Admin Users may access management functionality unavailable to storefront Users
 
 ---
@@ -657,6 +677,9 @@ Avoid:
 - Orders are immutable after creation
 - Order totals are calculated from Order Items
 - Order Items preserve historical pricing even if Product pricing changes later
+- An Order must belong to exactly one of: a Registered User (`user_id`) or a Guest Checkout Identity (`guest_email`); never both, never neither
+- Order Item prices are always read from the database at the moment of Order creation — client-submitted prices are never trusted
+- A successful Order creation clears the Cart for the placing User
 
 ---
 

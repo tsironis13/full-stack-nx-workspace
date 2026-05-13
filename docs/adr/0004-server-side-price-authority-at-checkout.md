@@ -1,0 +1,3 @@
+# Server recalculates Order Item prices from the database at checkout; client-submitted prices are ignored
+
+When `POST /orders` is received, the API reads current `sale_price` and `original_price` for each submitted `productItemId` directly from the database and uses those values to build Order Items and compute `total_amount`. The client does not send prices in the request body. We chose this because trusting client-submitted prices would allow trivially forged requests (e.g. `salePrice: 0.01`). Even with mock payment in v1, the Order record must reflect authoritative pricing — Order Items are immutable snapshots and incorrect prices would persist forever. The cost is a small extra DB read per checkout; that is acceptable.
