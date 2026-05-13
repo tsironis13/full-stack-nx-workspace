@@ -6,3 +6,5 @@ export * from './attributes';
 export * from './attribute_values';
 export * from './category_attributes';
 export * from './product_item_attributes';
+export * from './orders';
+export * from './order-items';
