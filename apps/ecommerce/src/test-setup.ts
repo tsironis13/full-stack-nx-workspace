@@ -1,8 +1,7 @@
-// eslint-disable-next-line boundaries/no-unknown-files
-import '@analogjs/vitest-angular/setup-snapshots';
+/* eslint-disable boundaries/no-unknown-files -- Jest bootstrap file outside DDD element graph */
+import { setupZonelessTestEnv } from 'jest-preset-angular/setup-env/zoneless';
 
-import '@angular/compiler';
-import '@analogjs/vitest-angular/setup-snapshots';
-import { setupTestBed } from '@analogjs/vitest-angular/setup-testbed';
-
-setupTestBed();
+setupZonelessTestEnv({
+  errorOnUnknownElements: true,
+  errorOnUnknownProperties: true,
+});
