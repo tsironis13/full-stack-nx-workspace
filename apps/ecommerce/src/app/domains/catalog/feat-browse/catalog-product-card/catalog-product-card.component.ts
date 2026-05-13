@@ -1,7 +1,12 @@
 import { CurrencyPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
+import { injectDispatch } from '@ngrx/signals/events';
 
-import type { CatalogListItem } from '../../application/public-api';
+import {
+  CartAclReadAdapter,
+  cartCatalogEvents,
+  type CatalogListItem,
+} from '../../application/public-api';
 
 const PLACEHOLDER_IMAGE =
   'data:image/svg+xml,' +
@@ -21,10 +26,28 @@ export class CatalogProductCardComponent {
 
   protected readonly placeholderImage = PLACEHOLDER_IMAGE;
 
+  private readonly cartRead = inject(CartAclReadAdapter);
+  private readonly dispatch = injectDispatch(cartCatalogEvents);
+
+  /** Current quantity of this card's Main Product Item in the cart (0 = not in cart). */
+  protected readonly cartQuantity = computed(
+    () => this.cartRead.itemQuantities().get(this.item().mainProductItemId) ?? 0
+  );
+
   protected onImageError(event: Event): void {
     const el = event.target;
     if (el instanceof HTMLImageElement) {
       el.src = this.placeholderImage;
     }
+  }
+
+  protected onAddToCart(): void {
+    const { productId, mainProductItemId, name, salePrice, originalPrice, primaryImageUrl } =
+      this.item();
+    this.dispatch.addFromBrowse({ productId, mainProductItemId, name, salePrice, originalPrice, primaryImageUrl });
+  }
+
+  protected onDecrementFromCart(): void {
+    this.dispatch.decrementItem({ mainProductItemId: this.item().mainProductItemId });
   }
 }

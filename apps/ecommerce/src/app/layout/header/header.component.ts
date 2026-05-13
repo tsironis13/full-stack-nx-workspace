@@ -10,9 +10,12 @@ import { ButtonModule } from 'primeng/button';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthIfDirective, AuthStore } from '@full-stack-nx-workspace/auth-web';
 
+import { CartAclReadAdapter } from '../../domains/cart/application/anti-corruption-layer';
+
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
+  styleUrl: './header.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ButtonModule, AuthIfDirective],
   host: {
@@ -23,6 +26,7 @@ export class HeaderComponent {
   protected readonly theme = signal<'light' | 'dark'>('light');
 
   readonly authStore = inject(AuthStore);
+  protected readonly cartRead = inject(CartAclReadAdapter);
 
   readonly onThemeChange = effect(() => {
     document.documentElement.classList.toggle(
