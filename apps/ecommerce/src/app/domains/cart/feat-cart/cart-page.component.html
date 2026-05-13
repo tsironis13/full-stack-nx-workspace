@@ -54,12 +54,21 @@
       <p class="cart-page__total">
         Σύνολο: <strong>{{ formattedSubtotal() }}</strong>
       </p>
-      <p-button
-        label="Συνέχεια αγορών"
-        icon="pi pi-arrow-left"
-        [routerLink]="['/catalog']"
-        severity="secondary"
-      />
+      <div class="cart-page__actions">
+        <p-button
+          label="Συνέχεια αγορών"
+          icon="pi pi-arrow-left"
+          [routerLink]="['/catalog']"
+          severity="secondary"
+        />
+        <p-button
+          label="Προχώρηση στο ταμείο"
+          icon="pi pi-arrow-right"
+          iconPos="right"
+          [routerLink]="['/checkout']"
+          [disabled]="store.items().length === 0"
+        />
+      </div>
     </div>
   }
 </div>
