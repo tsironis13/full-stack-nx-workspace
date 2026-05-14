@@ -1,0 +1,65 @@
+:host {
+  display: block;
+}
+
+.confirmation-page {
+  max-width: 36rem;
+  margin: 0 auto;
+  padding: 3rem 1rem;
+}
+
+.confirmation-page__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1.25rem;
+}
+
+.confirmation-page__icon {
+  font-size: 4rem;
+  color: var(--p-green-500, #22c55e);
+}
+
+.confirmation-page__title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.confirmation-page__subtitle {
+  font-size: 1rem;
+  color: var(--p-text-muted-color, #6b7280);
+  margin: 0;
+}
+
+.confirmation-page__details {
+  width: 100%;
+  background: var(--p-content-background, #fff);
+  border: 1px solid var(--p-content-border-color, #e5e7eb);
+  border-radius: 0.5rem;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  text-align: left;
+}
+
+.confirmation-detail {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9375rem;
+}
+
+.confirmation-detail__label {
+  color: var(--p-text-muted-color, #6b7280);
+}
+
+.confirmation-detail__value--confirmed {
+  color: var(--p-green-600, #16a34a);
+}
+
+.confirmation-page__actions {
+  margin-top: 0.5rem;
+}

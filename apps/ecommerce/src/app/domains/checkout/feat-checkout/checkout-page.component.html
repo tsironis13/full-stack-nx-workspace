@@ -1,3 +1,275 @@
 <div class="checkout-page">
   <h1 class="checkout-page__title">Ολοκλήρωση παραγγελίας</h1>
+
+  <div class="checkout-page__layout">
+    <!-- Left column: forms -->
+    <form
+      class="checkout-page__form"
+      [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+      novalidate
+    >
+      <!-- Guest email — visible only when not authenticated -->
+      @if (!isAuthenticated()) {
+        <section class="checkout-section" aria-labelledby="guest-email-heading">
+          <h2 class="checkout-section__title" id="guest-email-heading">
+            Στοιχεία επικοινωνίας
+          </h2>
+          <div class="form-field">
+            <label class="form-field__label" for="guestEmail">
+              Email <span aria-hidden="true">*</span>
+            </label>
+            <input
+              pInputText
+              id="guestEmail"
+              type="email"
+              formControlName="guestEmail"
+              autocomplete="email"
+              [class.ng-invalid]="form.get('guestEmail')?.invalid && form.get('guestEmail')?.touched"
+              aria-required="true"
+            />
+            @if (form.get('guestEmail')?.errors?.['required'] && form.get('guestEmail')?.touched) {
+              <span class="form-field__error" role="alert">Το email είναι υποχρεωτικό.</span>
+            } @else if (form.get('guestEmail')?.errors?.['email'] && form.get('guestEmail')?.touched) {
+              <span class="form-field__error" role="alert">Πληκτρολογήστε έγκυρη διεύθυνση email.</span>
+            }
+          </div>
+        </section>
+      }
+
+      <!-- Shipping address -->
+      <section
+        class="checkout-section"
+        aria-labelledby="shipping-heading"
+        formGroupName="shippingAddress"
+      >
+        <h2 class="checkout-section__title" id="shipping-heading">
+          Διεύθυνση αποστολής
+        </h2>
+
+        <div class="form-field">
+          <label class="form-field__label" for="fullName">
+            Ονοματεπώνυμο <span aria-hidden="true">*</span>
+          </label>
+          <input
+            pInputText
+            id="fullName"
+            type="text"
+            formControlName="fullName"
+            autocomplete="name"
+            [class.ng-invalid]="form.get('shippingAddress.fullName')?.invalid && form.get('shippingAddress.fullName')?.touched"
+            aria-required="true"
+          />
+          @if (form.get('shippingAddress.fullName')?.errors?.['required'] && form.get('shippingAddress.fullName')?.touched) {
+            <span class="form-field__error" role="alert">Το ονοματεπώνυμο είναι υποχρεωτικό.</span>
+          }
+        </div>
+
+        <div class="form-field">
+          <label class="form-field__label" for="streetAddress">
+            Διεύθυνση <span aria-hidden="true">*</span>
+          </label>
+          <input
+            pInputText
+            id="streetAddress"
+            type="text"
+            formControlName="streetAddress"
+            autocomplete="address-line1"
+            [class.ng-invalid]="form.get('shippingAddress.streetAddress')?.invalid && form.get('shippingAddress.streetAddress')?.touched"
+            aria-required="true"
+          />
+          @if (form.get('shippingAddress.streetAddress')?.errors?.['required'] && form.get('shippingAddress.streetAddress')?.touched) {
+            <span class="form-field__error" role="alert">Η διεύθυνση είναι υποχρεωτική.</span>
+          }
+        </div>
+
+        <div class="form-field">
+          <label class="form-field__label" for="addressLine2">
+            Διεύθυνση (γραμμή 2)
+          </label>
+          <input
+            pInputText
+            id="addressLine2"
+            type="text"
+            formControlName="addressLine2"
+            autocomplete="address-line2"
+          />
+        </div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label class="form-field__label" for="city">
+              Πόλη <span aria-hidden="true">*</span>
+            </label>
+            <input
+              pInputText
+              id="city"
+              type="text"
+              formControlName="city"
+              autocomplete="address-level2"
+              [class.ng-invalid]="form.get('shippingAddress.city')?.invalid && form.get('shippingAddress.city')?.touched"
+              aria-required="true"
+            />
+            @if (form.get('shippingAddress.city')?.errors?.['required'] && form.get('shippingAddress.city')?.touched) {
+              <span class="form-field__error" role="alert">Η πόλη είναι υποχρεωτική.</span>
+            }
+          </div>
+
+          <div class="form-field">
+            <label class="form-field__label" for="postalCode">
+              ΤΚ <span aria-hidden="true">*</span>
+            </label>
+            <input
+              pInputText
+              id="postalCode"
+              type="text"
+              formControlName="postalCode"
+              autocomplete="postal-code"
+              [class.ng-invalid]="form.get('shippingAddress.postalCode')?.invalid && form.get('shippingAddress.postalCode')?.touched"
+              aria-required="true"
+            />
+            @if (form.get('shippingAddress.postalCode')?.errors?.['required'] && form.get('shippingAddress.postalCode')?.touched) {
+              <span class="form-field__error" role="alert">Ο ΤΚ είναι υποχρεωτικός.</span>
+            }
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label class="form-field__label" for="country">
+            Χώρα <span aria-hidden="true">*</span>
+          </label>
+          <input
+            pInputText
+            id="country"
+            type="text"
+            formControlName="country"
+            autocomplete="country-name"
+            [class.ng-invalid]="form.get('shippingAddress.country')?.invalid && form.get('shippingAddress.country')?.touched"
+            aria-required="true"
+          />
+          @if (form.get('shippingAddress.country')?.errors?.['required'] && form.get('shippingAddress.country')?.touched) {
+            <span class="form-field__error" role="alert">Η χώρα είναι υποχρεωτική.</span>
+          }
+        </div>
+
+        <div class="form-field">
+          <label class="form-field__label" for="phone">
+            Τηλέφωνο <span aria-hidden="true">*</span>
+          </label>
+          <input
+            pInputText
+            id="phone"
+            type="tel"
+            formControlName="phone"
+            autocomplete="tel"
+            [class.ng-invalid]="form.get('shippingAddress.phone')?.invalid && form.get('shippingAddress.phone')?.touched"
+            aria-required="true"
+          />
+          @if (form.get('shippingAddress.phone')?.errors?.['required'] && form.get('shippingAddress.phone')?.touched) {
+            <span class="form-field__error" role="alert">Το τηλέφωνο είναι υποχρεωτικό.</span>
+          }
+        </div>
+      </section>
+
+      <!-- Mock payment -->
+      <section
+        class="checkout-section"
+        aria-labelledby="payment-heading"
+        formGroupName="payment"
+      >
+        <h2 class="checkout-section__title" id="payment-heading">
+          Στοιχεία πληρωμής
+        </h2>
+        <p class="checkout-section__note">
+          Δοκιμαστική εφαρμογή — δεν απαιτείται πραγματική κάρτα.
+        </p>
+
+        <div class="form-field">
+          <label class="form-field__label" for="cardNumber">Αριθμός κάρτας</label>
+          <input
+            pInputText
+            id="cardNumber"
+            type="text"
+            formControlName="cardNumber"
+            autocomplete="cc-number"
+            placeholder="0000 0000 0000 0000"
+          />
+        </div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label class="form-field__label" for="expiry">Λήξη</label>
+            <input
+              pInputText
+              id="expiry"
+              type="text"
+              formControlName="expiry"
+              autocomplete="cc-exp"
+              placeholder="ΜΜ/ΕΕ"
+            />
+          </div>
+          <div class="form-field">
+            <label class="form-field__label" for="cvv">CVV</label>
+            <input
+              pInputText
+              id="cvv"
+              type="text"
+              formControlName="cvv"
+              autocomplete="cc-csc"
+              placeholder="123"
+            />
+          </div>
+        </div>
+      </section>
+
+      <!-- Inline error message -->
+      @if (status() === 'error') {
+        <p-message
+          severity="error"
+          [text]="error() ?? 'Παρουσιάστηκε σφάλμα. Παρακαλώ δοκιμάστε ξανά.'"
+        />
+      }
+
+      <!-- Submit -->
+      <div class="checkout-page__actions">
+        <p-button
+          type="submit"
+          label="Ολοκλήρωση παραγγελίας"
+          icon="pi pi-check"
+          iconPos="right"
+          [loading]="isSubmitting()"
+          [disabled]="isPlaceOrderDisabled()"
+          (onClick)="onSubmit()"
+        />
+      </div>
+    </form>
+
+    <!-- Right column: order summary -->
+    <aside class="checkout-summary" aria-label="Σύνοψη παραγγελίας">
+      <h2 class="checkout-section__title">Σύνοψη παραγγελίας</h2>
+
+      @if (cartItems().length === 0) {
+        <p class="checkout-summary__empty">Το καλάθι είναι άδειο.</p>
+      } @else {
+        <ul class="checkout-summary__items" aria-label="Προϊόντα">
+          @for (line of cartItems(); track line.mainProductItemId) {
+            <li class="checkout-summary__item">
+              <span class="checkout-summary__item-name">
+                {{ line.name }}
+                <span class="checkout-summary__item-qty">× {{ line.quantity }}</span>
+              </span>
+              <span class="checkout-summary__item-subtotal">
+                {{ lineSubtotal(line.salePrice, line.originalPrice, line.quantity) }}
+              </span>
+            </li>
+          }
+        </ul>
+
+        <div class="checkout-summary__total">
+          <span>Σύνολο</span>
+          <strong>{{ formatEur(cartSubtotal()) }}</strong>
+        </div>
+      }
+    </aside>
+  </div>
 </div>

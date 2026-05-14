@@ -27,7 +27,7 @@ export interface PlaceOrderCommand {
 export class PlaceOrderUseCase {
   constructor(
     private readonly ordersRepository: OrdersRepository,
-    private readonly productItemsRepository: ProductItemsRepository
+    private readonly productItemsRepository: ProductItemsRepository,
   ) {}
 
   async execute(command: PlaceOrderCommand): Promise<PlaceOrderResponseDto> {
@@ -39,18 +39,18 @@ export class PlaceOrderUseCase {
 
     for (const requestedItem of command.items) {
       const found = productItems.find(
-        (p) => p.id === requestedItem.productItemId
+        (p) => Number(p.id) === requestedItem.productItemId,
       );
       if (!found) {
         throw new NotFoundException(
-          `Product item ${requestedItem.productItemId} not found`
+          `Product item ${requestedItem.productItemId} not found`,
         );
       }
     }
 
     const orderItemsPayload = command.items.map((requestedItem) => {
       const dbItem = productItems.find(
-        (p) => p.id === requestedItem.productItemId
+        (p) => Number(p.id) === requestedItem.productItemId,
       )!;
       return {
         productItemId: requestedItem.productItemId,
@@ -64,7 +64,7 @@ export class PlaceOrderUseCase {
 
     const totalAmount = orderItemsPayload.reduce(
       (sum, item) => sum + item.salePrice * item.quantity,
-      0
+      0,
     );
 
     const shippingAddressJson = JSON.stringify(command.shippingAddress);
@@ -87,20 +87,20 @@ export class PlaceOrderUseCase {
 
   private validateIdentity(
     userId: string | null,
-    guestEmail: string | null
+    guestEmail: string | null,
   ): void {
     const hasUser = !!userId;
     const hasGuest = !!guestEmail;
 
     if (!hasUser && !hasGuest) {
       throw new BadRequestException(
-        'Either userId or guestEmail must be provided'
+        'Either userId or guestEmail must be provided',
       );
     }
 
     if (hasUser && hasGuest) {
       throw new BadRequestException(
-        'Only one of userId or guestEmail may be set — not both'
+        'Only one of userId or guestEmail may be set — not both',
       );
     }
   }
