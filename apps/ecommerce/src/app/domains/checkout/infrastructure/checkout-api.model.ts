@@ -30,3 +30,11 @@ export interface PlaceOrderResponseWire {
   totalAmount: number;
   createdAt: string;
 }
+
+/** Snapshot of a single cart line captured at order-submission time. */
+export interface ConfirmedOrderItemWire {
+  name: string | null;
+  quantity: number;
+  salePrice: number | null;
+  originalPrice: number | null;
+}

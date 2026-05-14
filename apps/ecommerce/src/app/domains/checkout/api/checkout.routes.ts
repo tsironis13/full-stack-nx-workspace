@@ -1,4 +1,4 @@
-import { emptyCartGuard } from '../application/public-api';
+import { checkoutSuccessGuard, emptyCartGuard } from '../application/public-api';
 
 export default [
   {
@@ -11,6 +11,7 @@ export default [
   },
   {
     path: 'confirmation',
+    canActivate: [checkoutSuccessGuard],
     loadComponent: () =>
       import('../feat-checkout/checkout-confirmation/checkout-confirmation.component').then(
         (m) => m.CheckoutConfirmationComponent,
