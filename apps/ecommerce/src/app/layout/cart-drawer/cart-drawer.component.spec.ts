@@ -15,7 +15,7 @@ function addItem(
   dispatcher: Dispatcher,
   mainProductItemId: number,
   name = 'Test',
-  salePrice = 5
+  salePrice = 5,
 ): void {
   dispatcher.dispatch(
     cartCatalogEvents.addFromBrowse({
@@ -25,7 +25,7 @@ function addItem(
       salePrice,
       originalPrice: null,
       primaryImageUrl: null,
-    })
+    }),
   );
 }
 
@@ -83,10 +83,13 @@ describe('CartDrawerComponent', () => {
     const fixture = createFixture();
     jest.spyOn(dispatcher, 'dispatch');
 
-    (fixture.componentInstance as unknown as { onIncrement(id: number): void }).onIncrement(5);
+    (
+      fixture.componentInstance as unknown as { onIncrement(id: number): void }
+    ).onIncrement(5);
 
     expect(dispatcher.dispatch).toHaveBeenCalledWith(
-      cartUiEvents.incrementItem({ mainProductItemId: 5 })
+      cartUiEvents.incrementItem({ mainProductItemId: 5 }),
+      { scope: 'self' },
     );
   });
 
@@ -97,10 +100,13 @@ describe('CartDrawerComponent', () => {
     const fixture = createFixture();
     jest.spyOn(dispatcher, 'dispatch');
 
-    (fixture.componentInstance as unknown as { onDecrement(id: number): void }).onDecrement(5);
+    (
+      fixture.componentInstance as unknown as { onDecrement(id: number): void }
+    ).onDecrement(5);
 
     expect(dispatcher.dispatch).toHaveBeenCalledWith(
-      cartUiEvents.decrementOrRemoveItem({ mainProductItemId: 5 })
+      cartUiEvents.decrementOrRemoveItem({ mainProductItemId: 5 }),
+      { scope: 'self' },
     );
   });
 
@@ -110,17 +116,22 @@ describe('CartDrawerComponent', () => {
     const fixture = createFixture();
     jest.spyOn(dispatcher, 'dispatch');
 
-    (fixture.componentInstance as unknown as { onRemove(id: number): void }).onRemove(7);
+    (
+      fixture.componentInstance as unknown as { onRemove(id: number): void }
+    ).onRemove(7);
 
     expect(dispatcher.dispatch).toHaveBeenCalledWith(
-      cartUiEvents.removeItem({ mainProductItemId: 7 })
+      cartUiEvents.removeItem({ mainProductItemId: 7 }),
+      { scope: 'self' },
     );
   });
 
   it('decrementOrRemoveItem at qty 1 removes the item from ACL', () => {
     addItem(dispatcher, 3);
 
-    dispatcher.dispatch(cartUiEvents.decrementOrRemoveItem({ mainProductItemId: 3 }));
+    dispatcher.dispatch(
+      cartUiEvents.decrementOrRemoveItem({ mainProductItemId: 3 }),
+    );
 
     expect(cartRead.items()).toHaveLength(0);
     expect(cartRead.cartSubtotal()).toBe(0);
