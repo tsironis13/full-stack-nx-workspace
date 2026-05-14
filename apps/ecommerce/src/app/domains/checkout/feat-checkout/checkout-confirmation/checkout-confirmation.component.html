@@ -35,6 +35,46 @@
         </div>
       </div>
 
+      @if (confirmedGuestEmail()) {
+        <div class="confirmation-page__section">
+          <h2 class="confirmation-page__section-title">Email επικοινωνίας</h2>
+          <p class="confirmation-guest-email">{{ confirmedGuestEmail() }}</p>
+        </div>
+      }
+
+      @if (confirmedItems()?.length) {
+        <div class="confirmation-page__section">
+          <h2 class="confirmation-page__section-title">Προϊόντα παραγγελίας</h2>
+          <ul class="confirmation-items" role="list">
+            @for (item of confirmedItems(); track $index) {
+              <li class="confirmation-item">
+                <span class="confirmation-item__name">{{ item.name ?? '—' }}</span>
+                <span class="confirmation-item__qty">x{{ item.quantity }}</span>
+                <span class="confirmation-item__subtotal">
+                  {{ lineSubtotal(item.salePrice, item.originalPrice, item.quantity) }}
+                </span>
+              </li>
+            }
+          </ul>
+        </div>
+      }
+
+      @if (confirmedShippingAddress()) {
+        <div class="confirmation-page__section">
+          <h2 class="confirmation-page__section-title">Διεύθυνση αποστολής</h2>
+          <address class="confirmation-address">
+            <span>{{ confirmedShippingAddress()!.fullName }}</span>
+            <span>{{ confirmedShippingAddress()!.streetAddress }}</span>
+            @if (confirmedShippingAddress()!.addressLine2) {
+              <span>{{ confirmedShippingAddress()!.addressLine2 }}</span>
+            }
+            <span>{{ confirmedShippingAddress()!.city }}, {{ confirmedShippingAddress()!.postalCode }}</span>
+            <span>{{ confirmedShippingAddress()!.country }}</span>
+            <span>{{ confirmedShippingAddress()!.phone }}</span>
+          </address>
+        </div>
+      }
+
       <div class="confirmation-page__actions">
         <p-button
           label="Συνέχεια αγορών"

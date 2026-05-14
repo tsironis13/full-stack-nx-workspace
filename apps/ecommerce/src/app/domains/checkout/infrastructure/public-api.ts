@@ -4,4 +4,5 @@ export type {
   PlaceOrderResponseWire,
   ShippingAddressWire,
   OrderItemWire,
+  ConfirmedOrderItemWire,
 } from './checkout-api.model';
