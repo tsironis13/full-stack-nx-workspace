@@ -1,9 +1,13 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  OnInit,
+} from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-
 import { ButtonModule } from 'primeng/button';
 
-import { CheckoutStore } from '../application/public-api';
+import { CheckoutStore } from '../../application/public-api';
 
 function formatEur(amount: number): string {
   return new Intl.NumberFormat('el-GR', {
