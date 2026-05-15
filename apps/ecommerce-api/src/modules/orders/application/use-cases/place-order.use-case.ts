@@ -7,6 +7,7 @@ import {
 import { OrdersRepository } from '../../domain/repositories/orders.repository';
 import { PlaceOrderResponseDto } from '../dto/place-order-response.dto';
 import { ProductItemsRepository } from '../../domain/repositories/product-items.repository';
+import { ClearCartUseCase } from '../../../cart/application/use-cases/clear-cart.use-case';
 
 export interface PlaceOrderCommand {
   userId: string | null;
@@ -28,6 +29,7 @@ export class PlaceOrderUseCase {
   constructor(
     private readonly ordersRepository: OrdersRepository,
     private readonly productItemsRepository: ProductItemsRepository,
+    private readonly clearCartUseCase: ClearCartUseCase,
   ) {}
 
   async execute(command: PlaceOrderCommand): Promise<PlaceOrderResponseDto> {
@@ -76,6 +78,10 @@ export class PlaceOrderUseCase {
       totalAmount,
       items: orderItemsPayload,
     });
+
+    if (command.userId) {
+      await this.clearCartUseCase.execute(command.userId);
+    }
 
     return {
       orderId: order.id,
