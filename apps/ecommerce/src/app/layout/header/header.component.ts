@@ -6,9 +6,9 @@ import {
   output,
   signal,
 } from '@angular/core';
-
+import { Router, RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+
 import { AuthIfDirective, AuthStore } from '@full-stack-nx-workspace/auth-web';
 
 import { CartAclReadAdapter } from '../../domains/cart/application/anti-corruption-layer';
@@ -18,15 +18,17 @@ import { CartAclReadAdapter } from '../../domains/cart/application/anti-corrupti
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ButtonModule, AuthIfDirective],
+  imports: [AuthIfDirective, ButtonModule, RouterLink],
   host: {
-    class: 'flex bg-white dark:bg-gray-900 h-20 fixed top-0 left-0 z-50 w-full',
+    class:
+      'flex bg-white dark:bg-gray-900 min-h-20 fixed top-0 left-0 z-50 w-full items-center border-b border-gray-200 dark:border-gray-700',
   },
 })
 export class HeaderComponent {
   protected readonly theme = signal<'light' | 'dark'>('light');
 
   readonly authStore = inject(AuthStore);
+  private readonly router = inject(Router);
   protected readonly cartRead = inject(CartAclReadAdapter);
 
   /** Emitted when the user clicks the cart icon so the parent shell can open the drawer. */
@@ -35,56 +37,20 @@ export class HeaderComponent {
   readonly onThemeChange = effect(() => {
     document.documentElement.classList.toggle(
       'ecommerce-app-dark',
-      this.theme() === 'dark'
+      this.theme() === 'dark',
     );
   });
 
-  public toggleTheme(): void {
+  protected toggleTheme(): void {
     this.theme.update((theme) => (theme === 'light' ? 'dark' : 'light'));
   }
 
-  public openCartDrawer(): void {
+  protected openCartDrawer(): void {
     this.cartIconClick.emit();
   }
 
-  httpClient = inject(HttpClient);
-
-  private token = signal<string | null>(null);
-
-  public login(): void {
-    this.authStore.loginWithEmailAndPassword({
-      email: 'tsiro1@hotmail.com',
-      password: 'sxtvttio',
-    });
-    // this.httpClient
-    //   .post('/api/auth/login', {
-    //     //email: 'giannis123@hotmail.com',
-    //     //password: 'fjsfljsjksdffds',
-    //     email: 'tsiro1@hotmail.com',
-    //     password: 'sxtvttio',
-    //   })
-    //   .subscribe((data: any) => {
-    //     console.log(data?.data?.session?.access_token);
-    //     this.token.set(data?.data?.session?.access_token);
-    //     //this.token.set(data.access_token);
-    //   });
-  }
-
-  public myorder(): void {
-    const header = new HttpHeaders({
-      Authorization: `Bearer ${this.token()}`,
-    });
-
-    this.httpClient
-      .post('/api/orders/myorder', { id: 1 }, { headers: header })
-      .subscribe((data) => {
-        console.log(data);
-      });
-
-    this.httpClient
-      .get('/api/auth/profile', { headers: header })
-      .subscribe((data) => {
-        console.log(data);
-      });
+  protected logout(): void {
+    this.authStore.logout();
+    void this.router.navigate(['/login']);
   }
 }

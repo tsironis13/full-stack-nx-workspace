@@ -4,8 +4,11 @@ export type LoginWithEmailAndPasswordPostDto = {
 };
 
 export type LoginResponseDto = {
-  user: AuthUserDto;
-  session: SessionDto;
+  data: {
+    user: AuthUserDto;
+    session: SessionDto;
+  };
+  error: Record<string, unknown>;
 };
 
 export type AuthUserDto = {

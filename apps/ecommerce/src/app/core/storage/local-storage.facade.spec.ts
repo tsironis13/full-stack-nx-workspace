@@ -1,7 +1,7 @@
 import { PLATFORM_ID } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
-import { LocalStorageFacade } from './local-storage.facade';
+import { LocalStorageFacade } from '@full-stack-nx-workspace/shared';
 
 describe('LocalStorageFacade', () => {
   let facade: LocalStorageFacade;

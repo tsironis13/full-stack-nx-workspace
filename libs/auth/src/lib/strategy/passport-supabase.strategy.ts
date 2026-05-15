@@ -21,14 +21,14 @@ export class SupabaseAuthStrategy extends Strategy {
     super();
     if (!options.extractor) {
       throw new Error(
-        '\n Extractor is not a function. You should provide an extractor. \n Read the docs: https://github.com/tfarras/nestjs-firebase-auth#readme'
+        '\n Extractor is not a function. You should provide an extractor. \n Read the docs: https://github.com/tfarras/nestjs-firebase-auth#readme',
       );
     }
 
     this.supabase = createClient(
       options.supabaseUrl,
       options.supabaseKey,
-      (options.supabaseOptions = {})
+      (options.supabaseOptions = {}),
     );
     this.extractor = options.extractor;
   }
@@ -36,13 +36,13 @@ export class SupabaseAuthStrategy extends Strategy {
   override authenticate(req: Request): void {
     if (!this.extractor) {
       throw new Error(
-        'Extractor is not a function. You should provide an extractor. \n Read the docs: https://github.com/tfarras/nestjs-firebase-auth#readme'
+        'Extractor is not a function. You should provide an extractor. \n Read the docs: https://github.com/tfarras/nestjs-firebase-auth#readme',
       );
     }
 
     if (!this.supabase) {
       throw new Error(
-        'Supabase client is not initialized. You should provide a supabase client. \n Read the docs: https://github.com/tfarras/nestjs-firebase-auth#readme'
+        'Supabase client is not initialized. You should provide a supabase client. \n Read the docs: https://github.com/tfarras/nestjs-firebase-auth#readme',
       );
     }
 
@@ -63,11 +63,11 @@ export class SupabaseAuthStrategy extends Strategy {
 
   async signIn(
     email: string,
-    password: string
+    password: string,
   ): Promise<AuthTokenResponsePassword> {
     if (!this.supabase) {
       throw new Error(
-        'Supabase client is not initialized. You should provide a supabase client. \n Read the docs: https://github.com/tfarras/nestjs-firebase-auth#readme'
+        'Supabase client is not initialized. You should provide a supabase client. \n Read the docs: https://github.com/tfarras/nestjs-firebase-auth#readme',
       );
     }
 
@@ -84,7 +84,7 @@ export class SupabaseAuthStrategy extends Strategy {
   }
 
   async validate(
-    payload: SupabaseAuthUser | null
+    payload: SupabaseAuthUser | null,
   ): Promise<SupabaseAuthUser | null> {
     if (!payload) {
       this.fail(UNAUTHORIZED, 401);

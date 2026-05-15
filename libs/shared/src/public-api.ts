@@ -1,3 +1,4 @@
+export { LocalStorageFacade } from './lib/storage/local-storage.facade';
 export { CardComponent } from './lib/components/card/card.component';
 export { ImageComponent } from './lib/components/image/image.component';
 export type { ImageViewModel } from './lib/components/image/image.view.model';

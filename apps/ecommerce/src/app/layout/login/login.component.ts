@@ -30,7 +30,7 @@ export class LoginComponent {
     // email: 'tsiro1@hotmail.com',
     //   password: 'sxtvttio',
     if (authUser) {
-      this.router.navigate(['/']);
+      this.router.navigate(['/catalog']);
     }
   });
 
@@ -48,6 +48,22 @@ export class LoginComponent {
 
   protected login(): void {
     const loginForm = this.authStore.loginForm();
+    // this.authStore.loginWithEmailAndPassword({
+    //   email: 'tsiro1@hotmail.com',
+    //   password: 'sxtvttio',
+    // });
+    // this.httpClient
+    //   .post('/api/auth/login', {
+    //     //email: 'giannis123@hotmail.com',
+    //     //password: 'fjsfljsjksdffds',
+    //     email: 'tsiro1@hotmail.com',
+    //     password: 'sxtvttio',
+    //   })
+    //   .subscribe((data: any) => {
+    //     console.log(data?.data?.session?.access_token);
+    //     this.token.set(data?.data?.session?.access_token);
+    //     //this.token.set(data.access_token);
+    //   });
 
     if (loginForm) {
       this.authStore.loginWithEmailAndPassword({

@@ -17,7 +17,7 @@ import {
 } from '@ngrx/signals/events';
 import { tap } from 'rxjs';
 
-import { LocalStorageFacade } from '../../../core/public-api';
+import { LocalStorageFacade } from '@full-stack-nx-workspace/shared';
 import {
   addOrMergeLines,
   CLIENT_CART_SCHEMA_VERSION,

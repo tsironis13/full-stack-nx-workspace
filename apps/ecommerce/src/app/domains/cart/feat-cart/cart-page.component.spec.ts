@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { By } from '@angular/platform-browser';
 
-import { LocalStorageFacade } from '../../../core/public-api';
+import { LocalStorageFacade } from '@full-stack-nx-workspace/shared';
 import { GuestCartStore } from '../application/public-api';
 import { CartPageComponent } from './cart-page.component';
 

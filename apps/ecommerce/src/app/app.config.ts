@@ -15,14 +15,12 @@ import { appRoutes } from './app.routes';
 import { appTheme } from '../themes/app-theme';
 import {
   AUTH_API_URL_TOKEN,
-  AuthDataService,
   AuthStore,
   AuthApiService,
 } from '@full-stack-nx-workspace/auth-web';
 
 const provideAuthServices = () => [
   AuthStore,
-  AuthDataService,
   AuthApiService,
   { provide: AUTH_API_URL_TOKEN, useValue: '/api/auth' },
 ];

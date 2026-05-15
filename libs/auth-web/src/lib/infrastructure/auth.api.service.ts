@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { inject, Injectable, InjectionToken } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -26,7 +26,11 @@ export class AuthApiService {
     );
   }
 
-  public getCurrentAuthUser(): Observable<AuthUserDto> {
-    return this.#http.get<AuthUserDto>(`${this.#authApiUrl}/me`);
+  public getCurrentAuthUser(accessToken?: string): Observable<AuthUserDto> {
+    const headers =
+      accessToken !== undefined && accessToken !== ''
+        ? new HttpHeaders({ Authorization: `Bearer ${accessToken}` })
+        : undefined;
+    return this.#http.get<AuthUserDto>(`${this.#authApiUrl}/me`, { headers });
   }
 }

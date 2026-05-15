@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { Dispatcher } from '@ngrx/signals/events';
 
-import { LocalStorageFacade } from '../../core/public-api';
+import { LocalStorageFacade } from '@full-stack-nx-workspace/shared';
 import {
   CartAclReadAdapter,
   cartCatalogEvents,

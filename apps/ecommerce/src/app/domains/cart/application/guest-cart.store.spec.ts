@@ -2,7 +2,7 @@ import { PLATFORM_ID } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Dispatcher } from '@ngrx/signals/events';
 
-import { LocalStorageFacade } from '../../../core/public-api';
+import { LocalStorageFacade } from '@full-stack-nx-workspace/shared';
 import {
   CLIENT_CART_SCHEMA_VERSION,
   GUEST_CART_LOCAL_STORAGE_KEY,
