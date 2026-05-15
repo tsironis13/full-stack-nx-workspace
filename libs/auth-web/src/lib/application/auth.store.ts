@@ -169,7 +169,7 @@ export const AuthStore = signalStore(
             );
 
           const persisted = readPersistedAuth(store.storage);
-          console.log(persisted);
+
           if (!persisted?.session.accessToken) {
             return attemptLogin$;
           }
