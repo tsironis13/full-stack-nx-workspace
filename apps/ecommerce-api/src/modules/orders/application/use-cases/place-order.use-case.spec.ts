@@ -34,7 +34,24 @@ function makeOrder(overrides: Partial<ReturnType<typeof buildOrder>> = {}) {
   return buildOrder(overrides);
 }
 
-function buildOrder(overrides: Record<string, any> = {}) {
+function buildOrder(overrides: Record<string, unknown> = {}): {
+  id: number;
+  userId: string | null;
+  guestEmail: string;
+  status: string;
+  shippingAddress: typeof BASE_SHIPPING;
+  paymentStatus: string;
+  totalAmount: number;
+  createdAt: Date;
+  items: {
+    productItemId: number;
+    productName: string;
+    productCode: string;
+    salePrice: number;
+    originalPrice: number;
+    quantity: number;
+  }[];
+} {
   return {
     id: 100,
     userId: null,
@@ -97,7 +114,7 @@ describe('PlaceOrderUseCase', () => {
               originalPrice: PRODUCT_ITEM_1.originalPrice,
             }),
           ]),
-        })
+        }),
       );
     });
   });
@@ -115,7 +132,7 @@ describe('PlaceOrderUseCase', () => {
       });
 
       expect(createOrder).toHaveBeenCalledWith(
-        expect.objectContaining({ totalAmount: 40.0 })
+        expect.objectContaining({ totalAmount: 40.0 }),
       );
     });
 
@@ -136,7 +153,7 @@ describe('PlaceOrderUseCase', () => {
       });
 
       expect(createOrder).toHaveBeenCalledWith(
-        expect.objectContaining({ totalAmount: expectedTotal })
+        expect.objectContaining({ totalAmount: expectedTotal }),
       );
     });
   });
@@ -149,7 +166,7 @@ describe('PlaceOrderUseCase', () => {
           guestEmail: null,
           shippingAddress: BASE_SHIPPING,
           items: [{ productItemId: 10, quantity: 1 }],
-        })
+        }),
       ).rejects.toBeInstanceOf(BadRequestException);
 
       expect(findByIds).not.toHaveBeenCalled();
@@ -162,7 +179,7 @@ describe('PlaceOrderUseCase', () => {
           guestEmail: 'guest@example.com',
           shippingAddress: BASE_SHIPPING,
           items: [{ productItemId: 10, quantity: 1 }],
-        })
+        }),
       ).rejects.toBeInstanceOf(BadRequestException);
 
       expect(findByIds).not.toHaveBeenCalled();
@@ -171,7 +188,7 @@ describe('PlaceOrderUseCase', () => {
     it('accepts a guest order (userId null, guestEmail set)', async () => {
       findByIds.mockResolvedValue([PRODUCT_ITEM_1]);
       createOrder.mockResolvedValue(
-        makeOrder({ userId: null, guestEmail: 'guest@example.com' })
+        makeOrder({ userId: null, guestEmail: 'guest@example.com' }),
       );
 
       const result = await useCase.execute({
@@ -182,7 +199,10 @@ describe('PlaceOrderUseCase', () => {
       });
 
       expect(createOrder).toHaveBeenCalledWith(
-        expect.objectContaining({ userId: null, guestEmail: 'guest@example.com' })
+        expect.objectContaining({
+          userId: null,
+          guestEmail: 'guest@example.com',
+        }),
       );
       expect(result.status).toBe('confirmed');
     });
@@ -190,7 +210,7 @@ describe('PlaceOrderUseCase', () => {
     it('accepts an authenticated order (userId set, guestEmail null)', async () => {
       findByIds.mockResolvedValue([PRODUCT_ITEM_1]);
       createOrder.mockResolvedValue(
-        makeOrder({ userId: 'user-uuid-123', guestEmail: null })
+        makeOrder({ userId: 'user-uuid-123', guestEmail: undefined }),
       );
 
       const result = await useCase.execute({
@@ -201,7 +221,7 @@ describe('PlaceOrderUseCase', () => {
       });
 
       expect(createOrder).toHaveBeenCalledWith(
-        expect.objectContaining({ userId: 'user-uuid-123', guestEmail: null })
+        expect.objectContaining({ userId: 'user-uuid-123', guestEmail: null }),
       );
       expect(result.orderId).toBe(100);
     });
@@ -217,7 +237,7 @@ describe('PlaceOrderUseCase', () => {
           guestEmail: 'guest@example.com',
           shippingAddress: BASE_SHIPPING,
           items: [{ productItemId: 999, quantity: 1 }],
-        })
+        }),
       ).rejects.toBeInstanceOf(NotFoundException);
 
       expect(createOrder).not.toHaveBeenCalled();
@@ -235,7 +255,7 @@ describe('PlaceOrderUseCase', () => {
             { productItemId: 10, quantity: 1 },
             { productItemId: 999, quantity: 1 },
           ],
-        })
+        }),
       ).rejects.toBeInstanceOf(NotFoundException);
 
       expect(createOrder).not.toHaveBeenCalled();
@@ -247,7 +267,7 @@ describe('PlaceOrderUseCase', () => {
       findByIds.mockResolvedValue([PRODUCT_ITEM_1]);
       const createdAt = new Date('2026-05-13T10:00:00.000Z');
       createOrder.mockResolvedValue(
-        makeOrder({ id: 42, totalAmount: 20.0, createdAt })
+        makeOrder({ id: 42, totalAmount: 20.0, createdAt }),
       );
 
       const result = await useCase.execute({

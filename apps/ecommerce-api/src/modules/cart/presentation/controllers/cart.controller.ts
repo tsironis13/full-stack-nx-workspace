@@ -32,13 +32,16 @@ export class CartController {
   ) {}
 
   @Get()
-  getCart(@Request() req: any) {
+  getCart(@Request() req: { user: { id: string } }) {
     return this.getCartUseCase.execute(req.user.id);
   }
 
   @Post('items')
   @HttpCode(HttpStatus.OK)
-  addItem(@Body() dto: AddCartItemDto, @Request() req: any) {
+  addItem(
+    @Body() dto: AddCartItemDto,
+    @Request() req: { user: { id: string } },
+  ) {
     return this.addCartItemUseCase.execute({
       userId: req.user.id,
       productItemId: dto.productItemId,
@@ -50,7 +53,7 @@ export class CartController {
   updateItem(
     @Param('cartItemId', ParseIntPipe) cartItemId: number,
     @Body() dto: UpdateCartItemDto,
-    @Request() req: any,
+    @Request() req: { user: { id: string } },
   ) {
     return this.updateCartItemUseCase.execute({
       userId: req.user.id,
@@ -62,7 +65,7 @@ export class CartController {
   @Delete('items/:cartItemId')
   removeItem(
     @Param('cartItemId', ParseIntPipe) cartItemId: number,
-    @Request() req: any,
+    @Request() req: { user: { id: string } },
   ) {
     return this.removeCartItemUseCase.execute({
       userId: req.user.id,
