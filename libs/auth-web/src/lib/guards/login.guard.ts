@@ -8,6 +8,6 @@ export const loginGuard = () => {
   const router = inject(Router);
 
   return auth.authUser()
-    ? router.navigate(['/']) // redirect authenticated users
+    ? router.navigate(['/catalog']) // redirect authenticated users
     : true;
 };
