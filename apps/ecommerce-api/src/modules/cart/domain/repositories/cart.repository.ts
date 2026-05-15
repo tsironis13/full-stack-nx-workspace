@@ -22,4 +22,15 @@ export abstract class CartRepository {
     userId: string;
     cartItemId: number;
   }): Promise<Cart>;
+
+  abstract mergeItems(params: {
+    userId: string;
+    items: Array<{
+      productItemId: number;
+      quantity: number;
+      capturedSalePrice: number;
+      capturedName: string;
+      capturedImageUrl?: string | null;
+    }>;
+  }): Promise<Cart>;
 }
