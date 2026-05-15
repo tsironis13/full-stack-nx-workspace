@@ -669,6 +669,9 @@ Avoid:
 - Lowering quantity past one removes the **Cart Item**—the storefront does not retain zero-quantity lines
 - When adding the same **Product Item** again merges quantities into one **Cart Item**, indicative presentation for that line (including captured price and primary image shown in the **Cart**) **refreshes** from that add—the latest storefront interaction replaces the older snapshot on that row
 - Amounts shown for **Cart Items** in the storefront reflect the last captured offer for each line until **Checkout**; totals become authoritative only when **Checkout** establishes the **Order**
+- A **Cart Item** whose **Product Item** has been archived is flagged **unavailable** — it is returned in the Cart response but blocks **Checkout** until removed; it is never silently dropped
+- When the **Sale Price** of a **Product Item** changes after it was added, both the stored **captured price** and the live **current price** are returned in the Cart response; the storefront may surface a price-changed indicator but the **captured price** is display-only — **Checkout** always reads the authoritative price from the database
+- On logout, the guest Cart is reset to empty; items from a **Registered User** session do not carry over to a subsequent anonymous session
 
 ---
 
