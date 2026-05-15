@@ -127,6 +127,62 @@ export class DrizzleCartRepository implements CartRepository {
     return this.enrichCart(cart.id, params.userId);
   }
 
+  async mergeItems(params: {
+    userId: string;
+    items: Array<{
+      productItemId: number;
+      quantity: number;
+      capturedSalePrice: number;
+      capturedName: string;
+      capturedImageUrl?: string | null;
+    }>;
+  }): Promise<Cart> {
+    const cart = await this.ensureCart(params.userId);
+
+    for (const item of params.items) {
+      const [existing] = await this.drizzle.db
+        .select()
+        .from(cartItems)
+        .where(
+          and(
+            eq(cartItems.cartId, cart.id),
+            eq(cartItems.productItemId, item.productItemId),
+          ),
+        );
+
+      if (existing) {
+        await this.drizzle.db
+          .update(cartItems)
+          .set({
+            quantity: existing.quantity + item.quantity,
+            capturedSalePrice: item.capturedSalePrice,
+            capturedName: item.capturedName,
+            capturedImageUrl: item.capturedImageUrl ?? null,
+            updatedAt: new Date(),
+          })
+          .where(eq(cartItems.id, existing.id));
+      } else {
+        await this.drizzle.db.insert(cartItems).values({
+          cartId: cart.id,
+          productItemId: item.productItemId,
+          quantity: item.quantity,
+          capturedSalePrice: item.capturedSalePrice,
+          capturedName: item.capturedName,
+          capturedImageUrl: item.capturedImageUrl ?? null,
+        });
+      }
+    }
+
+    if (params.items.length > 0) {
+      await this.drizzle.db
+        .update(carts)
+        .set({ updatedAt: new Date() })
+        .where(eq(carts.id, cart.id));
+    }
+
+    return this.enrichCart(cart.id, params.userId);
+  }
+
   private async ensureCart(userId: string): Promise<{ id: number }> {
     const [existing] = await this.drizzle.db
       .select({ id: carts.id })
