@@ -35,5 +35,4 @@ export abstract class CartRepository {
       capturedImageUrl?: string | null;
     }>;
   }): Promise<Cart>;
-  abstract clearItemsByUserId(userId: string): Promise<void>;
 }

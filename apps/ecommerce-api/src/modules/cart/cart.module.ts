@@ -9,7 +9,6 @@ import { UpdateCartItemUseCase } from './application/use-cases/update-cart-item.
 import { RemoveCartItemUseCase } from './application/use-cases/remove-cart-item.use-case';
 import { ClearCartUseCase } from './application/use-cases/clear-cart.use-case';
 import { MergeCartUseCase } from './application/use-cases/merge-cart.use-case';
-import { ClearCartUseCase } from './application/use-cases/clear-cart.use-case';
 import { CartRepository } from './domain/repositories/cart.repository';
 import { ProductItemSnapshotProvider } from './application/use-cases/add-cart-item.use-case';
 import { ProductItemExistenceChecker } from './application/use-cases/merge-cart.use-case';
