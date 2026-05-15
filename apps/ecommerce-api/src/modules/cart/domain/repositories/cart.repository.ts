@@ -24,4 +24,15 @@ export abstract class CartRepository {
   }): Promise<Cart>;
 
   abstract clearItemsByUserId(userId: string): Promise<void>;
+
+  abstract mergeItems(params: {
+    userId: string;
+    items: Array<{
+      productItemId: number;
+      quantity: number;
+      capturedSalePrice: number;
+      capturedName: string;
+      capturedImageUrl?: string | null;
+    }>;
+  }): Promise<Cart>;
 }

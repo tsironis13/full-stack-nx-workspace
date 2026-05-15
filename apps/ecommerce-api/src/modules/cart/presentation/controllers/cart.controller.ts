@@ -17,8 +17,10 @@ import { GetCartUseCase } from '../../application/use-cases/get-cart.use-case';
 import { AddCartItemUseCase } from '../../application/use-cases/add-cart-item.use-case';
 import { UpdateCartItemUseCase } from '../../application/use-cases/update-cart-item.use-case';
 import { RemoveCartItemUseCase } from '../../application/use-cases/remove-cart-item.use-case';
+import { MergeCartUseCase } from '../../application/use-cases/merge-cart.use-case';
 import { AddCartItemDto } from '../dto/add-cart-item.dto';
 import { UpdateCartItemDto } from '../dto/update-cart-item.dto';
+import { MergeCartDto } from '../dto/merge-cart.dto';
 import { SupabaseAuthGuard } from '@full-stack-nx-workspace/auth';
 
 @UseGuards(SupabaseAuthGuard)
@@ -29,6 +31,7 @@ export class CartController {
     private readonly addCartItemUseCase: AddCartItemUseCase,
     private readonly updateCartItemUseCase: UpdateCartItemUseCase,
     private readonly removeCartItemUseCase: RemoveCartItemUseCase,
+    private readonly mergeCartUseCase: MergeCartUseCase,
   ) {}
 
   @Get()
@@ -70,6 +73,24 @@ export class CartController {
     return this.removeCartItemUseCase.execute({
       userId: req.user.id,
       cartItemId,
+    });
+  }
+
+  @Post('merge')
+  @HttpCode(HttpStatus.OK)
+  merge(
+    @Body() dto: MergeCartDto,
+    @Request() req: { user: { id: string } },
+  ) {
+    return this.mergeCartUseCase.execute({
+      userId: req.user.id,
+      items: dto.items.map((item) => ({
+        productItemId: item.productItemId,
+        quantity: item.quantity,
+        capturedSalePrice: item.capturedSalePrice,
+        capturedName: item.capturedName,
+        capturedImageUrl: item.capturedImageUrl ?? null,
+      })),
     });
   }
 }

@@ -8,10 +8,13 @@ import { AddCartItemUseCase } from './application/use-cases/add-cart-item.use-ca
 import { UpdateCartItemUseCase } from './application/use-cases/update-cart-item.use-case';
 import { RemoveCartItemUseCase } from './application/use-cases/remove-cart-item.use-case';
 import { ClearCartUseCase } from './application/use-cases/clear-cart.use-case';
+import { MergeCartUseCase } from './application/use-cases/merge-cart.use-case';
 import { CartRepository } from './domain/repositories/cart.repository';
 import { ProductItemSnapshotProvider } from './application/use-cases/add-cart-item.use-case';
+import { ProductItemExistenceChecker } from './application/use-cases/merge-cart.use-case';
 import { DrizzleCartRepository } from './infrastructure/drizzle-cart.repository';
 import { DrizzleProductItemSnapshotProvider } from './infrastructure/drizzle-product-item-snapshot.provider';
+import { DrizzleProductItemExistenceChecker } from './infrastructure/drizzle-product-item-existence-checker';
 
 @Module({
   imports: [SupabaseAuthModule],
@@ -22,6 +25,7 @@ import { DrizzleProductItemSnapshotProvider } from './infrastructure/drizzle-pro
     UpdateCartItemUseCase,
     RemoveCartItemUseCase,
     ClearCartUseCase,
+    MergeCartUseCase,
     {
       provide: CartRepository,
       useClass: DrizzleCartRepository,
@@ -29,6 +33,10 @@ import { DrizzleProductItemSnapshotProvider } from './infrastructure/drizzle-pro
     {
       provide: ProductItemSnapshotProvider,
       useClass: DrizzleProductItemSnapshotProvider,
+    },
+    {
+      provide: ProductItemExistenceChecker,
+      useClass: DrizzleProductItemExistenceChecker,
     },
   ],
   exports: [ClearCartUseCase],
