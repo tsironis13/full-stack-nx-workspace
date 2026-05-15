@@ -22,4 +22,6 @@ export abstract class CartRepository {
     userId: string;
     cartItemId: number;
   }): Promise<Cart>;
+
+  abstract clearItemsByUserId(userId: string): Promise<void>;
 }

@@ -4,6 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PlaceOrderUseCase, PlaceOrderCommand } from './place-order.use-case';
 import { OrdersRepository } from '../../domain/repositories/orders.repository';
 import { ProductItemsRepository } from '../../domain/repositories/product-items.repository';
+import { ClearCartUseCase } from '../../../cart/application/use-cases/clear-cart.use-case';
 
 const BASE_SHIPPING = {
   fullName: 'John Doe',
@@ -70,10 +71,12 @@ describe('PlaceOrderUseCase', () => {
   let useCase: PlaceOrderUseCase;
   const findByIds = jest.fn();
   const createOrder = jest.fn();
+  const clearCartExecute = jest.fn();
 
   beforeEach(async () => {
     findByIds.mockReset();
     createOrder.mockReset();
+    clearCartExecute.mockReset();
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -85,6 +88,10 @@ describe('PlaceOrderUseCase', () => {
         {
           provide: ProductItemsRepository,
           useValue: { findByIds },
+        },
+        {
+          provide: ClearCartUseCase,
+          useValue: { execute: clearCartExecute },
         },
       ],
     }).compile();
@@ -259,6 +266,42 @@ describe('PlaceOrderUseCase', () => {
       ).rejects.toBeInstanceOf(NotFoundException);
 
       expect(createOrder).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('ClearCartUseCase integration', () => {
+    it('calls ClearCartUseCase.execute with userId after a successful registered-user order', async () => {
+      findByIds.mockResolvedValue([PRODUCT_ITEM_1]);
+      createOrder.mockResolvedValue(
+        makeOrder({ userId: 'user-uuid-123', guestEmail: undefined }),
+      );
+      clearCartExecute.mockResolvedValue(undefined);
+
+      await useCase.execute({
+        userId: 'user-uuid-123',
+        guestEmail: null,
+        shippingAddress: BASE_SHIPPING,
+        items: [{ productItemId: 10, quantity: 1 }],
+      });
+
+      expect(clearCartExecute).toHaveBeenCalledTimes(1);
+      expect(clearCartExecute).toHaveBeenCalledWith('user-uuid-123');
+    });
+
+    it('does NOT call ClearCartUseCase.execute for a guest checkout', async () => {
+      findByIds.mockResolvedValue([PRODUCT_ITEM_1]);
+      createOrder.mockResolvedValue(
+        makeOrder({ userId: null, guestEmail: 'guest@example.com' }),
+      );
+
+      await useCase.execute({
+        userId: null,
+        guestEmail: 'guest@example.com',
+        shippingAddress: BASE_SHIPPING,
+        items: [{ productItemId: 10, quantity: 1 }],
+      });
+
+      expect(clearCartExecute).not.toHaveBeenCalled();
     });
   });
 

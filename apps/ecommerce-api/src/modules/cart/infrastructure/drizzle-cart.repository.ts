@@ -127,6 +127,21 @@ export class DrizzleCartRepository implements CartRepository {
     return this.enrichCart(cart.id, params.userId);
   }
 
+  async clearItemsByUserId(userId: string): Promise<void> {
+    const [cart] = await this.drizzle.db
+      .select({ id: carts.id })
+      .from(carts)
+      .where(eq(carts.userId, userId));
+
+    if (!cart) {
+      return;
+    }
+
+    await this.drizzle.db
+      .delete(cartItems)
+      .where(eq(cartItems.cartId, cart.id));
+  }
+
   private async ensureCart(userId: string): Promise<{ id: number }> {
     const [existing] = await this.drizzle.db
       .select({ id: carts.id })

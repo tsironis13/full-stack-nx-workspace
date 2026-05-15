@@ -7,6 +7,7 @@ import { GetCartUseCase } from './application/use-cases/get-cart.use-case';
 import { AddCartItemUseCase } from './application/use-cases/add-cart-item.use-case';
 import { UpdateCartItemUseCase } from './application/use-cases/update-cart-item.use-case';
 import { RemoveCartItemUseCase } from './application/use-cases/remove-cart-item.use-case';
+import { ClearCartUseCase } from './application/use-cases/clear-cart.use-case';
 import { CartRepository } from './domain/repositories/cart.repository';
 import { ProductItemSnapshotProvider } from './application/use-cases/add-cart-item.use-case';
 import { DrizzleCartRepository } from './infrastructure/drizzle-cart.repository';
@@ -20,6 +21,7 @@ import { DrizzleProductItemSnapshotProvider } from './infrastructure/drizzle-pro
     AddCartItemUseCase,
     UpdateCartItemUseCase,
     RemoveCartItemUseCase,
+    ClearCartUseCase,
     {
       provide: CartRepository,
       useClass: DrizzleCartRepository,
@@ -29,5 +31,6 @@ import { DrizzleProductItemSnapshotProvider } from './infrastructure/drizzle-pro
       useClass: DrizzleProductItemSnapshotProvider,
     },
   ],
+  exports: [ClearCartUseCase],
 })
 export class CartModule {}
