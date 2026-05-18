@@ -1,6 +1,11 @@
-import type { CatalogBrowseCartAddInput, CatalogCartLineSnapshot } from './cart.models';
+import type {
+  CatalogBrowseCartAddInput,
+  CatalogCartLineSnapshot,
+} from './cart.models';
 
-function snapshotFromRow(row: CatalogBrowseCartAddInput): Omit<CatalogCartLineSnapshot, 'quantity'> {
+function snapshotFromRow(
+  row: CatalogBrowseCartAddInput,
+): Omit<CatalogCartLineSnapshot, 'quantity'> {
   return {
     productId: Number(row.productId),
     mainProductItemId: Number(row.mainProductItemId),
@@ -15,11 +20,13 @@ function snapshotFromRow(row: CatalogBrowseCartAddInput): Omit<CatalogCartLineSn
 export function addOrMergeLines(
   lines: CatalogCartLineSnapshot[],
   row: CatalogBrowseCartAddInput,
-  addQty: number
+  addQty: number,
 ): CatalogCartLineSnapshot[] {
   const safeAdd = Math.max(1, Math.trunc(addQty));
   const snap = snapshotFromRow(row);
-  const idx = lines.findIndex((l) => l.mainProductItemId === row.mainProductItemId);
+  const idx = lines.findIndex(
+    (l) => l.mainProductItemId === row.mainProductItemId,
+  );
   if (idx === -1) {
     return [...lines, { ...snap, quantity: safeAdd }];
   }
@@ -28,22 +35,25 @@ export function addOrMergeLines(
     ...snap,
     quantity: prev.quantity + safeAdd,
   };
+
   return [...lines.slice(0, idx), refreshed, ...lines.slice(idx + 1)];
 }
 
 export function incrementLineQuantity(
   lines: CatalogCartLineSnapshot[],
-  mainProductItemId: number
+  mainProductItemId: number,
 ): CatalogCartLineSnapshot[] {
   return lines.map((l) =>
-    l.mainProductItemId === mainProductItemId ? { ...l, quantity: l.quantity + 1 } : l
+    l.mainProductItemId === mainProductItemId
+      ? { ...l, quantity: l.quantity + 1 }
+      : l,
   );
 }
 
 /** Decrement by 1; at quantity 1 the **Cart Item** is removed (no zero-quantity lines). */
 export function decrementLineQuantityOrRemove(
   lines: CatalogCartLineSnapshot[],
-  mainProductItemId: number
+  mainProductItemId: number,
 ): CatalogCartLineSnapshot[] {
   return lines.flatMap((l) => {
     if (l.mainProductItemId !== mainProductItemId) {
@@ -58,7 +68,7 @@ export function decrementLineQuantityOrRemove(
 
 export function removeLineByMainProductItemId(
   lines: CatalogCartLineSnapshot[],
-  mainProductItemId: number
+  mainProductItemId: number,
 ): CatalogCartLineSnapshot[] {
   return lines.filter((l) => l.mainProductItemId !== mainProductItemId);
 }

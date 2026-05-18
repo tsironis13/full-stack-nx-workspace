@@ -1,2 +1,2 @@
 export { CartApiService } from './cart-api.service';
-export type { CartApiResponseModel, CartItemApiModel } from './cart-api.model';
+export type { CartApiResponseModel, CartItemApiModel, MergeCartItemDto } from './cart-api.model';

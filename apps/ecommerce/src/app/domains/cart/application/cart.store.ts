@@ -21,7 +21,6 @@ import {
 } from '@ngrx/signals/events';
 import { tapResponse } from '@ngrx/operators';
 import {
-  catchError,
   distinctUntilChanged,
   EMPTY,
   filter,
@@ -42,7 +41,6 @@ import {
 import {
   addOrMergeLines,
   CLIENT_CART_SCHEMA_VERSION,
-  //type CatalogBrowseCartAddInput,
   type CatalogCartLineSnapshot,
   type ClientCartEnvelopeV1,
   decrementLineQuantityOrRemove,
@@ -133,6 +131,19 @@ function is401(err: unknown): boolean {
   return err instanceof HttpErrorResponse && err.status === 401;
 }
 
+function patchCartState(store: object, res: CartApiResponseModel): void {
+  patchState(store as never, {
+    ...mapCartResponse(res),
+    pendingMainProductItemId: null,
+  });
+}
+
+function absorbOrSetError(store: object, err: unknown, message: string): void {
+  if (!is401(err)) {
+    patchState(store as never, setError(message));
+  }
+}
+
 function handleApiError(store: object, err: unknown): void {
   if (is401(err)) {
     patchState(
@@ -192,20 +203,14 @@ export const CartStore = signalStore(
               capturedImageUrl: item.primaryImageUrl,
             }));
             return store.cartApiService.mergeCart(mergePayload).pipe(
-              tap((res) => {
-                patchState(store, {
-                  ...mapCartResponse(res),
-                  pendingMainProductItemId: null,
-                });
-                store.storage.remove(GUEST_CART_LOCAL_STORAGE_KEY);
-              }),
-              catchError((err) => {
-                // 401: absorb — AuthStore owns the session lifecycle
-                if (!is401(err)) {
-                  patchState(store, setError('Failed to merge cart'));
-                }
+              tapResponse({
+                next: (res) => {
+                  patchCartState(store, res);
+                  store.storage.remove(GUEST_CART_LOCAL_STORAGE_KEY);
+                },
                 // localStorage guest cart is intentionally left intact on failure
-                return EMPTY;
+                error: (err) =>
+                  absorbOrSetError(store, err, 'Failed to merge cart'),
               }),
             );
           }
@@ -213,18 +218,10 @@ export const CartStore = signalStore(
           // empty guest cart → hydrate from server
           if (guestCart.length === 0) {
             return store.cartApiService.getCart().pipe(
-              tap((res) =>
-                patchState(store, {
-                  ...mapCartResponse(res),
-                  pendingMainProductItemId: null,
-                }),
-              ),
-              catchError((err) => {
-                // 401: absorb — AuthStore owns the session lifecycle
-                if (!is401(err)) {
-                  patchState(store, setError('Failed to load cart'));
-                }
-                return EMPTY;
+              tapResponse({
+                next: (res) => patchCartState(store, res),
+                error: (err) =>
+                  absorbOrSetError(store, err, 'Failed to load cart'),
               }),
             );
           }
@@ -281,44 +278,47 @@ export const CartStore = signalStore(
       ),
     ),
 
-    decrementLine(mainProductItemId: number) {
-      if (!store.authStore.isAuthenticated()) {
-        patchState(store, (s) => ({
-          items: decrementLineQuantityOrRemove(s.items, mainProductItemId),
-        }));
-        persistItems(store.storage, store.platformId, store.items());
-        return;
-      }
-      const cartItemId = store.cartItemIdMap()[mainProductItemId];
-      const currentQty =
-        store.items().find((i) => i.mainProductItemId === mainProductItemId)
-          ?.quantity ?? 0;
-      if (cartItemId === undefined) return;
-      patchState(store, {
-        ...setPending(),
-        pendingMainProductItemId: mainProductItemId,
-      });
-      const apiCall$ =
-        currentQty <= 1
-          ? store.cartApiService.removeItem(cartItemId)
-          : store.cartApiService.updateItem(cartItemId, currentQty - 1);
-      apiCall$
-        .pipe(
-          tapResponse({
-            next: (res) =>
-              patchState(
-                store,
-                {
-                  ...mapCartResponse(res),
-                  pendingMainProductItemId: null,
-                },
-                setFulfilled(),
-              ),
-            error: (err) => handleApiError(store, err),
-          }),
-        )
-        .subscribe();
-    },
+    decrementLine: rxMethod<number>(
+      pipe(
+        switchMap((mainProductItemId) => {
+          if (!store.authStore.isAuthenticated()) {
+            patchState(store, (s) => ({
+              items: decrementLineQuantityOrRemove(s.items, mainProductItemId),
+            }));
+            persistItems(store.storage, store.platformId, store.items());
+            return EMPTY;
+          }
+          const cartItemId = store.cartItemIdMap()[mainProductItemId];
+          const currentQty =
+            store.items().find((i) => i.mainProductItemId === mainProductItemId)
+              ?.quantity ?? 0;
+          if (cartItemId === undefined) return EMPTY;
+          patchState(store, {
+            ...setPending(),
+            pendingMainProductItemId: mainProductItemId,
+          });
+          const apiCall$ =
+            currentQty <= 1
+              ? store.cartApiService.removeItem(cartItemId)
+              : store.cartApiService.updateItem(cartItemId, currentQty - 1);
+
+          return apiCall$.pipe(
+            tapResponse({
+              next: (res) =>
+                patchState(
+                  store,
+                  {
+                    ...mapCartResponse(res),
+                    pendingMainProductItemId: null,
+                  },
+                  setFulfilled(),
+                ),
+              error: (err) => handleApiError(store, err),
+            }),
+          );
+        }),
+      ),
+    ),
 
     removeLine: rxMethod<number>(
       pipe(
@@ -380,17 +380,19 @@ export const CartStore = signalStore(
       }),
     ),
     /** Guest: decrementItem → decrement local state */
-    guestDecrementItem$: events.on(cartCatalogEvents.decrementItem).pipe(
-      filter(() => !store.authStore.isAuthenticated()),
-      tap(({ payload }) => {
-        patchState(store, {
-          items: decrementLineQuantityOrRemove(
-            store.items(),
-            payload.mainProductItemId,
-          ),
-        });
-      }),
-    ),
+    guestDecrementItem$: events
+      .on(cartCatalogEvents.decrementItem, cartUiEvents.decrementOrRemoveItem)
+      .pipe(
+        filter(() => !store.authStore.isAuthenticated()),
+        tap(({ payload }) => {
+          patchState(store, {
+            items: decrementLineQuantityOrRemove(
+              store.items(),
+              payload.mainProductItemId,
+            ),
+          });
+        }),
+      ),
 
     /** Guest: incrementItem → increment local state */
     guestIncrementItem$: events.on(cartUiEvents.incrementItem).pipe(
@@ -404,21 +406,6 @@ export const CartStore = signalStore(
         });
       }),
     ),
-
-    /** Guest: decrementOrRemoveItem → decrement or remove local state */
-    guestDecrementOrRemoveItem$: events
-      .on(cartUiEvents.decrementOrRemoveItem)
-      .pipe(
-        filter(() => !store.authStore.isAuthenticated()),
-        tap(({ payload }) => {
-          patchState(store, {
-            items: decrementLineQuantityOrRemove(
-              store.items(),
-              payload.mainProductItemId,
-            ),
-          });
-        }),
-      ),
 
     /** Guest: removeItem → remove local state */
     guestRemoveItem$: events.on(cartUiEvents.removeItem).pipe(
@@ -462,19 +449,17 @@ export const CartStore = signalStore(
         return store.cartApiService
           .addItem({ productItemId: payload.mainProductItemId, quantity: 1 })
           .pipe(
-            tap((res) =>
-              patchState(
-                store,
-                {
-                  ...mapCartResponse(res),
-                  pendingMainProductItemId: null,
-                },
-                setFulfilled(),
-              ),
-            ),
-            catchError((err) => {
-              handleApiError(store, err);
-              return EMPTY;
+            tapResponse({
+              next: (res) =>
+                patchState(
+                  store,
+                  {
+                    ...mapCartResponse(res),
+                    pendingMainProductItemId: null,
+                  },
+                  setFulfilled(),
+                ),
+              error: (err) => handleApiError(store, err),
             }),
           );
       }),
@@ -483,38 +468,7 @@ export const CartStore = signalStore(
     /** Auth: decrementItem → PATCH qty-1 or DELETE when qty=1 */
     authDecrementItem$: events.on(cartCatalogEvents.decrementItem).pipe(
       filter(() => store.authStore.isAuthenticated()),
-      switchMap(({ payload }) => {
-        const { mainProductItemId } = payload;
-        const cartItemId = store.cartItemIdMap()[mainProductItemId];
-        const currentQty =
-          store.items().find((i) => i.mainProductItemId === mainProductItemId)
-            ?.quantity ?? 0;
-        if (cartItemId === undefined) return EMPTY;
-        patchState(store, {
-          ...setPending(),
-          pendingMainProductItemId: mainProductItemId,
-        });
-        const apiCall$ =
-          currentQty <= 1
-            ? store.cartApiService.removeItem(cartItemId)
-            : store.cartApiService.updateItem(cartItemId, currentQty - 1);
-        return apiCall$.pipe(
-          tap((res) =>
-            patchState(
-              store,
-              {
-                ...mapCartResponse(res),
-                pendingMainProductItemId: null,
-              },
-              setFulfilled(),
-            ),
-          ),
-          catchError((err) => {
-            handleApiError(store, err);
-            return EMPTY;
-          }),
-        );
-      }),
+      tap(({ payload }) => store.decrementLine(payload.mainProductItemId)),
     ),
 
     /** Auth: incrementItem → delegate to incrementLine (owns the PATCH logic) */
@@ -528,38 +482,7 @@ export const CartStore = signalStore(
       .on(cartUiEvents.decrementOrRemoveItem)
       .pipe(
         filter(() => store.authStore.isAuthenticated()),
-        switchMap(({ payload }) => {
-          const { mainProductItemId } = payload;
-          const cartItemId = store.cartItemIdMap()[mainProductItemId];
-          const currentQty =
-            store.items().find((i) => i.mainProductItemId === mainProductItemId)
-              ?.quantity ?? 0;
-          if (cartItemId === undefined) return EMPTY;
-          patchState(store, {
-            ...setPending(),
-            pendingMainProductItemId: mainProductItemId,
-          });
-          const apiCall$ =
-            currentQty <= 1
-              ? store.cartApiService.removeItem(cartItemId)
-              : store.cartApiService.updateItem(cartItemId, currentQty - 1);
-          return apiCall$.pipe(
-            tap((res) =>
-              patchState(
-                store,
-                {
-                  ...mapCartResponse(res),
-                  pendingMainProductItemId: null,
-                },
-                setFulfilled(),
-              ),
-            ),
-            catchError((err) => {
-              handleApiError(store, err);
-              return EMPTY;
-            }),
-          );
-        }),
+        tap(({ payload }) => store.decrementLine(payload.mainProductItemId)),
       ),
 
     /** Auth: removeItem → DELETE */
