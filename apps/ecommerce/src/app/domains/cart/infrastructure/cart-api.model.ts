@@ -20,3 +20,12 @@ export interface CartApiResponseModel {
   userId: string;
   items: CartItemApiModel[];
 }
+
+/** Single line in the POST /cart/merge request body. */
+export interface MergeCartItemDto {
+  productItemId: number;
+  quantity: number;
+  capturedSalePrice: number | null;
+  capturedName: string | null;
+  capturedImageUrl: string | null;
+}

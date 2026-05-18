@@ -4,12 +4,10 @@ import {
   provideZonelessChangeDetection,
 } from '@angular/core';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
-import {
-  provideHttpClient,
-  withInterceptorsFromDi,
-} from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
+import { authInterceptor } from './core/public-api';
 import { providePrimeNG } from 'primeng/config';
 import { appRoutes } from './app.routes';
 import { appTheme } from '../themes/app-theme';
@@ -27,7 +25,7 @@ const provideAuthServices = () => [
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideHttpClient(withInterceptorsFromDi()),
+    provideHttpClient(withInterceptors([authInterceptor])),
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
     provideRouter(appRoutes, withComponentInputBinding()),
