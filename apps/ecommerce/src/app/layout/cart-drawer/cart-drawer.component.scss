@@ -7,6 +7,15 @@
   text-align: center;
 }
 
+.cart-drawer__main {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 10rem;
+  min-width: 0;
+}
+
 .cart-drawer__empty-text {
   font-size: 1rem;
   color: var(--p-text-muted-color, #6b7280);
@@ -30,6 +39,28 @@
   align-items: start;
   padding: 0.75rem 0;
   border-bottom: 1px solid var(--p-content-border-color, #e5e7eb);
+  position: relative;
+}
+
+.cart-drawer__item-pending {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(
+    in srgb,
+    var(--p-content-background, #ffffff) 82%,
+    transparent
+  );
+  backdrop-filter: blur(2px);
+  border-radius: 0.25rem;
+}
+
+:host ::ng-deep .cart-drawer__spinner {
+  width: 2.25rem !important;
+  height: 2.25rem !important;
 }
 
 .cart-drawer__item-image {

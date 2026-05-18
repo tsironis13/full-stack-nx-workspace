@@ -70,8 +70,17 @@
 }
 
 .catalog-card__cart-qty {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-width: 1.5rem;
+  min-height: 1.75rem;
   text-align: center;
   font-weight: 600;
   font-size: 1rem;
+}
+
+:host ::ng-deep .catalog-card__qty-spinner {
+  width: 1.25rem !important;
+  height: 1.25rem !important;
 }

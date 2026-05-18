@@ -2,9 +2,10 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { RouterLink } from '@angular/router';
 
 import { ButtonModule } from 'primeng/button';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { CartQuantityControlComponent } from '@full-stack-nx-workspace/shared';
 
-import { GuestCartStore } from '../application/public-api';
+import { CartStore } from '../application/public-api';
 
 function formatEur(amount: number): string {
   return new Intl.NumberFormat('el-GR', {
@@ -18,21 +19,30 @@ function formatEur(amount: number): string {
   templateUrl: './cart-page.component.html',
   styleUrl: './cart-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, ButtonModule, CartQuantityControlComponent],
+  imports: [
+    RouterLink,
+    ButtonModule,
+    ProgressSpinnerModule,
+    CartQuantityControlComponent,
+  ],
 })
 export class CartPageComponent {
-  protected readonly store = inject(GuestCartStore);
+  protected readonly store = inject(CartStore);
 
   protected readonly cartSubtotal = computed(() =>
     this.store
       .items()
       .reduce(
         (sum, l) => sum + (l.salePrice ?? l.originalPrice ?? 0) * l.quantity,
-        0
-      )
+        0,
+      ),
   );
 
-  protected lineSubtotal(salePrice: number | null, originalPrice: number | null, quantity: number): string {
+  protected lineSubtotal(
+    salePrice: number | null,
+    originalPrice: number | null,
+    quantity: number,
+  ): string {
     return formatEur((salePrice ?? originalPrice ?? 0) * quantity);
   }
 

@@ -14,6 +14,10 @@
   margin-bottom: 1.5rem;
 }
 
+.cart-page__with-items {
+  position: relative;
+}
+
 .cart-page__empty {
   display: flex;
   flex-direction: column;
@@ -46,6 +50,28 @@
   border-radius: 0.5rem;
   border: 1px solid var(--p-content-border-color, #e5e7eb);
   background: var(--p-content-background, #fff);
+  position: relative;
+}
+
+.cart-item__pending {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(
+    in srgb,
+    var(--p-content-background, #ffffff) 82%,
+    transparent
+  );
+  backdrop-filter: blur(2px);
+  border-radius: 0.5rem;
+}
+
+:host ::ng-deep .cart-page__spinner {
+  width: 2.75rem !important;
+  height: 2.75rem !important;
 }
 
 .cart-item__image {

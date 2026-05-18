@@ -21,22 +21,36 @@
       +{{ item().additionalOptionsCount }} επιπλέον επιλογές
     </p>
   }
-  <div class="catalog-card__cart" role="group" [attr.aria-label]="'Ποσότητα για ' + (item().name ?? 'προϊόν')">
+  <div
+    class="catalog-card__cart"
+    role="group"
+    [attr.aria-busy]="lineServerMutationPending()"
+    [attr.aria-label]="'Ποσότητα για ' + (item().name ?? 'προϊόν')"
+  >
     <button
       type="button"
       class="catalog-card__cart-btn catalog-card__cart-btn--minus"
       aria-label="Μείωση ποσότητας"
-      [disabled]="cartQuantity() === 0"
+      [disabled]="cartQuantity() === 0 || lineServerMutationPending()"
       (click)="onDecrementFromCart()"
-    >−</button>
+    >
+      −
+    </button>
     <span class="catalog-card__cart-qty" aria-live="polite" aria-atomic="true">
-      {{ cartQuantity() }}
+      @if (lineServerMutationPending()) {
+        <p-progressSpinner strokeWidth="4" styleClass="catalog-card__qty-spinner" />
+      } @else {
+        {{ cartQuantity() }}
+      }
     </span>
     <button
       type="button"
       class="catalog-card__cart-btn catalog-card__cart-btn--plus"
       aria-label="Αύξηση ποσότητας"
+      [disabled]="lineServerMutationPending()"
       (click)="onAddToCart()"
-    >+</button>
+    >
+      +
+    </button>
   </div>
 </div>

@@ -1,27 +1,53 @@
-import { PLATFORM_ID } from '@angular/core';
+import { signal, type WritableSignal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { By } from '@angular/platform-browser';
 
-import { LocalStorageFacade } from '@full-stack-nx-workspace/shared';
-import { GuestCartStore } from '../application/public-api';
+import { CartStore } from '../application/public-api';
 import { CartPageComponent } from './cart-page.component';
 
+/** Snapshot fields the cart page template reads (keeps specs free of domain barrels). */
+interface CartPageLineFixture {
+  quantity: number;
+  productId: number;
+  mainProductItemId: number;
+  name: string | null;
+  salePrice: number | null;
+  originalPrice: number | null;
+  primaryImageUrl: string | null;
+}
+
 describe('CartPageComponent', () => {
+  let itemsSig: WritableSignal<CartPageLineFixture[]>;
+  let pendingSig: WritableSignal<number | null>;
+  let incrementLine: jest.Mock;
+  let decrementLine: jest.Mock;
+  let removeLine: jest.Mock;
+
   beforeEach(() => {
-    localStorage.clear();
+    itemsSig = signal([]);
+    pendingSig = signal(null);
+    incrementLine = jest.fn();
+    decrementLine = jest.fn();
+    removeLine = jest.fn();
+
     TestBed.configureTestingModule({
       imports: [CartPageComponent],
       providers: [
-        GuestCartStore,
-        LocalStorageFacade,
-        { provide: PLATFORM_ID, useValue: 'browser' },
+        {
+          provide: CartStore,
+          useValue: {
+            items: itemsSig.asReadonly(),
+            pendingMainProductItemId: pendingSig.asReadonly(),
+            incrementLine,
+            decrementLine,
+            removeLine,
+          },
+        },
         provideRouter([]),
       ],
     });
   });
-
-  afterEach(() => localStorage.clear());
 
   function createFixture() {
     const fixture = TestBed.createComponent(CartPageComponent);
@@ -38,8 +64,7 @@ describe('CartPageComponent', () => {
   });
 
   it('shows items list when cart has items', () => {
-    const store = TestBed.inject(GuestCartStore);
-    store.addFromBrowseRow(
+    itemsSig.set([
       {
         productId: 1,
         mainProductItemId: 10,
@@ -47,9 +72,9 @@ describe('CartPageComponent', () => {
         salePrice: 9.99,
         originalPrice: 14.99,
         primaryImageUrl: null,
+        quantity: 2,
       },
-      2
-    );
+    ]);
 
     const fixture = createFixture();
     const itemsList = fixture.debugElement.query(By.css('.cart-page__items'));
@@ -59,11 +84,17 @@ describe('CartPageComponent', () => {
   });
 
   it('does not show empty state when cart has items', () => {
-    const store = TestBed.inject(GuestCartStore);
-    store.addFromBrowseRow(
-      { productId: 1, mainProductItemId: 10, name: 'A', salePrice: 5, originalPrice: null, primaryImageUrl: null },
-      1
-    );
+    itemsSig.set([
+      {
+        productId: 1,
+        mainProductItemId: 10,
+        name: 'A',
+        salePrice: 5,
+        originalPrice: null,
+        primaryImageUrl: null,
+        quantity: 1,
+      },
+    ]);
 
     const fixture = createFixture();
     const emptyEl = fixture.debugElement.query(By.css('.cart-page__empty'));
@@ -71,64 +102,95 @@ describe('CartPageComponent', () => {
   });
 
   it('displays line name and subtotal', () => {
-    const store = TestBed.inject(GuestCartStore);
-    store.addFromBrowseRow(
-      { productId: 1, mainProductItemId: 10, name: 'Alpha', salePrice: 10, originalPrice: null, primaryImageUrl: null },
-      3
-    );
+    itemsSig.set([
+      {
+        productId: 1,
+        mainProductItemId: 10,
+        name: 'Alpha',
+        salePrice: 10,
+        originalPrice: null,
+        primaryImageUrl: null,
+        quantity: 3,
+      },
+    ]);
 
     const fixture = createFixture();
     const itemEl = fixture.debugElement.query(By.css('.cart-item'));
     expect(itemEl.nativeElement.textContent).toContain('Alpha');
-    // 10 × 3 = 30 EUR in el-GR format
-    const subtotalEl = fixture.debugElement.query(By.css('.cart-item__subtotal'));
+    const subtotalEl = fixture.debugElement.query(
+      By.css('.cart-item__subtotal'),
+    );
     expect(subtotalEl.nativeElement.textContent).toContain('30');
   });
 
   it('calls store.incrementLine when addItemToCart fires', () => {
-    const store = TestBed.inject(GuestCartStore);
-    store.addFromBrowseRow(
-      { productId: 1, mainProductItemId: 7, name: 'B', salePrice: 5, originalPrice: null, primaryImageUrl: null },
-      1
-    );
-    jest.spyOn(store, 'incrementLine');
+    itemsSig.set([
+      {
+        productId: 1,
+        mainProductItemId: 7,
+        name: 'B',
+        salePrice: 5,
+        originalPrice: null,
+        primaryImageUrl: null,
+        quantity: 1,
+      },
+    ]);
 
     const fixture = createFixture();
-    const control = fixture.debugElement.query(By.css('app-cart-quantity-control'));
+    const control = fixture.debugElement.query(
+      By.css('app-cart-quantity-control'),
+    );
     control.triggerEventHandler('addItemToCart', null);
 
-    expect(store.incrementLine).toHaveBeenCalledWith(7);
+    expect(incrementLine).toHaveBeenCalledWith(7);
   });
 
   it('calls store.decrementLine when removeItemFromCart fires', () => {
-    const store = TestBed.inject(GuestCartStore);
-    store.addFromBrowseRow(
-      { productId: 1, mainProductItemId: 7, name: 'B', salePrice: 5, originalPrice: null, primaryImageUrl: null },
-      2
-    );
-    jest.spyOn(store, 'decrementLine');
+    itemsSig.set([
+      {
+        productId: 1,
+        mainProductItemId: 7,
+        name: 'B',
+        salePrice: 5,
+        originalPrice: null,
+        primaryImageUrl: null,
+        quantity: 2,
+      },
+    ]);
 
     const fixture = createFixture();
-    const control = fixture.debugElement.query(By.css('app-cart-quantity-control'));
+    const control = fixture.debugElement.query(
+      By.css('app-cart-quantity-control'),
+    );
     control.triggerEventHandler('removeItemFromCart', null);
 
-    expect(store.decrementLine).toHaveBeenCalledWith(7);
+    expect(decrementLine).toHaveBeenCalledWith(7);
   });
 
   it('shows cart subtotal', () => {
-    const store = TestBed.inject(GuestCartStore);
-    store.addFromBrowseRow(
-      { productId: 1, mainProductItemId: 1, name: 'X', salePrice: 5, originalPrice: null, primaryImageUrl: null },
-      2
-    );
-    store.addFromBrowseRow(
-      { productId: 2, mainProductItemId: 2, name: 'Y', salePrice: 3, originalPrice: null, primaryImageUrl: null },
-      1
-    );
+    itemsSig.set([
+      {
+        productId: 1,
+        mainProductItemId: 1,
+        name: 'X',
+        salePrice: 5,
+        originalPrice: null,
+        primaryImageUrl: null,
+        quantity: 2,
+      },
+      {
+        productId: 2,
+        mainProductItemId: 2,
+        name: 'Y',
+        salePrice: 3,
+        originalPrice: null,
+        primaryImageUrl: null,
+        quantity: 1,
+      },
+    ]);
 
     const fixture = createFixture();
     const totalEl = fixture.debugElement.query(By.css('.cart-page__total'));
-    // 5×2 + 3×1 = 13
     expect(totalEl.nativeElement.textContent).toContain('13');
   });
 });

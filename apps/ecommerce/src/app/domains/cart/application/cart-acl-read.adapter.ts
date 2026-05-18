@@ -1,17 +1,17 @@
 import { computed, inject, Injectable } from '@angular/core';
 
 import type { CatalogCartLineSnapshot } from '../domain/public-api';
-import { GuestCartStore } from './guest-cart.store';
+import { CartStore } from './cart.store';
 
 /**
  * Narrow read surface exposed by the **Cart** bounded context for foreign
- * consumers. Hides `GuestCartStore` internals behind stable, curated signals.
+ * consumers. Hides `CartStore` internals behind stable, curated signals.
  *
  * Import exclusively via `domains/cart/application/anti-corruption-layer.ts`.
  */
 @Injectable({ providedIn: 'root' })
 export class CartAclReadAdapter {
-  private readonly store = inject(GuestCartStore);
+  private readonly store = inject(CartStore);
 
   /** Sum of all **Cart Item** quantities; drives the header badge. */
   readonly totalUnitCount = this.store.totalUnitCount;
@@ -43,7 +43,13 @@ export class CartAclReadAdapter {
       .items()
       .reduce(
         (sum, l) => sum + (l.salePrice ?? l.originalPrice ?? 0) * l.quantity,
-        0
-      )
+        0,
+      ),
   );
+
+  /**
+   * While a **registered-user** cart line is awaiting a server response, this is
+   * that line's `mainProductItemId`; otherwise `null`. Drives per-card / per-row loaders.
+   */
+  readonly pendingMainProductItemId = this.store.pendingMainProductItemId;
 }
