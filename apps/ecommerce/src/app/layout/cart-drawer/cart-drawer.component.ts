@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 
 import { ButtonModule } from 'primeng/button';
 import { DrawerModule } from 'primeng/drawer';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { CartQuantityControlComponent } from '@full-stack-nx-workspace/shared';
 import { injectDispatch } from '@ngrx/signals/events';
 
@@ -29,7 +30,12 @@ function formatEur(amount: number): string {
   templateUrl: './cart-drawer.component.html',
   styleUrl: './cart-drawer.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DrawerModule, ButtonModule, CartQuantityControlComponent],
+  imports: [
+    DrawerModule,
+    ButtonModule,
+    ProgressSpinnerModule,
+    CartQuantityControlComponent,
+  ],
 })
 export class CartDrawerComponent {
   readonly visible = model<boolean>(false);

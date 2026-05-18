@@ -12,9 +12,21 @@
       />
     </div>
   } @else {
+    <div class="cart-page__with-items">
     <ul class="cart-page__items" aria-label="Προϊόντα στο καλάθι">
       @for (line of store.items(); track line.mainProductItemId) {
         <li class="cart-item">
+          @if (store.pendingMainProductItemId() === line.mainProductItemId) {
+            <div
+              class="cart-item__pending"
+              role="status"
+              aria-live="polite"
+              aria-busy="true"
+              aria-label="Ενημέρωση γραμμής"
+            >
+              <p-progressSpinner strokeWidth="4" styleClass="cart-page__spinner" />
+            </div>
+          }
           @if (line.primaryImageUrl) {
             <img
               class="cart-item__image"
@@ -66,9 +78,10 @@
           icon="pi pi-arrow-right"
           iconPos="right"
           [routerLink]="['/checkout']"
-          [disabled]="store.items().length === 0"
+          [disabled]="store.items().length === 0 || store.pendingMainProductItemId() !== null"
         />
       </div>
+    </div>
     </div>
   }
 </div>

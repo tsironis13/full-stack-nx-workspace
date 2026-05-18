@@ -42,6 +42,7 @@ function createCartAclMock() {
     totalUnitCount: signal(2),
     itemQuantities: signal(new Map()),
     cartSubtotal: signal(19.98),
+    pendingMainProductItemId: signal(null as number | null),
   };
 }
 

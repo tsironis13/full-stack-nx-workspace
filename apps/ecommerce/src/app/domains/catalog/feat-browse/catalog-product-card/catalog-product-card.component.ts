@@ -1,5 +1,6 @@
 import { CurrencyPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { injectDispatch } from '@ngrx/signals/events';
 
 import {
@@ -19,7 +20,7 @@ const PLACEHOLDER_IMAGE =
   templateUrl: './catalog-product-card.component.html',
   styleUrl: './catalog-product-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CurrencyPipe],
+  imports: [CurrencyPipe, ProgressSpinnerModule],
 })
 export class CatalogProductCardComponent {
   readonly item = input.required<CatalogListItem>();
@@ -29,9 +30,15 @@ export class CatalogProductCardComponent {
   private readonly cartRead = inject(CartAclReadAdapter);
   private readonly dispatch = injectDispatch(cartCatalogEvents);
 
+  /** True only for this card while its line is syncing with the server (auth mode). */
+  protected readonly lineServerMutationPending = computed(
+    () =>
+      this.cartRead.pendingMainProductItemId() === this.item().mainProductItemId,
+  );
+
   /** Current quantity of this card's Main Product Item in the cart (0 = not in cart). */
   protected readonly cartQuantity = computed(
-    () => this.cartRead.itemQuantities().get(this.item().mainProductItemId) ?? 0
+    () => this.cartRead.itemQuantities().get(this.item().mainProductItemId) ?? 0,
   );
 
   protected onImageError(event: Event): void {
