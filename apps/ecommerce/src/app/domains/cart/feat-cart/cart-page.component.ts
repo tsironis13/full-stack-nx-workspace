@@ -10,6 +10,8 @@ import { ButtonModule } from 'primeng/button';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { CartQuantityControlComponent } from '@full-stack-nx-workspace/shared';
 
+import { CartPriceChangedLineComponent } from '../../../ui/cart/cart-price-changed-line/cart-price-changed-line.component';
+import { CartUnavailableLineAlertComponent } from '../../../ui/cart/cart-unavailable-line-alert/cart-unavailable-line-alert.component';
 import { CartStore } from '../application/public-api';
 
 function formatEur(amount: number): string {
@@ -29,6 +31,8 @@ function formatEur(amount: number): string {
     ButtonModule,
     ProgressSpinnerModule,
     CartQuantityControlComponent,
+    CartUnavailableLineAlertComponent,
+    CartPriceChangedLineComponent,
   ],
 })
 export class CartPageComponent {
@@ -41,6 +45,10 @@ export class CartPageComponent {
         (sum, l) => sum + (l.salePrice ?? l.originalPrice ?? 0) * l.quantity,
         0,
       ),
+  );
+
+  protected readonly hasUnavailableItems = computed(() =>
+    this.store.items().some((item) => item.available === false),
   );
 
   protected lineSubtotal(

@@ -100,6 +100,11 @@
   color: var(--p-text-muted-color, #6b7280);
 }
 
+.cart-item--unavailable {
+  opacity: 0.75;
+  border-color: var(--p-red-200, #fca5a5);
+}
+
 .cart-item__controls {
   display: flex;
   align-items: center;

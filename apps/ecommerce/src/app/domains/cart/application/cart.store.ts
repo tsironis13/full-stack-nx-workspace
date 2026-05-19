@@ -113,6 +113,7 @@ function mapCartResponse(
   const cartItemIdMap: Record<number, number> = {};
   const items: CatalogCartLineSnapshot[] = response.items.map((item) => {
     cartItemIdMap[item.productItemId] = item.id;
+
     return {
       quantity: item.quantity,
       /** productId is not returned by the Cart API — sentinel value used. */
@@ -122,6 +123,8 @@ function mapCartResponse(
       salePrice: item.capturedPrice,
       originalPrice: item.currentPrice,
       primaryImageUrl: item.capturedImageUrl,
+      available: item.available,
+      priceChanged: item.currentPrice !== item.capturedPrice,
     };
   });
   return { items, cartItemIdMap };

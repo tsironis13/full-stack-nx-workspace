@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 
+import type { CatalogCartLineSnapshot } from '../../cart/domain/public-api';
 import { CartAclReadAdapter } from '../../cart/application/anti-corruption-layer';
 import { emptyCartGuard } from './empty-cart.guard';
 
@@ -13,22 +14,30 @@ import { emptyCartGuard } from './empty-cart.guard';
 })
 class StubComponent {}
 
+function makeLine(
+  overrides: Partial<CatalogCartLineSnapshot> = {},
+): CatalogCartLineSnapshot {
+  return {
+    mainProductItemId: 1,
+    productId: 1,
+    name: 'Product',
+    quantity: 1,
+    originalPrice: 10,
+    salePrice: null,
+    primaryImageUrl: null,
+    ...overrides,
+  };
+}
+
 describe('emptyCartGuard', () => {
-  function setup(itemCount: number) {
-    const items = signal(
-      Array.from({ length: itemCount }, (_, i) => ({
-        mainProductItemId: i + 1,
-        productId: i + 1,
-        name: `Product ${i + 1}`,
-        quantity: 1,
-        originalPrice: 10,
-        salePrice: null,
-        primaryImageUrl: null,
-      }))
-    );
+  function setup(items: CatalogCartLineSnapshot[]) {
+    const itemsSignal = signal(items);
 
     const mockCartAcl = {
-      items,
+      items: itemsSignal.asReadonly(),
+      hasUnavailableItems: computed(() =>
+        itemsSignal().some((i) => i.available === false),
+      ),
     } as unknown as CartAclReadAdapter;
 
     TestBed.configureTestingModule({
@@ -48,19 +57,57 @@ describe('emptyCartGuard', () => {
       ],
     });
 
-    return { items };
+    return { itemsSignal };
   }
 
+  afterEach(() => TestBed.resetTestingModule());
+
   it('redirects to /cart when the cart is empty', async () => {
-    setup(0);
+    setup([]);
     const harness = await RouterTestingHarness.create('/checkout');
     const router = TestBed.inject(Router);
     expect(router.url).toBe('/cart');
     expect(harness).toBeDefined();
   });
 
-  it('allows navigation to /checkout when the cart has items', async () => {
-    setup(2);
+  it('allows navigation to /checkout when all items are available', async () => {
+    setup([
+      makeLine({ mainProductItemId: 1, available: true }),
+      makeLine({ mainProductItemId: 2, available: true }),
+    ]);
+    const harness = await RouterTestingHarness.create('/checkout');
+    const router = TestBed.inject(Router);
+    expect(router.url).toBe('/checkout');
+    expect(harness).toBeDefined();
+  });
+
+  it('redirects to /cart when any item is unavailable', async () => {
+    setup([
+      makeLine({ mainProductItemId: 1, available: true }),
+      makeLine({ mainProductItemId: 2, available: false }),
+    ]);
+    const harness = await RouterTestingHarness.create('/checkout');
+    const router = TestBed.inject(Router);
+    expect(router.url).toBe('/cart');
+    expect(harness).toBeDefined();
+  });
+
+  it('redirects to /cart when all items are unavailable', async () => {
+    setup([
+      makeLine({ mainProductItemId: 1, available: false }),
+      makeLine({ mainProductItemId: 2, available: false }),
+    ]);
+    const harness = await RouterTestingHarness.create('/checkout');
+    const router = TestBed.inject(Router);
+    expect(router.url).toBe('/cart');
+    expect(harness).toBeDefined();
+  });
+
+  it('allows navigation to /checkout for guest items (no available field)', async () => {
+    setup([
+      makeLine({ mainProductItemId: 1 }),
+      makeLine({ mainProductItemId: 2 }),
+    ]);
     const harness = await RouterTestingHarness.create('/checkout');
     const router = TestBed.inject(Router);
     expect(router.url).toBe('/checkout');

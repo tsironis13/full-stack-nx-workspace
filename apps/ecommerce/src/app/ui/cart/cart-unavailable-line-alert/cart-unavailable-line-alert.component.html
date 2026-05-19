@@ -1,0 +1,12 @@
+<div class="cart-unavailable-line-alert__panel" role="alert">
+  <span class="pi pi-exclamation-triangle" aria-hidden="true"></span>
+  <span>Δεν διατίθεται πλέον</span>
+  <p-button
+    icon="pi pi-trash"
+    [text]="true"
+    severity="danger"
+    size="small"
+    aria-label="Αφαίρεση μη διαθέσιμου προϊόντος"
+    (onClick)="remove.emit()"
+  />
+</div>
