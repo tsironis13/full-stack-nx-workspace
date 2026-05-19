@@ -90,6 +90,10 @@
   color: var(--p-text-muted-color, #6b7280);
 }
 
+.cart-drawer__item--unavailable {
+  opacity: 0.75;
+}
+
 .cart-drawer__item-controls {
   display: flex;
   align-items: center;

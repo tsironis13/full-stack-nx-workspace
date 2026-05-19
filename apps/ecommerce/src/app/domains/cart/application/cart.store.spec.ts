@@ -608,4 +608,99 @@ describe('CartStore', () => {
       expect(store.isPending()).toBe(false);
     });
   });
+
+  describe('stale item flags (available + priceChanged)', () => {
+    it('maps available: false from server response', async () => {
+      configureTestBed(false, {
+        configureApiMocks: () => {
+          mockGetCart.mockReturnValue(
+            of(
+              makeServerCart([
+                makeServerItem({
+                  productItemId: 99,
+                  available: false,
+                  capturedPrice: 9.99,
+                  currentPrice: 9.99,
+                }),
+              ]),
+            ),
+          );
+        },
+      });
+
+      setAuthenticated(true);
+      await flushStoreEffects();
+
+      expect(store.items()[0].available).toBe(false);
+    });
+
+    it('maps available: true from server response', async () => {
+      configureTestBed(false, {
+        configureApiMocks: () => {
+          mockGetCart.mockReturnValue(
+            of(makeServerCart([makeServerItem({ available: true })])),
+          );
+        },
+      });
+
+      setAuthenticated(true);
+      await flushStoreEffects();
+
+      expect(store.items()[0].available).toBe(true);
+    });
+
+    it('sets priceChanged: true when currentPrice !== capturedPrice', async () => {
+      configureTestBed(false, {
+        configureApiMocks: () => {
+          mockGetCart.mockReturnValue(
+            of(
+              makeServerCart([
+                makeServerItem({
+                  capturedPrice: 9.99,
+                  currentPrice: 8.99,
+                  available: true,
+                }),
+              ]),
+            ),
+          );
+        },
+      });
+
+      setAuthenticated(true);
+      await flushStoreEffects();
+
+      expect(store.items()[0].priceChanged).toBe(true);
+    });
+
+    it('sets priceChanged: false when currentPrice equals capturedPrice', async () => {
+      configureTestBed(false, {
+        configureApiMocks: () => {
+          mockGetCart.mockReturnValue(
+            of(
+              makeServerCart([
+                makeServerItem({
+                  capturedPrice: 9.99,
+                  currentPrice: 9.99,
+                  available: true,
+                }),
+              ]),
+            ),
+          );
+        },
+      });
+
+      setAuthenticated(true);
+      await flushStoreEffects();
+
+      expect(store.items()[0].priceChanged).toBe(false);
+    });
+
+    it('guest cart items have no available or priceChanged fields', () => {
+      configureTestBed(false);
+      dispatcher.dispatch(cartCatalogEvents.addFromBrowse(browsePayload()));
+
+      expect(store.items()[0].available).toBeUndefined();
+      expect(store.items()[0].priceChanged).toBeUndefined();
+    });
+  });
 });

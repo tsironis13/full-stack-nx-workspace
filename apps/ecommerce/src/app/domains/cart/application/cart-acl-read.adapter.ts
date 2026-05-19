@@ -52,4 +52,13 @@ export class CartAclReadAdapter {
    * that line's `mainProductItemId`; otherwise `null`. Drives per-card / per-row loaders.
    */
   readonly pendingMainProductItemId = this.store.pendingMainProductItemId;
+
+  /**
+   * `true` when any server-cart item has `available: false` (archived product).
+   * Guest-cart items (no `available` field) are treated as available and never
+   * contribute to this flag.
+   */
+  readonly hasUnavailableItems = computed(() =>
+    this.store.items().some((item) => item.available === false),
+  );
 }

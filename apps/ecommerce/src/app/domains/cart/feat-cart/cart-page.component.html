@@ -15,7 +15,7 @@
     <div class="cart-page__with-items">
     <ul class="cart-page__items" aria-label="Προϊόντα στο καλάθι">
       @for (line of store.items(); track line.mainProductItemId) {
-        <li class="cart-item">
+        <li class="cart-item" [class.cart-item--unavailable]="line.available === false">
           @if (store.pendingMainProductItemId() === line.mainProductItemId) {
             <div
               class="cart-item__pending"
@@ -26,6 +26,11 @@
             >
               <p-progressSpinner strokeWidth="4" styleClass="cart-page__spinner" />
             </div>
+          }
+          @if (line.available === false) {
+            <app-cart-unavailable-line-alert
+              (remove)="onRemove(line.mainProductItemId)"
+            />
           }
           @if (line.primaryImageUrl) {
             <img
@@ -39,25 +44,32 @@
           <div class="cart-item__details">
             <p class="cart-item__name">{{ line.name }}</p>
             <p class="cart-item__price">{{ formatPrice(line.salePrice ?? line.originalPrice) }}</p>
+            @if (line.priceChanged) {
+              <app-cart-price-changed-line
+                [formattedPrice]="formatPrice(line.originalPrice)"
+              />
+            }
           </div>
-          <div class="cart-item__controls">
-            <app-cart-quantity-control
-              [quantity]="line.quantity"
-              (addItemToCart)="onIncrement(line.mainProductItemId)"
-              (removeItemFromCart)="onDecrement(line.mainProductItemId)"
-            />
-            <p-button
-              icon="pi pi-trash"
-              [text]="true"
-              severity="danger"
-              size="small"
-              aria-label="Αφαίρεση προϊόντος"
-              (onClick)="onRemove(line.mainProductItemId)"
-            />
-          </div>
-          <p class="cart-item__subtotal">
-            {{ lineSubtotal(line.salePrice, line.originalPrice, line.quantity) }}
-          </p>
+          @if (line.available !== false) {
+            <div class="cart-item__controls">
+              <app-cart-quantity-control
+                [quantity]="line.quantity"
+                (addItemToCart)="onIncrement(line.mainProductItemId)"
+                (removeItemFromCart)="onDecrement(line.mainProductItemId)"
+              />
+              <p-button
+                icon="pi pi-trash"
+                [text]="true"
+                severity="danger"
+                size="small"
+                aria-label="Αφαίρεση προϊόντος"
+                (onClick)="onRemove(line.mainProductItemId)"
+              />
+            </div>
+            <p class="cart-item__subtotal">
+              {{ lineSubtotal(line.salePrice, line.originalPrice, line.quantity) }}
+            </p>
+          }
         </li>
       }
     </ul>
@@ -78,7 +90,7 @@
           icon="pi pi-arrow-right"
           iconPos="right"
           [routerLink]="['/checkout']"
-          [disabled]="store.items().length === 0 || store.pendingMainProductItemId() !== null"
+          [disabled]="store.items().length === 0 || store.pendingMainProductItemId() !== null || hasUnavailableItems()"
         />
       </div>
     </div>

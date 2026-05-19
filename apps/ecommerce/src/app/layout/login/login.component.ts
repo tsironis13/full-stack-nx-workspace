@@ -52,6 +52,7 @@ export class LoginComponent {
     //   email: 'tsiro1@hotmail.com',
     //   password: 'sxtvttio',
     // });
+    // email: 'test@email.com', password: '123456'
     // this.httpClient
     //   .post('/api/auth/login', {
     //     //email: 'giannis123@hotmail.com',

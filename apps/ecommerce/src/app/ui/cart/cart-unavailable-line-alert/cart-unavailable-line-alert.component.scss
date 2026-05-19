@@ -1,0 +1,30 @@
+:host {
+  display: contents;
+}
+
+.cart-unavailable-line-alert__panel {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--p-red-500, #ef4444);
+  font-weight: 600;
+
+  .pi {
+    font-size: 1rem;
+  }
+
+  p-button {
+    margin-left: auto;
+  }
+}
+
+:host.cart-unavailable-line-alert--compact .cart-unavailable-line-alert__panel {
+  gap: 0.375rem;
+  font-size: 0.8rem;
+
+  .pi {
+    font-size: 0.9rem;
+  }
+}

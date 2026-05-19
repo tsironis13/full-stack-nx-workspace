@@ -17,6 +17,8 @@ import {
   CartAclReadAdapter,
   cartUiEvents,
 } from '../../domains/cart/application/anti-corruption-layer';
+import { CartPriceChangedLineComponent } from '../../ui/cart/cart-price-changed-line/cart-price-changed-line.component';
+import { CartUnavailableLineAlertComponent } from '../../ui/cart/cart-unavailable-line-alert/cart-unavailable-line-alert.component';
 
 function formatEur(amount: number): string {
   return new Intl.NumberFormat('el-GR', {
@@ -35,6 +37,8 @@ function formatEur(amount: number): string {
     ButtonModule,
     ProgressSpinnerModule,
     CartQuantityControlComponent,
+    CartUnavailableLineAlertComponent,
+    CartPriceChangedLineComponent,
   ],
 })
 export class CartDrawerComponent {
