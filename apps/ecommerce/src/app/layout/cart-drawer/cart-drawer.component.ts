@@ -17,8 +17,10 @@ import {
   CartAclReadAdapter,
   cartUiEvents,
 } from '../../domains/cart/application/anti-corruption-layer';
-import { CartPriceChangedLineComponent } from '../../ui/cart/cart-price-changed-line/cart-price-changed-line.component';
-import { CartUnavailableLineAlertComponent } from '../../ui/cart/cart-unavailable-line-alert/cart-unavailable-line-alert.component';
+import {
+  CartPriceChangedLineComponent,
+  CartUnavailableLineAlertComponent,
+} from '../../ui/public-api';
 
 function formatEur(amount: number): string {
   return new Intl.NumberFormat('el-GR', {
@@ -49,7 +51,7 @@ export class CartDrawerComponent {
   private readonly router = inject(Router);
 
   protected readonly formattedSubtotal = computed(() =>
-    formatEur(this.cartRead.cartSubtotal())
+    formatEur(this.cartRead.cartSubtotal()),
   );
 
   protected formatPrice(amount: number | null): string {
@@ -59,7 +61,7 @@ export class CartDrawerComponent {
   protected lineSubtotal(
     salePrice: number | null,
     originalPrice: number | null,
-    quantity: number
+    quantity: number,
   ): string {
     return formatEur((salePrice ?? originalPrice ?? 0) * quantity);
   }
