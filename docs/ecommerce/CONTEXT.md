@@ -57,11 +57,72 @@ Avoid:
 
 ---
 
+## Rating
+
+The numeric star score (1–5) on a **Review** of a **Product**.
+
+Not a separate submission type — shoppers submit **Reviews**; the star value is the **Rating**. A **Product**'s public score is the exact average **Rating** across its non-deleted **Reviews**, together with a **review count**. **Highest rated** sort and the **Rating** filter use the exact average; the storefront displays the average rounded to one decimal (for example 3.666… shown as **3.7★**). Shown on the product detail page and catalog listing cards when the **Product** has at least one **Review**.
+
+Avoid:
+
+- SKU rating
+- Item rating
+- Variant rating
+- Standalone rating (without a **Review** record)
+
+---
+
+## Review
+
+A shopper's evaluation of a **Product**: a required **Rating** (1–5 stars) and optional written content (title and/or body).
+
+Belongs to exactly one **Product** and one **Registered User** (the author). A **Registered User** may author at most one **Review** per **Product**; they may **edit** or **delete** (soft delete) that **Review** after submission. An **Admin User** may **hide** any **Review** from the storefront — same outcome as author soft delete: hidden from shoppers, excluded from the **Product** aggregate, retained in the database. Only **Registered Users** with a **verified purchase** of that **Product** may submit a **Review**; **Guest Users** cannot, even if they placed an **Order** via **Guest Checkout Identity**.
+
+Text is optional — a **Review** with stars only still counts toward the **Product** aggregate and may appear in the review list without written content.
+
+On the storefront review list, the author is shown as **first name + last initial** (for example “Kate R.”), **snapshotted** on the **Review** at submit or edit time. If no usable name was available at snapshot time, show **Verified buyer**. Profile renames do not retroactively change existing **Reviews** unless the author **edits** the **Review** (which refreshes the snapshot).
+
+Eligible **Registered Users** may submit, **edit**, or **delete** a **Review** from the **Product** detail page and from **order history** (for example “Write a review” / “Edit review” on eligible **Products** from **`confirmed`** **Orders**). Both entry points operate on the same **Review** record.
+
+Avoid:
+
+- Feedback
+- Comment
+- Testimonial (unless editorial — see future editorial sources)
+
+---
+
+## Verified purchase
+
+Proof that a **Registered User** bought a **Product**, derived from **Order** history.
+
+A **verified purchase** exists when the user has at least one **Order** in **`confirmed`** status containing an **Order Item** whose **Product Item** belongs to the target **Product**. **Orders** in **`pending`** or **`cancelled`** status do not qualify.
+
+Avoid:
+
+- Verified buyer badge (UI label — not a separate domain entity)
+- Purchase verification (generic — use **Verified purchase**)
+
+---
+
 ## Storefront catalog sort (v1)
 
 - **Newest:** By **`products.created_at`** (newest first uses descending order).
 - **Price (low to high / high to low):** By **Sale Price** on the **Main Product Item** for each **Product**, consistent with listing display.
-- **Not offered:** **Highest rated** — deferred together with product rating (see **Product rating (storefront catalog v1)** under Flagged ambiguities). **Most popular** — deferred until the domain defines a measurable popularity signal.
+- **Highest rated:** By exact average **Rating** across non-deleted **Reviews** for each **Product** (descending). **Products** with no **Reviews** appear after all rated **Products** (tie-break among unrated — for example by **`products.created_at`**).
+- **Not offered:** **Most popular** — deferred until the domain defines a measurable popularity signal.
+
+---
+
+## Storefront catalog rating display (v1)
+
+Catalog listing cards and the product detail page show average **Rating** (one decimal, rounded for display) and **review count** when the **Product** has at least one non-deleted **Review**. **Products** with no **Reviews** show no star score on listing cards; the product detail page may show neutral copy such as “No reviews yet” instead of a numeric average.
+
+---
+
+## Storefront catalog rating filter (v1)
+
+Shoppers may filter to **Products** whose exact average **Rating** is at or above a selected threshold (for example 4★ and up — a **Product** averaging 3.8 does not match). **Products** with no **Reviews** do not match any minimum-**Rating** filter.
 
 ---
 
@@ -218,6 +279,7 @@ May:
 - Manage categories
 - Manage orders
 - Manage inventory
+- Hide **Reviews** from the storefront (**business-portal**)
 
 Avoid:
 
@@ -607,6 +669,11 @@ Avoid:
 - A Product contains one or more Product Items
 - A Product Item belongs to exactly one Product
 - A Product should contain exactly one Main Product Item
+- A Product may have many **Reviews**
+- A **Review** belongs to exactly one **Product**
+- A **Review** belongs to exactly one **Registered User**
+- A **Review** includes exactly one **Rating** (star score)
+- At most one **Review** per **Registered User** per **Product**
 - A User may own one active Cart
 - A Cart contains Cart Items
 - A Cart Item references a Product Item
@@ -683,6 +750,22 @@ Avoid:
 - An Order must belong to exactly one of: a Registered User (`user_id`) or a Guest Checkout Identity (`guest_email`); never both, never neither
 - Order Item prices are always read from the database at the moment of Order creation — client-submitted prices are never trusted
 - A successful Order creation clears the Cart for the placing User
+
+---
+
+## Review rules
+
+- Only a **Registered User** may author a **Review**
+- A **Registered User** may submit a **Review** for a **Product** only when they have a **verified purchase** of that **Product**
+- At most one **Review** per **Registered User** per **Product**
+- The author may **edit** their **Review** after submission; the **Product** aggregate reflects the latest **Rating**
+- The author may **delete** their **Review** (soft delete) — it is hidden from the storefront, excluded from the **Product** aggregate, and retained in the database
+- An **Admin User** may **hide** any **Review** from the storefront — same effect as author soft delete; the author cannot restore an admin-hidden **Review**
+- A **Review** with stars only appears in the product review list (stars, author, date); written content is omitted when absent
+- Public author display: **first name + last initial**, snapshotted at submit or edit; **Verified buyer** when no usable name was available at snapshot time
+- **Review** submission and edit are available from the **Product** detail page and from **order history** for eligible **Registered Users**
+- **Orders** in **`pending`** or **`cancelled`** status do not establish a **verified purchase**
+- **Guest Users** may not submit **Reviews**, even when they placed an **Order** as a guest
 
 ---
 
@@ -866,4 +949,4 @@ These represent different lifecycle states and should not share UI labels.
 
 ## Product rating (storefront catalog v1)
 
-**Resolved (deferred):** Star ratings and rating-based filtering are **out of scope** for the current catalog work. Until this note is replaced, storefront listings must not depend on persisted rating or review data. When rating is in scope, define how **Rating** relates to **Product** and any future **Review** (or editorial) sources.
+**Resolved (2026):** Product-level **Reviews** and **Ratings** are in scope for the storefront and catalog. See **Rating**, **Review**, **Verified purchase**, storefront catalog **rating display / filter / sort**, and **Review rules** above for the full model. Catalog v1 no longer defers star ratings or **Highest rated** sort. Decision record: [0001-product-reviews-and-verified-purchase](./adr/0001-product-reviews-and-verified-purchase.md).
