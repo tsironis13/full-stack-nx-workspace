@@ -5,8 +5,9 @@ import { ProductsModule } from '../modules/products/products.module';
 import { AuthModule } from '../auth/auth.module';
 import { OrdersModule } from '../modules/orders/orders.module';
 import { CartModule } from '../modules/cart/cart.module';
+import { ReviewsModule } from '../modules/reviews/reviews.module';
 
 @Module({
-  imports: [DrizzleModule, ProductsModule, AuthModule, OrdersModule, CartModule],
+  imports: [DrizzleModule, ProductsModule, AuthModule, OrdersModule, CartModule, ReviewsModule],
 })
 export class AppModule {}

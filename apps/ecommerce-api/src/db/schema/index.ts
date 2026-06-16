@@ -10,3 +10,4 @@ export * from './orders';
 export * from './order-items';
 export * from './carts';
 export * from './cart-items';
+export * from './product-reviews';
