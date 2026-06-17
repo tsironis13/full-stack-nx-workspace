@@ -10,6 +10,10 @@ export default [
         loadChildren: () => import('../../domains/catalog/api/catalog.routes'),
       },
       {
+        path: 'products',
+        loadChildren: () => import('../../domains/product/api/product.routes'),
+      },
+      {
         path: 'cart',
         loadChildren: () => import('../../domains/cart/api/cart.routes'),
       },
