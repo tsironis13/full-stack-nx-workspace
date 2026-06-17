@@ -1,4 +1,9 @@
-export type { ProductReview, ProductReviewsPage } from './product.models';
+export type {
+  ProductReview,
+  ProductReviewsPage,
+  MyReview,
+  ReviewDraft,
+} from './product.models';
 export {
   aggregateRatingAriaLabel,
   formatAverageRatingForDisplay,
