@@ -1,6 +1,9 @@
 import type { Routes } from '@angular/router';
 
-import { ProductDetailStore } from '../application/public-api';
+import {
+  ProductDetailStore,
+  ReviewSubmissionStore,
+} from '../application/public-api';
 
 export default [
   {
@@ -9,6 +12,6 @@ export default [
       import('../feat-detail/product-detail.page').then(
         (m) => m.ProductDetailPageComponent,
       ),
-    providers: [ProductDetailStore],
+    providers: [ProductDetailStore, ReviewSubmissionStore],
   },
 ] satisfies Routes;

@@ -1,11 +1,33 @@
 import { Injectable } from '@nestjs/common';
-import { and, avg, count, desc, eq, isNull } from 'drizzle-orm';
+import { and, avg, count, desc, eq, isNull, sql } from 'drizzle-orm';
 
 import { productReviews } from '../../../db/schema/product-reviews';
 import { products } from '../../../db/schema/products';
 import { DrizzleService } from '../../../drizzle/drizzle.service';
 import { ReviewsRepository } from '../domain/repositories/reviews.repository';
-import type { ProductReviewPage } from '../domain/review.types';
+import type {
+  ProductReviewPage,
+  ReviewHiddenBy,
+  ReviewRecord,
+} from '../domain/review.types';
+
+type ProductReviewRow = typeof productReviews.$inferSelect;
+
+function toReviewRecord(row: ProductReviewRow): ReviewRecord {
+  return {
+    id: row.id,
+    productId: row.productId,
+    userId: row.userId,
+    rating: Number(row.rating),
+    title: row.title,
+    body: row.body,
+    authorDisplayName: row.authorDisplayName,
+    hiddenAt: row.hiddenAt,
+    hiddenBy: (row.hiddenBy as ReviewHiddenBy | null) ?? null,
+    createdAt: row.createdAt ?? new Date(),
+    updatedAt: row.updatedAt ?? new Date(),
+  };
+}
 
 @Injectable()
 export class DrizzleReviewsRepository extends ReviewsRepository {
@@ -79,5 +101,87 @@ export class DrizzleReviewsRepository extends ReviewsRepository {
         reviewCount,
       },
     };
+  }
+
+  async findByUserAndProduct(params: {
+    userId: string;
+    productId: number;
+  }): Promise<ReviewRecord | null> {
+    const [row] = await this.drizzle.db
+      .select()
+      .from(productReviews)
+      .where(
+        and(
+          eq(productReviews.productId, params.productId),
+          eq(productReviews.userId, params.userId),
+        ),
+      )
+      .limit(1);
+
+    return row ? toReviewRecord(row) : null;
+  }
+
+  async createReview(params: {
+    productId: number;
+    userId: string;
+    rating: number;
+    title: string | null;
+    body: string | null;
+    authorDisplayName: string;
+  }): Promise<ReviewRecord> {
+    const [row] = await this.drizzle.db
+      .insert(productReviews)
+      .values({
+        productId: params.productId,
+        userId: params.userId,
+        rating: params.rating,
+        title: params.title,
+        body: params.body,
+        authorDisplayName: params.authorDisplayName,
+      })
+      .returning();
+
+    return toReviewRecord(row);
+  }
+
+  async updateReview(params: {
+    id: number;
+    rating: number;
+    title: string | null;
+    body: string | null;
+    authorDisplayName: string;
+    reactivate: boolean;
+  }): Promise<ReviewRecord> {
+    const [row] = await this.drizzle.db
+      .update(productReviews)
+      .set({
+        rating: params.rating,
+        title: params.title,
+        body: params.body,
+        authorDisplayName: params.authorDisplayName,
+        updatedAt: new Date(),
+        ...(params.reactivate ? { hiddenAt: null, hiddenBy: null } : {}),
+      })
+      .where(eq(productReviews.id, params.id))
+      .returning();
+
+    return toReviewRecord(row);
+  }
+
+  async hideReview(params: {
+    id: number;
+    hiddenBy: ReviewHiddenBy;
+  }): Promise<ReviewRecord> {
+    const [row] = await this.drizzle.db
+      .update(productReviews)
+      .set({
+        hiddenAt: sql`now()`,
+        hiddenBy: params.hiddenBy,
+        updatedAt: new Date(),
+      })
+      .where(eq(productReviews.id, params.id))
+      .returning();
+
+    return toReviewRecord(row);
   }
 }

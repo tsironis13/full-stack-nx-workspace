@@ -1,5 +1,21 @@
-import type { ProductReviewsPage } from '../domain/public-api';
-import type { ProductReviewsPageWire } from '../infrastructure/public-api';
+import type { MyReview, ProductReviewsPage } from '../domain/public-api';
+import type {
+  MyReviewWire,
+  ProductReviewsPageWire,
+} from '../infrastructure/public-api';
+
+export function mapMyReviewFromWire(wire: MyReviewWire): MyReview {
+  return {
+    id: Number(wire.id),
+    productId: Number(wire.productId),
+    rating: Number(wire.rating),
+    title: wire.title,
+    body: wire.body,
+    authorDisplayName: wire.authorDisplayName,
+    createdAt: new Date(wire.createdAt),
+    updatedAt: new Date(wire.updatedAt),
+  };
+}
 
 export function mapProductReviewsFromWire(
   wire: ProductReviewsPageWire,
