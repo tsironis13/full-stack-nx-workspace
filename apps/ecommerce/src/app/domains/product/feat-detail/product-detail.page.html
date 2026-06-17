@@ -1,0 +1,99 @@
+<div class="product-detail">
+  <nav class="product-detail__nav">
+    <a routerLink="/catalog">Επιστροφή στον κατάλογο</a>
+  </nav>
+
+  <header class="product-detail__header">
+    <h1 class="product-detail__title">Προϊόν</h1>
+  </header>
+
+  <section
+    class="product-detail__reviews"
+    aria-labelledby="product-reviews-heading"
+  >
+    <h2 id="product-reviews-heading">Κριτικές</h2>
+
+    @if (store.loading()) {
+    <div class="product-detail__state" role="status" aria-live="polite">
+      <p-progressSpinner
+        aria-hidden="true"
+        styleClass="product-detail__spinner"
+      />
+      <span>Φόρτωση κριτικών…</span>
+    </div>
+    } @else if (store.error()) {
+    <div
+      class="product-detail__state product-detail__state--error"
+      role="alert"
+    >
+      <p>Δεν ήταν δυνατή η φόρτωση των κριτικών. Δοκιμάστε ξανά.</p>
+      <button
+        type="button"
+        class="product-detail__btn"
+        (click)="store.load(+id())"
+      >
+        Επανάληψη
+      </button>
+    </div>
+    } @else if (store.data(); as reviews) { @if (store.hasReviews()) {
+    <div class="product-detail__aggregate" [attr.aria-label]="aggregateLabel()">
+      <span class="product-detail__aggregate-score" aria-hidden="true">
+        {{ store.displayedAverageRating() }}★
+      </span>
+      <span class="product-detail__aggregate-count">
+        {{ reviews.reviewCount }} κριτικές
+      </span>
+    </div>
+    } @else {
+    <p class="product-detail__empty" role="status">
+      Δεν υπάρχουν κριτικές ακόμα
+    </p>
+    } @if (reviews.items.length > 0) {
+    <ul class="product-detail__review-list">
+      @for (review of reviews.items; track review.id) {
+      <li class="product-detail__review">
+        <div
+          class="product-detail__review-stars"
+          role="img"
+          [attr.aria-label]="reviewRatingAriaLabel(review.rating)"
+        >
+          @for (star of stars(); track star) {
+          <span
+            class="product-detail__star"
+            [class.product-detail__star--filled]="isStarFilled(star, review.rating)"
+            aria-hidden="true"
+          >
+            ★
+          </span>
+          }
+        </div>
+        <p class="product-detail__review-author">
+          {{ review.authorDisplayName }}
+        </p>
+        <time
+          class="product-detail__review-date"
+          [attr.datetime]="review.createdAt.toISOString()"
+        >
+          {{ formatReviewDate(review.createdAt) }}
+        </time>
+        @if (review.title) {
+        <h3 class="product-detail__review-title">{{ review.title }}</h3>
+        } @if (review.body) {
+        <p class="product-detail__review-body">{{ review.body }}</p>
+        }
+      </li>
+      }
+    </ul>
+
+    @if (reviews.total > reviews.pageSize) {
+    <p-paginator
+      [first]="(reviews.page - 1) * reviews.pageSize"
+      [rows]="reviews.pageSize"
+      [totalRecords]="reviews.total"
+      [rowsPerPageOptions]="[5, 10, 20]"
+      (onPageChange)="onPageChange($event)"
+      styleClass="product-detail__paginator"
+    />
+    } } }
+  </section>
+</div>

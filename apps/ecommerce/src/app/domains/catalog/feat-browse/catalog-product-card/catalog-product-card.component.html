@@ -1,14 +1,22 @@
 <div class="catalog-card__media">
-  <img
-    class="catalog-card__img"
-    [src]="item().primaryImageUrl || placeholderImage"
-    [alt]="item().name ?? 'Προϊόν'"
-    loading="lazy"
-    (error)="onImageError($event)"
-  />
+  <a
+    class="catalog-card__link"
+    [routerLink]="['/products', item().productId]"
+    [attr.aria-label]="'Προβολή ' + (item().name ?? 'προϊόντος')"
+  >
+    <img
+      class="catalog-card__img"
+      [src]="item().primaryImageUrl || placeholderImage"
+      [alt]="item().name ?? 'Προϊόν'"
+      loading="lazy"
+      (error)="onImageError($event)"
+    />
+  </a>
 </div>
 <div class="catalog-card__body">
-  <h3 class="catalog-card__name">{{ item().name ?? '—' }}</h3>
+  <h3 class="catalog-card__name">
+    <a [routerLink]="['/products', item().productId]">{{ item().name ?? '—' }}</a>
+  </h3>
   <p class="catalog-card__price">
     {{
       item().salePrice !== null && item().salePrice !== undefined

@@ -1,5 +1,6 @@
 import { CurrencyPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { injectDispatch } from '@ngrx/signals/events';
 
@@ -20,7 +21,7 @@ const PLACEHOLDER_IMAGE =
   templateUrl: './catalog-product-card.component.html',
   styleUrl: './catalog-product-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CurrencyPipe, ProgressSpinnerModule],
+  imports: [CurrencyPipe, ProgressSpinnerModule, RouterLink],
 })
 export class CatalogProductCardComponent {
   readonly item = input.required<CatalogListItem>();
