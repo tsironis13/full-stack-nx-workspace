@@ -22,6 +22,10 @@ export default [
         loadChildren: () =>
           import('../../domains/checkout/api/checkout.routes'),
       },
+      {
+        path: 'orders',
+        loadChildren: () => import('../../domains/orders/api/orders.routes'),
+      },
     ],
   },
   {

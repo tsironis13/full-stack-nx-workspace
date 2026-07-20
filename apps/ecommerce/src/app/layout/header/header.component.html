@@ -30,6 +30,12 @@
 
     <div *authIf="'connected'; else notConnectedTemplate; pending: loadingTemplate">
       <div class="flex flex-wrap items-center gap-2">
+        <a
+          routerLink="/orders"
+          class="text-sm hover:underline whitespace-nowrap px-1 text-[color:var(--p-primary-color)]"
+        >
+          Οι παραγγελίες μου
+        </a>
         <span
           class="text-sm text-gray-700 dark:text-gray-200 max-w-[14rem] truncate inline-block align-middle"
           [attr.title]="authStore.authUser()?.email ?? ''"
