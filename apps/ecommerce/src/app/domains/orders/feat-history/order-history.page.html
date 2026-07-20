@@ -1,0 +1,68 @@
+<div class="order-history">
+  <header class="order-history__header">
+    <h1 class="order-history__title">Οι παραγγελίες μου</h1>
+  </header>
+
+  @if (store.loading()) {
+  <div class="order-history__state" role="status" aria-live="polite">
+    <p-progressSpinner aria-hidden="true" styleClass="order-history__spinner" />
+    <span>Φόρτωση παραγγελιών…</span>
+  </div>
+  } @else if (store.error()) {
+  <div class="order-history__state order-history__state--error" role="alert">
+    <p>Δεν ήταν δυνατή η φόρτωση των παραγγελιών. Δοκιμάστε ξανά.</p>
+    <button
+      type="button"
+      class="order-history__btn"
+      (click)="store.load()"
+    >
+      Επανάληψη
+    </button>
+  </div>
+  } @else if (store.isEmpty()) {
+  <p class="order-history__empty" role="status">
+    Δεν έχεις ολοκληρωμένες παραγγελίες ακόμα.
+  </p>
+  } @else {
+  <ul class="order-history__orders">
+    @for (order of store.orders(); track order.orderId) {
+    <li class="order-history__order">
+      <div class="order-history__order-head">
+        <h2 class="order-history__order-id">Παραγγελία #{{ order.orderId }}</h2>
+        <time
+          class="order-history__order-date"
+          [attr.datetime]="order.createdAt.toISOString()"
+        >
+          {{ formatOrderDate(order.createdAt) }}
+        </time>
+        <span class="order-history__order-total">
+          {{ formatAmount(order.totalAmount) }}
+        </span>
+      </div>
+
+      <ul class="order-history__items">
+        @for (item of order.items; track item.productItemId) {
+        <li class="order-history__item">
+          <div class="order-history__item-info">
+            <span class="order-history__item-name">
+              {{ item.productName ?? 'Προϊόν' }}
+            </span>
+            <span class="order-history__item-qty">×{{ item.quantity }}</span>
+          </div>
+
+          @if (item.canReview) {
+          <a
+            class="order-history__review-cta"
+            [routerLink]="['/products', item.productId]"
+          >
+            {{ item.hasReview ? 'Επεξεργασία κριτικής' : 'Γράψε κριτική' }}
+          </a>
+          }
+        </li>
+        }
+      </ul>
+    </li>
+    }
+  </ul>
+  }
+</div>
