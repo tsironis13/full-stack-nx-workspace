@@ -1,6 +1,6 @@
 # PRD: Product Reviews and Ratings
 
-<!-- Source: grill-with-docs session + docs/ecommerce/CONTEXT.md + docs/ecommerce/adr/0001-product-reviews-and-verified-purchase.md. Publish with: gh issue create --title "PRD: Product Reviews and Ratings" --body-file docs/ecommerce/prd-product-reviews-and-ratings.md --label Sandcastle -->
+<!-- Source: domain-modeling-overlay session + docs/ecommerce/CONTEXT.md + docs/ecommerce/adr/0001-product-reviews-and-verified-purchase.md. Publish with: gh issue create --title "PRD: Product Reviews and Ratings" --body-file docs/ecommerce/prd-product-reviews-and-ratings.md --label Sandcastle -->
 
 ## Problem Statement
 
@@ -113,7 +113,9 @@ export const productReviews = pgTable(
   'product_reviews',
   {
     id: serial('id').primaryKey(),
-    productId: integer('product_id').notNull().references(() => products.id),
+    productId: integer('product_id')
+      .notNull()
+      .references(() => products.id),
     userId: uuid('user_id').notNull(),
     rating: smallint('rating').notNull(), // 1–5, CHECK in migration
     title: text('title'),
@@ -124,9 +126,7 @@ export const productReviews = pgTable(
     createdAt: timestamp('created_at').defaultNow(),
     updatedAt: timestamp('updated_at').defaultNow(),
   },
-  (t) => [
-    uniqueIndex('one_review_per_user_per_product').on(t.productId, t.userId),
-  ],
+  (t) => [uniqueIndex('one_review_per_user_per_product').on(t.productId, t.userId)],
 );
 ```
 
@@ -135,12 +135,12 @@ export const productReviews = pgTable(
 
 **`ecommerce-api` — new `reviews` module**
 
-| Layer | Responsibility |
-| ----- | -------------- |
-| Presentation | HTTP controllers, DTOs, auth guards |
-| Application | Submit/edit/delete review use cases; list reviews; eligibility query; verified-purchase checker port |
-| Domain | Review entity rules (rating range, hide semantics) |
-| Infrastructure | Drizzle repository; join `orders` / `order_items` / `product_items` for verification |
+| Layer          | Responsibility                                                                                       |
+| -------------- | ---------------------------------------------------------------------------------------------------- |
+| Presentation   | HTTP controllers, DTOs, auth guards                                                                  |
+| Application    | Submit/edit/delete review use cases; list reviews; eligibility query; verified-purchase checker port |
+| Domain         | Review entity rules (rating range, hide semantics)                                                   |
+| Infrastructure | Drizzle repository; join `orders` / `order_items` / `product_items` for verification                 |
 
 **Storefront HTTP contracts (`ecommerce-api`)**
 
@@ -164,12 +164,12 @@ export const productReviews = pgTable(
 
 **Angular — `ecommerce`**
 
-| Slice | Work |
-| ----- | ---- |
-| `domains/catalog` | Card stars + count; toolbar sort option **Highest rated**; rating threshold filter; extend `catalog-api.model` / mapper |
-| `domains/reviews` (new) or `domains/product` | Product detail page with review list, aggregate, submit/edit/delete form; `reviews-api.service` |
-| `domains/orders` or `domains/account` (new) | Order history page with review CTAs; routes under authenticated shell |
-| `auth-web` | Gate write actions; surface profile name for snapshot (derive first name + last initial client-side or accept server snapshot on response) |
+| Slice                                        | Work                                                                                                                                       |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `domains/catalog`                            | Card stars + count; toolbar sort option **Highest rated**; rating threshold filter; extend `catalog-api.model` / mapper                    |
+| `domains/reviews` (new) or `domains/product` | Product detail page with review list, aggregate, submit/edit/delete form; `reviews-api.service`                                            |
+| `domains/orders` or `domains/account` (new)  | Order history page with review CTAs; routes under authenticated shell                                                                      |
+| `auth-web`                                   | Gate write actions; surface profile name for snapshot (derive first name + last initial client-side or accept server snapshot on response) |
 
 - Product detail routing does not exist today — add lazy route (e.g. `/products/:id`) as part of this work.
 - Cross-domain: catalog does not own review writes; reviews domain owns mutations. Catalog only reads aggregates from list API.

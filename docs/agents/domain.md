@@ -1,6 +1,6 @@
 # Domain Docs
 
-How engineering agents should consume this repo's domain documentation when exploring the codebase. Canonical **shape and rules** for `CONTEXT.md` / `CONTEXT-MAP.md` live in [.cursor/skills/grill-with-docs/CONTEXT-FORMAT.md](../../.cursor/skills/grill-with-docs/CONTEXT-FORMAT.md); this file applies those **conventions** to navigation and behavior in agents.
+How engineering agents should consume this repo's domain documentation when exploring the codebase. Canonical **shape and rules** for `CONTEXT.md` / `CONTEXT-MAP.md` live in [.cursor/skills/domain-modeling-overlay/CONTEXT-FORMAT.md](../../.cursor/skills/domain-modeling-overlay/CONTEXT-FORMAT.md); this file applies those **conventions** to navigation and behavior in agents.
 
 ## Before exploring, read these
 
@@ -10,9 +10,9 @@ How engineering agents should consume this repo's domain documentation when expl
 
 3. **`docs/adr/`** — workspace-wide ADRs that touch the area you're about to work in.
 
-4. **`docs/<area>/adr/`** — optional context-scoped ADRs when the map or folder layout includes them (same numbering rules per area; see [ADR-FORMAT.md](../../.cursor/skills/grill-with-docs/ADR-FORMAT.md)).
+4. **`docs/<area>/adr/`** — optional context-scoped ADRs when the map or folder layout includes them (same numbering rules per area; see [ADR-FORMAT.md](../../.cursor/skills/domain-modeling-overlay/ADR-FORMAT.md)).
 
-If any of these files or folders don't exist, **proceed silently**. Don't flag their absence; don't suggest creating them upfront. The producer skill (`/grill-with-docs`) creates them lazily when terms or decisions actually get resolved.
+If any of these files or folders don't exist, **proceed silently**. Don't flag their absence; don't suggest creating them upfront. The producer skill (`/domain-modeling-overlay`) creates them lazily when terms or decisions actually get resolved.
 
 ## File structure (aligned with CONTEXT-FORMAT)
 
@@ -86,7 +86,7 @@ Match how authors are expected to write glossaries per CONTEXT-FORMAT:
 
 When your output names a domain concept (issue title, refactor proposal, hypothesis, test name), use the term as defined in the active `CONTEXT.md`. Don't drift to synonyms the glossary explicitly avoids.
 
-If the concept you need isn't in the glossary yet, that's a signal — either you're inventing language the project doesn't use (reconsider) or there's a real gap (note it for `/grill-with-docs`).
+If the concept you need isn't in the glossary yet, that's a signal — either you're inventing language the project doesn't use (reconsider) or there's a real gap (note it for `/domain-modeling-overlay`).
 
 ## Angular cross-domain writes (ecommerce-style)
 

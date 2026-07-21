@@ -6,8 +6,8 @@ This Nx workspace ships several applications and libraries. **Domain language** 
 
 Each third column lists **Nx project IDs**: the `name` field from each project’s `project.json` / `package.json` — the same identifiers you use in `nx run <name>:<target>` and in `nx graph`.
 
-| Context        | Language file                                            | Nx project IDs for this context                                                                                     |
-| -------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| Context        | Language file                                            | Nx project IDs for this context                                                                                                                       |
+| -------------- | -------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **E-commerce** | [docs/ecommerce/CONTEXT.md](./docs/ecommerce/CONTEXT.md) | Primary: `ecommerce`, `ecommerce-api`, `business-portal`, `business-portal-api`, `store`, `api`. Shared libs used here: `auth`, `auth-web`, `shared`. |
 
 Add a new row here when a bounded context gets its own glossary (e.g. a separate product with different domain language).
@@ -16,10 +16,10 @@ Add a new row here when a bounded context gets its own glossary (e.g. a separate
 
 These documents apply across Nx apps and libraries. They are **not** domain `CONTEXT.md` files and do not define product language; they describe **how** the repo is shaped and built.
 
-| Document | Scope |
-| -------- | ----- |
+| Document                                                               | Scope                                                                                                                |
+| ---------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
 | [docs/front-end-infrastructure.md](./docs/front-end-infrastructure.md) | Angular apps, DDD-oriented layering, ESLint / module boundaries, shared `libs/` patterns for the monorepo front end. |
-| [docs/nestjs-architecture.md](./docs/nestjs-architecture.md) | NestJS + Drizzle, modular monolith / clean-architecture patterns for backend apps in this workspace. |
+| [docs/nestjs-architecture.md](./docs/nestjs-architecture.md)           | NestJS + Drizzle, modular monolith / clean-architecture patterns for backend apps in this workspace.                 |
 
 Keep them at **`docs/<doc>.md`** (top-level under `docs/`), not under `docs/ecommerce/`, unless you later split a doc so it only applies to one product.
 
@@ -31,7 +31,7 @@ Keep them at **`docs/<doc>.md`** (top-level under `docs/`), not under `docs/ecom
 
 ## ADRs
 
-- Workspace-wide or cross-context decisions: `docs/adr/` (see [.cursor/skills/grill-with-docs/ADR-FORMAT.md](.cursor/skills/grill-with-docs/ADR-FORMAT.md)).
+- Workspace-wide or cross-context decisions: `docs/adr/` (see [.cursor/skills/domain-modeling-overlay/ADR-FORMAT.md](.cursor/skills/domain-modeling-overlay/ADR-FORMAT.md)).
 - Decisions that only concern the e-commerce model: optional `docs/ecommerce/adr/`, same numbering style locally, or reference the workspace series if you prefer a single stream.
 
 ## Discoverability
