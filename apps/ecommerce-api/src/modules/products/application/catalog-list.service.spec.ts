@@ -69,6 +69,7 @@ describe('CatalogListService', () => {
       salePriceMin: undefined,
       salePriceMax: undefined,
       attributeFilters: undefined,
+      minRating: undefined,
     });
     expect(findAttributeFacets).toHaveBeenCalledWith({
       q: undefined,
@@ -76,6 +77,7 @@ describe('CatalogListService', () => {
       salePriceMin: undefined,
       salePriceMax: undefined,
       attributeFilters: undefined,
+      minRating: undefined,
     });
     expect(res.total).toBe(2);
     expect(res.items).toHaveLength(1);
@@ -147,6 +149,7 @@ describe('CatalogListService', () => {
       salePriceMin: undefined,
       salePriceMax: undefined,
       attributeFilters: undefined,
+      minRating: undefined,
     });
   });
 
@@ -174,6 +177,7 @@ describe('CatalogListService', () => {
       salePriceMin: 10.5,
       salePriceMax: 99,
       attributeFilters: undefined,
+      minRating: undefined,
     });
   });
 
@@ -318,5 +322,128 @@ describe('CatalogListService', () => {
       { id: 2, name: 'B' },
       { id: 1, name: 'A' },
     ]);
+  });
+
+  it('maps averageRating and reviewCount onto catalog list items', async () => {
+    findCatalogPage.mockResolvedValue({
+      total: 2,
+      rows: [
+        {
+          productId: 1,
+          name: 'Rated',
+          mainProductItemId: 10,
+          salePrice: 12.5,
+          originalPrice: 20,
+          primaryImageUrl: null,
+          additionalOptionsCount: 0,
+          averageRating: 4.5,
+          reviewCount: 2,
+        },
+        {
+          productId: 2,
+          name: 'Unrated',
+          mainProductItemId: 11,
+          salePrice: 9,
+          originalPrice: null,
+          primaryImageUrl: null,
+          additionalOptionsCount: 0,
+          averageRating: null,
+          reviewCount: 0,
+        },
+      ],
+    });
+
+    const res = await service.list({
+      page: 1,
+      pageSize: 12,
+      sort: CatalogSort.newest,
+    });
+
+    expect(res.items[0]).toMatchObject({
+      productId: 1,
+      averageRating: 4.5,
+      reviewCount: 2,
+    });
+    expect(res.items[1]).toMatchObject({
+      productId: 2,
+      averageRating: null,
+      reviewCount: 0,
+    });
+  });
+
+  it('passes rating_desc sort and minRating with other filters to the repository', async () => {
+    isActiveRootCategory.mockResolvedValue(true);
+    findCatalogPage.mockResolvedValue({ total: 0, rows: [] });
+
+    await service.list({
+      page: 1,
+      pageSize: 12,
+      sort: CatalogSort.rating_desc,
+      q: 'shirt',
+      categoryRootId: 3,
+      minSalePrice: '10',
+      maxSalePrice: '50',
+      rawAttributeFilters: '1:10',
+      minRating: 4,
+    });
+
+    expect(findCatalogPage).toHaveBeenCalledWith({
+      page: 1,
+      pageSize: 12,
+      sort: CatalogSort.rating_desc,
+      q: 'shirt',
+      categoryRootId: 3,
+      salePriceMin: 10,
+      salePriceMax: 50,
+      attributeFilters: [{ attributeId: 1, valueId: 10 }],
+      minRating: 4,
+    });
+    expect(findAttributeFacets).toHaveBeenCalledWith({
+      q: 'shirt',
+      categoryRootId: 3,
+      salePriceMin: 10,
+      salePriceMax: 50,
+      attributeFilters: [{ attributeId: 1, valueId: 10 }],
+      minRating: 4,
+    });
+  });
+
+  it('rejects minRating below 1', async () => {
+    await expect(
+      service.list({
+        page: 1,
+        pageSize: 12,
+        sort: CatalogSort.newest,
+        minRating: 0,
+      })
+    ).rejects.toBeInstanceOf(BadRequestException);
+
+    expect(findCatalogPage).not.toHaveBeenCalled();
+  });
+
+  it('rejects minRating above 5', async () => {
+    await expect(
+      service.list({
+        page: 1,
+        pageSize: 12,
+        sort: CatalogSort.newest,
+        minRating: 6,
+      })
+    ).rejects.toBeInstanceOf(BadRequestException);
+
+    expect(findCatalogPage).not.toHaveBeenCalled();
+  });
+
+  it('rejects non-integer minRating', async () => {
+    await expect(
+      service.list({
+        page: 1,
+        pageSize: 12,
+        sort: CatalogSort.newest,
+        minRating: 3.5,
+      })
+    ).rejects.toBeInstanceOf(BadRequestException);
+
+    expect(findCatalogPage).not.toHaveBeenCalled();
   });
 });

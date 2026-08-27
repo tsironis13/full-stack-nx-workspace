@@ -1,4 +1,4 @@
-export type CatalogSort = 'newest' | 'price_asc' | 'price_desc';
+export type CatalogSort = 'newest' | 'price_asc' | 'price_desc' | 'rating_desc';
 
 export interface CatalogListItem {
   productId: number;
@@ -8,6 +8,10 @@ export interface CatalogListItem {
   originalPrice: number | null;
   primaryImageUrl: string | null;
   additionalOptionsCount: number;
+  /** Exact average of non-hidden reviews; `null` when unrated. */
+  averageRating: number | null;
+  /** Count of non-hidden reviews (0 when unrated). */
+  reviewCount: number;
 }
 
 /** One selectable value within a dynamic attribute facet. */

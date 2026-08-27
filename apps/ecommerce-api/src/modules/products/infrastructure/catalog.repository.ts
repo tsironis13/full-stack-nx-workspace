@@ -6,6 +6,7 @@ import { attributes } from '../../../db/schema/attributes';
 import { productCategories } from '../../../db/schema/product-categories';
 import { productItemAttributes } from '../../../db/schema/product_item_attributes';
 import { productItems } from '../../../db/schema/product-items';
+import { productReviews } from '../../../db/schema/product-reviews';
 import { products } from '../../../db/schema/products';
 import { DrizzleService } from '../../../drizzle/drizzle.service';
 
@@ -21,7 +22,24 @@ export type CatalogListRow = {
   originalPrice: number | null;
   primaryImageUrl: string | null;
   additionalOptionsCount: number;
+  averageRating: number | null;
+  reviewCount: number;
 };
+
+/** Exact average / count over non-hidden reviews for a product (correlated). */
+const averageRatingSql = sql<number | null>`(
+  select avg(${productReviews.rating})::float8
+  from ${productReviews}
+  where ${productReviews.productId} = ${products.id}
+    and ${productReviews.hiddenAt} is null
+)`;
+
+const reviewCountSql = sql<number>`coalesce((
+  select count(*)::int
+  from ${productReviews}
+  where ${productReviews.productId} = ${products.id}
+    and ${productReviews.hiddenAt} is null
+), 0)`;
 
 @Injectable()
 export class CatalogRepository {
@@ -69,6 +87,7 @@ export class CatalogRepository {
     salePriceMin?: number;
     salePriceMax?: number;
     attributeFilters?: AttributeFilter[];
+    minRating?: number;
   }): Promise<{ rows: CatalogListRow[]; total: number }> {
     const {
       page,
@@ -79,6 +98,7 @@ export class CatalogRepository {
       salePriceMin,
       salePriceMax,
       attributeFilters,
+      minRating,
     } = params;
     const offset = (page - 1) * pageSize;
 
@@ -89,12 +109,12 @@ export class CatalogRepository {
     );
 
     const whereClause = this.buildBaseWhere(
-      joinMainItem,
       q,
       categoryRootId,
       salePriceMin,
       salePriceMax,
-      attributeFilters
+      attributeFilters,
+      minRating
     );
 
     const orderBy =
@@ -102,7 +122,9 @@ export class CatalogRepository {
         ? [desc(products.createdAt)]
         : sort === CatalogSort.price_asc
           ? [asc(productItems.salePrice)]
-          : [desc(productItems.salePrice)];
+          : sort === CatalogSort.price_desc
+            ? [desc(productItems.salePrice)]
+            : [sql`${averageRatingSql} desc nulls last`];
 
     const rows = await this.drizzle.db
       .select({
@@ -123,6 +145,8 @@ export class CatalogRepository {
           where pi2.product_id = ${products.id}
           and pi2.deleted_at is null
         ))`,
+        averageRating: averageRatingSql,
+        reviewCount: reviewCountSql,
       })
       .from(products)
       .innerJoin(productItems, joinMainItem)
@@ -141,6 +165,9 @@ export class CatalogRepository {
       rows: rows.map((r) => ({
         ...r,
         additionalOptionsCount: Number(r.additionalOptionsCount),
+        averageRating:
+          r.averageRating == null ? null : Number(r.averageRating),
+        reviewCount: Number(r.reviewCount),
       })),
       total: Number(countRow?.c ?? 0),
     };
@@ -162,8 +189,9 @@ export class CatalogRepository {
     salePriceMin?: number;
     salePriceMax?: number;
     attributeFilters?: AttributeFilter[];
+    minRating?: number;
   }): Promise<CatalogAttributeFacet[]> {
-    const { q, categoryRootId, salePriceMin, salePriceMax, attributeFilters } =
+    const { q, categoryRootId, salePriceMin, salePriceMax, attributeFilters, minRating } =
       params;
 
     const joinMainItem = and(
@@ -173,12 +201,12 @@ export class CatalogRepository {
     );
 
     const baseWhere = this.buildBaseWhere(
-      joinMainItem,
       q,
       categoryRootId,
       salePriceMin,
       salePriceMax,
-      attributeFilters
+      attributeFilters,
+      minRating
     );
 
     // Join through ALL (non-deleted) product items to pick up all attribute values,
@@ -235,16 +263,16 @@ export class CatalogRepository {
   /**
    * Builds the shared WHERE clause used by both `findCatalogPage` and
    * `findAttributeFacets`. The caller must have already joined `productItems`
-   * with the `joinMainItem` condition so that `productItems` columns are in scope
+   * with the main-item condition so that `productItems` columns are in scope
    * for the price-range predicates.
    */
   private buildBaseWhere(
-    joinMainItem: ReturnType<typeof and>,
     q: string | undefined,
     categoryRootId: number | undefined,
     salePriceMin: number | undefined,
     salePriceMax: number | undefined,
-    attributeFilters: AttributeFilter[] | undefined
+    attributeFilters: AttributeFilter[] | undefined,
+    minRating: number | undefined
   ) {
     const filters: ReturnType<typeof isNull>[] = [isNull(products.deletedAt)];
     const trimmed = q?.trim();
@@ -259,6 +287,11 @@ export class CatalogRepository {
     }
     if (salePriceMax !== undefined) {
       filters.push(lte(productItems.salePrice, salePriceMax));
+    }
+
+    // Exact average >= minRating; NULL (unrated) fails the comparison and is excluded.
+    if (minRating !== undefined) {
+      filters.push(sql`${averageRatingSql} >= ${minRating}`);
     }
 
     // AND across attributes: for each active filter add an EXISTS subquery that

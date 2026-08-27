@@ -1,0 +1,39 @@
+.catalog-browse__facet {
+  margin-bottom: var(--spacing-100, 1rem);
+}
+
+.catalog-browse__facet-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.catalog-browse__facet-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.catalog-browse__chip {
+  min-height: 2rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--p-content-border-color, #e5e7eb);
+  background: var(--p-content-background, #fff);
+  color: inherit;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+.catalog-browse__chip--active {
+  border-color: var(--p-primary-color, #2563eb);
+  background: var(--p-primary-color, #2563eb);
+  color: var(--p-primary-contrast-color, #fff);
+}
+
+.catalog-browse__facet-help {
+  margin: 0.5rem 0 0;
+  font-size: 0.8rem;
+  color: var(--p-text-muted-color, #6b7280);
+}

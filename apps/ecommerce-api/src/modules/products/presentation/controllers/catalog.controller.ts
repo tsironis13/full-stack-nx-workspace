@@ -38,6 +38,11 @@ export class CatalogController {
     @Query('minSalePrice') minSalePrice?: string,
     @Query('maxSalePrice') maxSalePrice?: string,
     /**
+     * Inclusive minimum exact average rating (1–5). Excludes unrated products.
+     */
+    @Query('minRating', new ParseIntPipe({ optional: true }))
+    minRating?: number,
+    /**
      * Attribute filter(s) in `"attributeId:valueId"` format. May appear multiple
      * times for different attributes (AND semantics). v1 is single-select per
      * attribute. Example: `?attributeFilter=1:5&attributeFilter=2:10`
@@ -52,6 +57,7 @@ export class CatalogController {
       categoryRootId,
       minSalePrice,
       maxSalePrice,
+      minRating,
       rawAttributeFilters: attributeFilter,
     });
   }

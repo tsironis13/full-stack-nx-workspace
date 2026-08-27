@@ -17,6 +17,19 @@
   <h3 class="catalog-card__name">
     <a [routerLink]="['/products', item().productId]">{{ item().name ?? '—' }}</a>
   </h3>
+  @if (hasRating()) {
+    <p
+      class="catalog-card__rating"
+      [attr.aria-label]="ratingAriaLabel()"
+    >
+      <span class="catalog-card__rating-score" aria-hidden="true">
+        {{ displayedAverageRating() }}★
+      </span>
+      <span class="catalog-card__rating-count" aria-hidden="true">
+        ({{ item().reviewCount }})
+      </span>
+    </p>
+  }
   <p class="catalog-card__price">
     {{
       item().salePrice !== null && item().salePrice !== undefined

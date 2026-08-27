@@ -6,6 +6,10 @@ export type {
   CatalogListResponse,
   CatalogSort,
 } from '../domain/public-api';
+export {
+  catalogCardRatingAriaLabel,
+  formatAverageRatingForDisplay,
+} from '../domain/public-api';
 
 /**
  * Cart ACL surface re-exported here so **catalog feature** components can import

@@ -5,3 +5,7 @@ export type {
   CatalogListResponse,
   CatalogSort,
 } from './catalog.models';
+export {
+  catalogCardRatingAriaLabel,
+  formatAverageRatingForDisplay,
+} from './catalog-rating-display';

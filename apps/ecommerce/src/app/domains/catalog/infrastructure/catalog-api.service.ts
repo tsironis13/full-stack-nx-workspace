@@ -22,6 +22,8 @@ export class CatalogApiService {
     categoryRootId?: number;
     salePriceMin?: number | null;
     salePriceMax?: number | null;
+    /** Inclusive min exact average rating (1–5); omit when unset. */
+    minRating?: number | null;
     /** Active attribute filters: map of attributeId → selected valueId. */
     attributeFilters?: Record<number, number>;
   }): Observable<CatalogListResponseWire> {
@@ -58,6 +60,9 @@ export class CatalogApiService {
         'maxSalePrice',
         String(params.salePriceMax)
       );
+    }
+    if (params.minRating !== undefined && params.minRating !== null) {
+      httpParams = httpParams.set('minRating', String(params.minRating));
     }
     if (params.attributeFilters) {
       for (const [attributeId, valueId] of Object.entries(params.attributeFilters)) {
