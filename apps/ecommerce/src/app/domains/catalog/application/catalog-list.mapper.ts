@@ -13,6 +13,9 @@ export function mapCatalogListFromWire(
       originalPrice: item.originalPrice,
       primaryImageUrl: item.primaryImageUrl,
       additionalOptionsCount: Number(item.additionalOptionsCount),
+      averageRating:
+        item.averageRating == null ? null : Number(item.averageRating),
+      reviewCount: Number(item.reviewCount ?? 0),
     })),
     total: Number(wire.total),
     page: Number(wire.page),

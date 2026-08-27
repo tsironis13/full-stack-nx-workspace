@@ -2,6 +2,8 @@ export enum CatalogSort {
   newest = 'newest',
   price_asc = 'price_asc',
   price_desc = 'price_desc',
+  /** Exact average rating descending; unrated products last. */
+  rating_desc = 'rating_desc',
 }
 
 /**
@@ -50,6 +52,11 @@ export interface CatalogListQuery {
    * **Product Item** carrying the specified attribute value.
    */
   attributeFilters?: AttributeFilter[];
+  /**
+   * Inclusive minimum exact average **Rating** (1–5). Excludes unrated products
+   * and those below the threshold. Sort/filter use full precision (not display rounding).
+   */
+  minRating?: number;
 }
 
 /** HTTP/controller input; raw query strings are normalized in `CatalogListService`. */

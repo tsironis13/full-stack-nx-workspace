@@ -9,7 +9,11 @@ export interface CatalogCategoryRootsResponseWire {
 }
 
 /** Query sort values accepted by GET /api/products/catalog (wire contract). */
-export type CatalogListSortParam = 'newest' | 'price_asc' | 'price_desc';
+export type CatalogListSortParam =
+  | 'newest'
+  | 'price_asc'
+  | 'price_desc'
+  | 'rating_desc';
 
 /** Single catalog row as returned by the HTTP API (may diverge from domain over time). */
 export interface CatalogListItemWire {
@@ -20,6 +24,8 @@ export interface CatalogListItemWire {
   originalPrice: number | null;
   primaryImageUrl: string | null;
   additionalOptionsCount: number;
+  averageRating: number | null;
+  reviewCount: number;
 }
 
 /** One selectable value within an attribute facet (wire contract). */

@@ -1,0 +1,33 @@
+<div
+  class="catalog-browse__facet"
+  role="group"
+  aria-label="Ελάχιστη βαθμολογία"
+>
+  <span class="catalog-browse__facet-label">Ελάχιστη βαθμολογία</span>
+  <div class="catalog-browse__facet-chips">
+    <button
+      type="button"
+      class="catalog-browse__chip"
+      [class.catalog-browse__chip--active]="selectedMinRating() === null"
+      (click)="minRatingSelected.emit(null)"
+    >
+      Όλα
+    </button>
+    @for (option of options; track option.value) {
+      <button
+        type="button"
+        class="catalog-browse__chip"
+        [class.catalog-browse__chip--active]="
+          selectedMinRating() === option.value
+        "
+        (click)="minRatingSelected.emit(option.value)"
+      >
+        {{ option.label }}
+      </button>
+    }
+  </div>
+  <p class="catalog-browse__facet-help">
+    Εμφανίζονται μόνο προϊόντα με μέση βαθμολογία ίση ή μεγαλύτερη από το όριο
+    (χωρίς βαθμολογία αποκλείονται).
+  </p>
+</div>

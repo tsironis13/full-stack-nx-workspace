@@ -6,6 +6,10 @@ export class CatalogListItemDto {
   originalPrice!: number | null;
   primaryImageUrl!: string | null;
   additionalOptionsCount!: number;
+  /** Exact average of non-hidden reviews; `null` when the product is unrated. */
+  averageRating!: number | null;
+  /** Count of non-hidden reviews (0 when unrated). */
+  reviewCount!: number;
 }
 
 export class AttributeFacetValueDto {

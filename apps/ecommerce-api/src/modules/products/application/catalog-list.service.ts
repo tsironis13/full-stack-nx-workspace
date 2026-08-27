@@ -39,6 +39,7 @@ export class CatalogListService {
     );
 
     const attributeFilters = this.parseAttributeFilters(query.rawAttributeFilters);
+    const minRating = this.parseMinRating(query.minRating);
 
     const facetParams = {
       q: query.q,
@@ -46,6 +47,7 @@ export class CatalogListService {
       salePriceMin,
       salePriceMax,
       attributeFilters,
+      minRating,
     };
 
     const [{ rows, total }, facets] = await Promise.all([
@@ -67,12 +69,26 @@ export class CatalogListService {
         originalPrice: r.originalPrice,
         primaryImageUrl: r.primaryImageUrl,
         additionalOptionsCount: r.additionalOptionsCount,
+        averageRating: r.averageRating,
+        reviewCount: r.reviewCount,
       })),
       total,
       page,
       pageSize,
       facets,
     };
+  }
+
+  private parseMinRating(raw?: number): number | undefined {
+    if (raw === undefined || raw === null) {
+      return undefined;
+    }
+    if (!Number.isInteger(raw) || raw < 1 || raw > 5) {
+      throw new BadRequestException(
+        'minRating must be an integer between 1 and 5'
+      );
+    }
+    return raw;
   }
 
   private parseSalePriceRange(

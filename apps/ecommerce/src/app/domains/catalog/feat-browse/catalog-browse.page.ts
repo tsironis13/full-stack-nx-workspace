@@ -12,6 +12,7 @@ import { CatalogBrowseStore, type CatalogSort } from '../application/public-api'
 import { CatalogAttributeFacetsComponent } from './catalog-attribute-facets/catalog-attribute-facets.component';
 import { CatalogBrowseToolbarComponent } from './catalog-browse-toolbar/catalog-browse-toolbar.component';
 import { CatalogCategoryFacetComponent } from './catalog-category-facet/catalog-category-facet.component';
+import { CatalogMinRatingFacetComponent } from './catalog-min-rating-facet/catalog-min-rating-facet.component';
 import { CatalogPriceBandComponent } from './catalog-price-band/catalog-price-band.component';
 import { CatalogProductCardComponent } from './catalog-product-card/catalog-product-card.component';
 
@@ -24,6 +25,7 @@ import { CatalogProductCardComponent } from './catalog-product-card/catalog-prod
     CatalogAttributeFacetsComponent,
     CatalogBrowseToolbarComponent,
     CatalogCategoryFacetComponent,
+    CatalogMinRatingFacetComponent,
     CatalogPriceBandComponent,
     CatalogProductCardComponent,
     PaginatorModule,
@@ -37,6 +39,7 @@ export class CatalogBrowsePageComponent implements OnInit {
     { value: 'newest', label: 'Νεότερα' },
     { value: 'price_asc', label: 'Τιμή (αύξουσα)' },
     { value: 'price_desc', label: 'Τιμή (φθίνουσα)' },
+    { value: 'rating_desc', label: 'Υψηλότερη βαθμολογία' },
   ];
 
   ngOnInit(): void {

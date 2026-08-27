@@ -28,6 +28,11 @@
     (priceRangeChanged)="store.setSalePriceRange($event.min, $event.max)"
   />
 
+  <app-catalog-min-rating-facet
+    [selectedMinRating]="store.minRating()"
+    (minRatingSelected)="store.setMinRating($event)"
+  />
+
   @if (store.facets().length > 0) {
     <app-catalog-attribute-facets
       [facets]="store.facets()"

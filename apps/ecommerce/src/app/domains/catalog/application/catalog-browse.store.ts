@@ -26,6 +26,10 @@ type CatalogBrowseState = {
   /** Inclusive max **Sale Price** (main item); `null` = no upper bound. */
   salePriceMax: number | null;
   /**
+   * Inclusive minimum exact average **Rating** (1–5); `null` = no rating filter.
+   */
+  minRating: number | null;
+  /**
    * Active attribute filters: map of `attributeId` → selected `valueId`.
    * v1 is single-select per attribute (AND across attributes).
    */
@@ -46,6 +50,7 @@ const initialState: CatalogBrowseState = {
   selectedCategoryRootId: null,
   salePriceMin: null,
   salePriceMax: null,
+  minRating: null,
   selectedAttributeFilters: {},
   categoryRoots: [],
   categoryRootsLoading: false,
@@ -83,6 +88,7 @@ export const CatalogBrowseStore = signalStore(
                 categoryRootId === null ? undefined : categoryRootId,
               salePriceMin: store.salePriceMin(),
               salePriceMax: store.salePriceMax(),
+              minRating: store.minRating(),
               attributeFilters:
                 Object.keys(filters).length > 0 ? filters : undefined,
             })
@@ -163,6 +169,17 @@ export const CatalogBrowseStore = signalStore(
           salePriceMax,
           page: 1,
         });
+        load();
+      },
+      /**
+       * Set (or clear) the minimum exact average rating filter.
+       * Passing `null` clears the filter. Values are 1–5.
+       */
+      setMinRating(minRating: number | null) {
+        if (store.minRating() === minRating) {
+          return;
+        }
+        patchState(store, { minRating, page: 1 });
         load();
       },
       /**
