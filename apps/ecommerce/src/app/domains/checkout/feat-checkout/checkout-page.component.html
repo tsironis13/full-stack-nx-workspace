@@ -225,9 +225,8 @@
       <!-- Inline error message -->
       @if (status() === 'error') {
         <p-message
-          severity="error"
-          [text]="error() ?? 'Παρουσιάστηκε σφάλμα. Παρακαλώ δοκιμάστε ξανά.'"
-        />
+          severity="error"          
+        >Παρουσιάστηκε σφάλμα. Παρακαλώ δοκιμάστε ξανά.</p-message>
       }
 
       <!-- Submit -->
