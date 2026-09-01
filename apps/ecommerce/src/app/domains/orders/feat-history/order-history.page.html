@@ -5,7 +5,7 @@
 
   @if (store.loading()) {
   <div class="order-history__state" role="status" aria-live="polite">
-    <p-progressSpinner aria-hidden="true" styleClass="order-history__spinner" />
+    <p-progress-spinner  aria-hidden="true" styleClass="order-history__spinner" />
     <span>Φόρτωση παραγγελιών…</span>
   </div>
   } @else if (store.error()) {

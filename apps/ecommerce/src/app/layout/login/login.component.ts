@@ -25,7 +25,7 @@ export class LoginComponent {
   private readonly router = inject(Router);
 
   protected readonly onSuccessUserLoginEffect = effect(() => {
-    const authUser = this.authStore.authUser();
+    const authUser = this.authStore.authUser();    
 
     // email: 'tsiro1@hotmail.com',
     //   password: 'sxtvttio',
@@ -35,7 +35,7 @@ export class LoginComponent {
   });
 
   protected readonly loginForm = form(
-    this.authStore.loginForm as WritableSignal<{
+    this.authStore.loginForm as unknown as WritableSignal<{
       email: string;
       password: string;
     }>,

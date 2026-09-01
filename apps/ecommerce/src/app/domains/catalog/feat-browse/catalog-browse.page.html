@@ -44,7 +44,7 @@
 
   @if (store.loading()) {
     <div class="catalog-browse__state" role="status" aria-live="polite">
-      <p-progressSpinner aria-hidden="true" styleClass="catalog-browse__spinner" />
+      <p-progress-spinner aria-hidden="true" styleClass="catalog-browse__spinner" />
       <span>Φόρτωση καταλόγου…</span>
     </div>
   } @else if (store.error()) {

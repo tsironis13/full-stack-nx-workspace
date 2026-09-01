@@ -59,7 +59,7 @@
     </button>
     <span class="catalog-card__cart-qty" aria-live="polite" aria-atomic="true">
       @if (lineServerMutationPending()) {
-        <p-progressSpinner strokeWidth="4" styleClass="catalog-card__qty-spinner" />
+        <p-progress-spinner  strokeWidth="4" styleClass="catalog-card__qty-spinner" />
       } @else {
         {{ cartQuantity() }}
       }
