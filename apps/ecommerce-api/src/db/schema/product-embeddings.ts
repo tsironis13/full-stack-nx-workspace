@@ -1,24 +1,24 @@
-import {
-  pgTable,
-  serial,
-  timestamp,
-  integer,
-  vector,
-} from 'drizzle-orm/pg-core';
+/**
+ * One 1024D embedding row per Product, produced by Qwen3-Embedding-0.6B via
+ * LM Studio. `content` is the exact document that was embedded.
+ */
+import { pgTable, integer, text, timestamp, vector } from 'drizzle-orm/pg-core';
 import { InferSelectModel } from 'drizzle-orm';
 
-import { productCategories } from './product-categories';
 import { products } from './products';
 
+/** Qwen3-Embedding-0.6B output size (LM Studio: text-embedding-qwen3-embedding-0.6b). */
+export const PRODUCT_EMBEDDING_DIMENSIONS = 1024;
+
 export const productEmbeddings = pgTable('product_embeddings', {
-  id: serial('id').primaryKey(),
   productId: integer('product_id')
-    .notNull()
+    .primaryKey()
     .references(() => products.id, { onDelete: 'cascade' }),
-  categoryId: integer('category_id')
-    .notNull()
-    .references(() => productCategories.id, { onDelete: 'cascade' }),
-  embedding: vector('embedding', { dimensions: 1536 }),
+  content: text('content').notNull(),
+  embedding: vector('embedding', {
+    dimensions: PRODUCT_EMBEDDING_DIMENSIONS,
+  }).notNull(),
+  model: text('model').notNull(),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 });

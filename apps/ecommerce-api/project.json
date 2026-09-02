@@ -39,6 +39,21 @@
       "options": {
         "passWithNoTests": true
       }
+    },
+    "build-product-embeddings-cli": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "webpack-cli build --config webpack.cli.config.js",
+        "cwd": "apps/ecommerce-api"
+      }
+    },
+    "product-embeddings": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build-product-embeddings-cli"],
+      "options": {
+        "command": "node dist/apps/ecommerce-api-cli/main.js {args}",
+        "cwd": "{workspaceRoot}"
+      }
     }
   }
 }
