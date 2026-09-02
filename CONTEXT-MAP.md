@@ -27,6 +27,7 @@ Keep them at **`docs/<doc>.md`** (top-level under `docs/`), not under `docs/ecom
 
 - **Storefront vs business portal** — **Two** storefront Angular applications target shoppers; **`business-portal`** targets **Admin User** workflows. All implement the **E-commerce** context described in `docs/ecommerce/CONTEXT.md`; they are different UIs over the same domain, not separate glossaries today.
 - **APIs** — **`ecommerce-api`** exposes HTTP for **both** storefront Angular applications. **`business-portal-api`** exposes HTTP for **`business-portal`** only. Domain terms in `docs/ecommerce/CONTEXT.md` apply across these clients unless you split a context later.
+- **Shopping Assistant vs storefront catalog** — Need-language **Product recommendations** are a **Shopping Assistant** behavior (chat in **`ecommerce`**, ranking HTTP on **`ecommerce-api`**). **Storefront catalog search** stays **`products.name`** only. Same e-commerce glossary; different shopper entry points.
 - **Libraries** — `libs/auth`, `libs/auth-web`, and `libs/shared` provide technical capabilities; they do not define a parallel domain context until you add a dedicated `CONTEXT.md` for them.
 
 ## ADRs
