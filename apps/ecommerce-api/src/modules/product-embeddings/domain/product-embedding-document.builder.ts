@@ -19,7 +19,7 @@ export class ProductEmbeddingDocumentBuilder {
     pushLabeled(lines, 'About', source.about);
     pushLabeled(lines, 'Care', source.careInstructions);
 
-    const options = formatAttributes(source.attributes);
+    const options = formatProductEmbeddingOptions(source.attributes);
     if (options) {
       lines.push(`Options: ${options}`);
     }
@@ -43,7 +43,9 @@ function pushLabeled(
   }
 }
 
-function formatAttributes(attributes: ProductEmbeddingAttribute[]): string {
+export function formatProductEmbeddingOptions(
+  attributes: ProductEmbeddingAttribute[]
+): string {
   const valuesByName = new Map<string, string[]>();
 
   for (const attribute of attributes) {

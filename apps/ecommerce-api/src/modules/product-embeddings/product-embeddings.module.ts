@@ -1,6 +1,7 @@
 /**
  * Nest module for Product semantic search: index + query use cases wired to
- * Drizzle and the LM Studio embedding client. No HTTP controller yet.
+ * Drizzle and the LM Studio embedding client. HTTP is Shopping Assistant
+ * retrieval only — not storefront catalog `q`.
  */
 import { Module } from '@nestjs/common';
 
@@ -12,8 +13,10 @@ import { ProductEmbeddingsRepository } from './domain/repositories/product-embed
 import { DrizzleProductEmbeddingSourceRepository } from './infrastructure/drizzle-product-embedding-source.repository';
 import { DrizzleProductEmbeddingsRepository } from './infrastructure/drizzle-product-embeddings.repository';
 import { LmStudioEmbeddingClient } from './infrastructure/lm-studio-embedding.client';
+import { ProductEmbeddingsSearchController } from './presentation/controllers/product-embeddings-search.controller';
 
 @Module({
+  controllers: [ProductEmbeddingsSearchController],
   providers: [
     IndexProductEmbeddingsUseCase,
     SearchProductEmbeddingsUseCase,

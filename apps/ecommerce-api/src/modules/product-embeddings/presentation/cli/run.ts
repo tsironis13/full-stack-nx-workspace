@@ -66,13 +66,16 @@ async function main(): Promise<void> {
     Logger.log(
       `Indexed ${result.productCount} products with ${result.model} (${result.dimensions}D); skipped ${result.skippedEmpty} empty`
     );
+  } catch (error: unknown) {
+    Logger.error(error);
+    process.exitCode = 1;
   } finally {
     await app.close();
-    process.exit();
+    process.exit(process.exitCode ?? 0);
   }
 }
 
 main().catch((error: unknown) => {
   Logger.error(error);
-  process.exitCode = 1;
+  process.exit(1);
 });

@@ -24,6 +24,20 @@ export type ProductEmbeddingSearchHit = {
   similarity: number;
 };
 
+/** Compact Product fields returned for a Shopping Assistant recommendation. */
+export type ProductRecommendationProjection = {
+  productId: number;
+  name: string;
+  similarity: number;
+  categoryPath: string[];
+  /** Sale Price on the Main Product Item, when present. */
+  salePrice: number | null;
+  storefrontPath: string;
+  excerpt: string | null;
+  /** Attribute summary, same grouping as the indexed document Options line. */
+  options: string | null;
+};
+
 export type IndexedProductEmbedding = {
   productId: number;
   content: string;

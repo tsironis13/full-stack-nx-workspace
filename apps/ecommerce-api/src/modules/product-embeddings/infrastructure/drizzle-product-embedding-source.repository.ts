@@ -3,7 +3,7 @@
  * Product Item sale price for the embedding document builder.
  */
 import { Injectable } from '@nestjs/common';
-import { and, eq, isNull } from 'drizzle-orm';
+import { and, eq, inArray, isNull } from 'drizzle-orm';
 
 import { attributeValues } from '../../../db/schema/attribute_values';
 import { attributes } from '../../../db/schema/attributes';
@@ -31,6 +31,21 @@ export class DrizzleProductEmbeddingSourceRepository extends ProductEmbeddingSou
   }
 
   async loadAll(): Promise<ProductEmbeddingSource[]> {
+    return this.loadSources();
+  }
+
+  async loadByProductIds(
+    productIds: number[]
+  ): Promise<ProductEmbeddingSource[]> {
+    if (productIds.length === 0) {
+      return [];
+    }
+    return this.loadSources(productIds);
+  }
+
+  private async loadSources(
+    productIds?: number[]
+  ): Promise<ProductEmbeddingSource[]> {
     const categoryRows = await this.drizzle.db
       .select({
         id: productCategories.id,
@@ -41,7 +56,15 @@ export class DrizzleProductEmbeddingSourceRepository extends ProductEmbeddingSou
       .where(isNull(productCategories.deletedAt));
 
     const categoriesById = new Map<number, CategoryRow>(
-      categoryRows.map((row) => [row.id, row])
+      categoryRows.map((row) => [
+        asId(row.id),
+        {
+          id: asId(row.id),
+          name: row.name,
+          parentCategoryId:
+            row.parentCategoryId == null ? null : asId(row.parentCategoryId),
+        },
+      ])
     );
 
     const productRows = await this.drizzle.db
@@ -54,7 +77,22 @@ export class DrizzleProductEmbeddingSourceRepository extends ProductEmbeddingSou
         categoryId: products.categoryId,
       })
       .from(products)
-      .where(isNull(products.deletedAt));
+      .where(
+        productIds
+          ? and(isNull(products.deletedAt), inArray(products.id, productIds))
+          : isNull(products.deletedAt)
+      );
+
+    const mainItemFilter = productIds
+      ? and(
+          eq(productItems.isMainProduct, true),
+          isNull(productItems.deletedAt),
+          inArray(productItems.productId, productIds)
+        )
+      : and(
+          eq(productItems.isMainProduct, true),
+          isNull(productItems.deletedAt)
+        );
 
     const mainItemRows = await this.drizzle.db
       .select({
@@ -62,16 +100,18 @@ export class DrizzleProductEmbeddingSourceRepository extends ProductEmbeddingSou
         salePrice: productItems.salePrice,
       })
       .from(productItems)
-      .where(
-        and(
-          eq(productItems.isMainProduct, true),
-          isNull(productItems.deletedAt)
-        )
-      );
+      .where(mainItemFilter);
 
     const salePriceByProductId = new Map<number, number | null>(
-      mainItemRows.map((row) => [row.productId, row.salePrice])
+      mainItemRows.map((row) => [asId(row.productId), row.salePrice])
     );
+
+    const attributeFilter = productIds
+      ? and(
+          isNull(productItems.deletedAt),
+          inArray(productItems.productId, productIds)
+        )
+      : isNull(productItems.deletedAt);
 
     const attributeRows = await this.drizzle.db
       .select({
@@ -92,16 +132,17 @@ export class DrizzleProductEmbeddingSourceRepository extends ProductEmbeddingSou
         attributeValues,
         eq(attributeValues.id, productItemAttributes.attributeValueId)
       )
-      .where(isNull(productItems.deletedAt));
+      .where(attributeFilter);
 
     const attributesByProductId = new Map<number, ProductEmbeddingAttribute[]>();
     for (const row of attributeRows) {
       if (!row.name || !row.value) {
         continue;
       }
-      const list = attributesByProductId.get(row.productId) ?? [];
+      const productId = asId(row.productId);
+      const list = attributesByProductId.get(productId) ?? [];
       list.push({ name: row.name, value: row.value });
-      attributesByProductId.set(row.productId, list);
+      attributesByProductId.set(productId, list);
     }
 
     const sources: ProductEmbeddingSource[] = [];
@@ -110,15 +151,16 @@ export class DrizzleProductEmbeddingSourceRepository extends ProductEmbeddingSou
       if (!name) {
         continue;
       }
+      const productId = asId(row.productId);
       sources.push({
-        productId: row.productId,
+        productId,
         name,
         description: row.description,
         about: row.about,
         careInstructions: row.careInstructions,
         categoryPath: categoryPath(row.categoryId, categoriesById),
-        attributes: attributesByProductId.get(row.productId) ?? [],
-        salePrice: salePriceByProductId.get(row.productId) ?? null,
+        attributes: attributesByProductId.get(productId) ?? [],
+        salePrice: salePriceByProductId.get(productId) ?? null,
       });
     }
 
@@ -132,7 +174,8 @@ function categoryPath(
 ): string[] {
   const names: string[] = [];
   const seen = new Set<number>();
-  let currentId: number | null = categoryId;
+  let currentId: number | null =
+    categoryId == null ? null : asId(categoryId);
 
   while (currentId != null && !seen.has(currentId)) {
     seen.add(currentId);
@@ -147,4 +190,8 @@ function categoryPath(
   }
 
   return names;
+}
+
+function asId(value: unknown): number {
+  return Number(value);
 }

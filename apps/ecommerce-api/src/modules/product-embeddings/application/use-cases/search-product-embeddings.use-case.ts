@@ -1,13 +1,16 @@
 /**
- * Semantic Product retrieval. Embeds a shopper query (Qwen3 Instruct/Query
- * prefix) and ranks `product_embeddings` by cosine similarity. Used by the CLI
- * (`search`); storefront catalog v1 still searches `products.name` only.
+ * Semantic Product retrieval for the Shopping Assistant. Embeds a shopper
+ * need (Qwen3 Instruct/Query prefix) and returns compact Product
+ * recommendation projections. Storefront catalog v1 still searches
+ * `products.name` only.
  */
 import { BadRequestException, Injectable } from '@nestjs/common';
 
 import { EmbeddingClient } from '../../domain/embedding-client';
-import type { ProductEmbeddingSearchHit } from '../../domain/product-embedding.types';
+import type { ProductRecommendationProjection } from '../../domain/product-embedding.types';
+import { ProductRecommendationProjectionBuilder } from '../../domain/product-recommendation-projection.builder';
 import { formatEcommerceSearchQuery } from '../../domain/qwen3-embedding.instructions';
+import { ProductEmbeddingSourceRepository } from '../../domain/repositories/product-embedding-source.repository';
 import { ProductEmbeddingsRepository } from '../../domain/repositories/product-embeddings.repository';
 
 const DEFAULT_LIMIT = 8;
@@ -15,17 +18,19 @@ const MAX_LIMIT = 20;
 
 @Injectable()
 export class SearchProductEmbeddingsUseCase {
+  private readonly projections = new ProductRecommendationProjectionBuilder();
+
   constructor(
     private readonly embeddingsRepository: ProductEmbeddingsRepository,
+    private readonly sourceRepository: ProductEmbeddingSourceRepository,
     private readonly embeddingClient: EmbeddingClient,
   ) {}
 
   async execute(params: {
     query: string;
     limit?: number;
-  }): Promise<ProductEmbeddingSearchHit[]> {
+  }): Promise<ProductRecommendationProjection[]> {
     const query = params.query.trim();
-    console.log('query', query);
     if (!query) {
       throw new BadRequestException('Search query must not be empty');
     }
@@ -38,6 +43,23 @@ export class SearchProductEmbeddingsUseCase {
       formatEcommerceSearchQuery(query),
     ]);
 
-    return this.embeddingsRepository.searchByEmbedding({ embedding, limit });
+    const hits = await this.embeddingsRepository.searchByEmbedding({
+      embedding,
+      limit,
+    });
+    const sources = await this.sourceRepository.loadByProductIds(
+      hits.map((hit) => Number(hit.productId)),
+    );
+    const sourceById = new Map(
+      sources.map((source) => [Number(source.productId), source]),
+    );
+
+    return hits.flatMap((hit) => {
+      const source = sourceById.get(Number(hit.productId));
+      if (!source) {
+        return [];
+      }
+      return [this.projections.build(source, hit.similarity)];
+    });
   }
 }

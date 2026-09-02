@@ -70,7 +70,7 @@ export class DrizzleProductEmbeddingsRepository extends ProductEmbeddingsReposit
       .limit(params.limit);
 
     return rows.map((row) => ({
-      productId: row.productId,
+      productId: Number(row.productId),
       name: row.name,
       similarity: Number(row.similarity),
     }));
