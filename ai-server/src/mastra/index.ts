@@ -7,8 +7,10 @@ import {
   Observability,
   SensitiveDataFilter,
 } from '@mastra/observability';
+import { registerApiRoute } from '@mastra/core/server';
 
 import { shoppingAgent } from './agents/shopping-agent';
+import { agUiRouteHandler } from './routes/ag-ui-route';
 
 export const mastra = new Mastra({
   agents: { shoppingAgent },
@@ -41,5 +43,11 @@ export const mastra = new Mastra({
       allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
       allowHeaders: ['Content-Type', 'Authorization'],
     },
+    apiRoutes: [
+      registerApiRoute('/ag-ui/:agentId', {
+        method: 'POST',
+        handler: agUiRouteHandler,
+      }),
+    ],
   },
 });
