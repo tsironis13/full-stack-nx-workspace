@@ -1,44 +1,58 @@
-<article class="msg assistant">
-  <div class="avatar">🤖</div>
-  <div>
-    <div class="bubble bubble--markdown">
+<article
+  class="flex items-end gap-2.5 animate-[shopping-assistant-in_280ms_ease-out] motion-reduce:animate-none"
+>
+  <ng-container [ngTemplateOutlet]="assistantAvatar" />
+  <div class="min-w-0 max-w-[85%]">
+    <div
+      class="bubble bubble--markdown rounded-2xl rounded-bl-md bg-gray-100 px-3.5 py-2.5 text-sm leading-relaxed text-gray-800 dark:bg-gray-800 dark:text-gray-100"
+    >
       <copilot-chat-assistant-message-renderer
         [content]="greeting()"
         inputClass="cpk:prose cpk:max-w-full"
       />
     </div>
-    <div class="meta"></div>
   </div>
 </article>
 
 @for (view of views(); track view.id) {
   @if (view.text) {
-    <article class="msg {{ view.variant }}">
-      <div class="avatar">{{ view.avatar }}</div>
-      <div>
-        <div
-          class="bubble"
-          [class.bubble--markdown]="view.variant === 'assistant'"
-        >
-          @if (view.variant === 'assistant') {
+    <article
+      class="flex items-end gap-2.5 animate-[shopping-assistant-in_280ms_ease-out] motion-reduce:animate-none"
+      [class.flex-row-reverse]="view.variant === 'user'"
+    >
+      @if (view.variant === 'assistant') {
+        <ng-container [ngTemplateOutlet]="assistantAvatar" />
+      }
+      <div class="min-w-0 max-w-[85%]">
+        @if (view.variant === 'assistant') {
+          <div
+            class="bubble bubble--markdown rounded-2xl rounded-bl-md bg-gray-100 px-3.5 py-2.5 text-sm leading-relaxed text-gray-800 dark:bg-gray-800 dark:text-gray-100"
+          >
             <copilot-chat-assistant-message-renderer
               [content]="view.text"
               inputClass="cpk:prose cpk:max-w-full"
             />
-          } @else {
+          </div>
+        } @else {
+          <div
+            class="bubble rounded-2xl rounded-br-md bg-[var(--p-primary-color,#4f46e5)] px-3.5 py-2.5 text-sm leading-relaxed text-[var(--p-primary-contrast-color,#fff)] shadow-sm"
+          >
             {{ view.text }}
-          }
-        </div>
-        <div class="meta"></div>
+          </div>
+        }
       </div>
     </article>
   }
 
   @for (call of view.toolCalls; track call.id) {
-    <article class="msg {{ view.variant }}">
-      <div class="avatar">{{ view.avatar }}</div>
-      <div>
-        <div class="bubble">
+    <article
+      class="flex items-end gap-2.5 animate-[shopping-assistant-in_280ms_ease-out] motion-reduce:animate-none"
+    >
+      <ng-container [ngTemplateOutlet]="assistantAvatar" />
+      <div class="min-w-0 max-w-[92%]">
+        <div
+          class="bubble overflow-hidden rounded-2xl rounded-bl-md border border-gray-200/80 bg-white px-3 py-2.5 text-sm dark:border-gray-700 dark:bg-gray-900"
+        >
           <copilot-render-tool-calls
             [message]="call.message"
             [messages]="messages()"
@@ -46,38 +60,43 @@
             [isLoading]="pending()"
           />
         </div>
-        <div class="meta"></div>
       </div>
     </article>
   }
 
   @if (view.activity) {
     @let activity = view.activity;
-    <article class="msg {{ view.variant }}">
-      <div class="avatar">{{ view.avatar }}</div>
-      <div>
-        <div class="bubble" [class.bubble--a2ui]="activity.isSurface">
-          <!-- <app-copilot-activity
-            [message]="activity.message"
-            [agentId]="agentId()" /> -->
-        </div>
-        <div class="meta"></div>
+    <article
+      class="flex items-end gap-2.5 animate-[shopping-assistant-in_280ms_ease-out] motion-reduce:animate-none"
+    >
+      <ng-container [ngTemplateOutlet]="assistantAvatar" />
+      <div class="min-w-0 max-w-[92%]">
+        <div
+          class="bubble rounded-2xl rounded-bl-md bg-gray-100 px-3.5 py-2.5 text-sm dark:bg-gray-800"
+          [class.bubble--a2ui]="activity.isSurface"
+        ></div>
       </div>
     </article>
   }
 }
 
 @for (interrupt of interrupts(); track interrupt.id) {
-  <article class="msg assistant">
-    <div class="avatar">🤖</div>
-    <div>
-      <div class="bubble">
-        <p class="interrupt-message">{{ interrupt.message }}</p>
-        <div class="interrupt-actions">
+  <article
+    class="flex items-end gap-2.5 animate-[shopping-assistant-in_280ms_ease-out] motion-reduce:animate-none"
+  >
+    <ng-container [ngTemplateOutlet]="assistantAvatar" />
+    <div class="min-w-0 max-w-[85%]">
+      <div
+        class="bubble flex flex-col gap-3 rounded-2xl rounded-bl-md border border-[color-mix(in_srgb,var(--p-primary-color,#4f46e5)_22%,transparent)] bg-[color-mix(in_srgb,var(--p-primary-color,#4f46e5)_6%,white)] px-3.5 py-3 text-sm dark:bg-[color-mix(in_srgb,var(--p-primary-color,#4f46e5)_14%,#111827)]"
+      >
+        <p class="interrupt-message m-0 text-gray-800 dark:text-gray-100">
+          {{ interrupt.message }}
+        </p>
+        <div class="interrupt-actions flex flex-col gap-2">
           @for (option of interrupt.options; track option.id) {
             <button
               type="button"
-              class="btn btn-default"
+              class="w-full rounded-xl border border-[var(--p-primary-color,#4f46e5)] px-3 py-2 text-sm font-semibold text-[var(--p-primary-color,#4f46e5)] transition hover:bg-[color-mix(in_srgb,var(--p-primary-color,#4f46e5)_8%,transparent)]"
               (click)="resolveInterrupt(interrupt.id, option.payload)"
             >
               {{ option.label }}
@@ -85,22 +104,41 @@
           }
         </div>
       </div>
-      <div class="meta"></div>
     </div>
   </article>
 }
 
 @if (pending()) {
-  <article class="msg assistant">
-    <div class="avatar">🤖</div>
-    <div>
-      <div class="bubble">
-        <div class="ai-wait-indicator">
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
+  <article
+    class="flex items-end gap-2.5 animate-[shopping-assistant-in_280ms_ease-out] motion-reduce:animate-none"
+    aria-live="polite"
+    aria-label="Assistant is typing"
+  >
+    <ng-container [ngTemplateOutlet]="assistantAvatar" />
+    <div
+      class="bubble rounded-2xl rounded-bl-md bg-gray-100 px-3.5 py-3 dark:bg-gray-800"
+    >
+      <div class="ai-wait-indicator text-gray-500 dark:text-gray-400">
+        <span></span>
+        <span></span>
+        <span></span>
       </div>
     </div>
   </article>
 }
+
+<ng-template #assistantAvatar>
+  <div
+    class="grid size-8 shrink-0 place-items-center rounded-full bg-[color-mix(in_srgb,var(--p-primary-color,#4f46e5)_16%,transparent)] text-[var(--p-primary-color,#4f46e5)]"
+    aria-hidden="true"
+  >
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+      <path
+        d="M12 3l1.6 3.9L18 8.6l-3.5 2.9.9 4.4L12 14.2 8.6 15.9l.9-4.4L6 8.6l4.4-1.7L12 3Z"
+        stroke="currentColor"
+        stroke-width="1.6"
+        stroke-linejoin="round"
+      />
+    </svg>
+  </div>
+</ng-template>

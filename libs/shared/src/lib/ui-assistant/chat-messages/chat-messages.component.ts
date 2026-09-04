@@ -1,5 +1,13 @@
 import { type Interrupt } from '@ag-ui/core';
-import { Component, computed, input, output, signal } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  input,
+  output,
+  signal,
+} from '@angular/core';
 import {
   CopilotChatAssistantMessageRenderer,
   type Message,
@@ -57,7 +65,6 @@ interface ChatActivityView {
 interface ChatMessageView {
   id: string;
   variant: 'user' | 'assistant';
-  avatar: string;
   text: string;
   activity: ChatActivityView | null;
   toolCalls: ChatToolCallView[];
@@ -65,9 +72,17 @@ interface ChatMessageView {
 
 @Component({
   selector: 'app-chat-messages',
-  imports: [CopilotChatAssistantMessageRenderer, RenderToolCalls],
+  imports: [
+    CopilotChatAssistantMessageRenderer,
+    RenderToolCalls,
+    NgTemplateOutlet,
+  ],
   templateUrl: './chat-messages.component.html',
-  styleUrls: ['./chat-messages.component.scss'],
+  styleUrl: './chat-messages.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    class: 'flex flex-col gap-3',
+  },
 })
 export class ChatMessagesComponent {
   readonly messages = input.required<Message[]>();
@@ -98,7 +113,6 @@ function toMessageViews(messages: Message[]): ChatMessageView[] {
   return messages.map((message): ChatMessageView => ({
     id: message.id,
     variant: message.role === 'user' ? 'user' : 'assistant',
-    avatar: message.role === 'user' ? '💬' : '🤖',
     text: toMessageText(message),
     activity:
       message.role === 'activity'

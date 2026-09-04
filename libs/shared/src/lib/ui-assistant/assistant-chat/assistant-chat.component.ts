@@ -3,9 +3,9 @@ import {
   afterRenderEffect,
   Component,
   computed,
-  effect,
   ElementRef,
   inject,
+  input,
   type Signal,
   signal,
   viewChild,
@@ -27,28 +27,35 @@ import {
   sendMessage,
   stop,
 } from '../../util-copilotkit/agent-store-helper';
-// import {
-//   ChatMessages,
-//   type ResumeInterruptEvent,
-// } from '../chat-messages/chat-messages';
-import { ChatMessagesComponent } from '../chat-messages/chat-messages.component';
+import {
+  ChatMessagesComponent,
+  type ResumeInterruptEvent,
+} from '../chat-messages/chat-messages.component';
 import { ChatRegistry } from '../chat-registry';
+
+export type AssistantChatPosition = 'left' | 'right';
 
 const DEFAULT_GREETING = 'Hi! How can I help you?';
 
 @Component({
   selector: 'app-assistant-chat',
-  //imports: [FormsModule, ChatMessages],
   imports: [FormsModule, ChatMessagesComponent],
   templateUrl: './assistant-chat.component.html',
-  styleUrls: ['./assistant-chat.component.scss'],
+  styleUrl: './assistant-chat.component.scss',
+  host: {
+    class: 'contents',
+    '(document:keydown.escape)': 'onDocumentEscape()',
+  },
 })
 export class AssistantChatComponent {
+  public readonly position = input.required<AssistantChatPosition>();
+
   private chatRegistry = inject(ChatRegistry);
   private agentMode = inject(AgentModeService);
   private copilotKit = inject(CopilotKit);
 
   protected mode = this.agentMode.mode;
+  protected readonly isLeft = computed(() => this.position() === 'left');
 
   private composerInput =
     viewChild<ElementRef<HTMLInputElement>>('composerInput');
@@ -62,10 +69,6 @@ export class AssistantChatComponent {
 
   protected readonly store = signal<Signal<AgentStore> | undefined>(undefined);
   protected readonly agentId = signal<string | undefined>(undefined);
-
-  x = effect(() => {
-    //console.log('messages', this.messages());
-  });
 
   private readonly interruptController = signal<
     InterruptController | undefined
@@ -81,6 +84,10 @@ export class AssistantChatComponent {
     const store = this.store();
     return store ? store().isRunning() : false;
   });
+
+  protected readonly canSend = computed(
+    () => this.message().trim().length > 0 && !this.isRunning(),
+  );
 
   protected readonly interrupts = computed<Interrupt[]>(() => {
     const controller = this.interruptController();
@@ -122,11 +129,15 @@ export class AssistantChatComponent {
 
   protected toggle(): void {
     if (this.panelVisible()) {
-      this.panelVisible.set(false);
+      this.close();
       return;
     }
 
     this.open();
+  }
+
+  protected close(): void {
+    this.panelVisible.set(false);
   }
 
   private open(): void {
@@ -134,8 +145,16 @@ export class AssistantChatComponent {
     queueMicrotask(() => this.composerInput()?.nativeElement.focus());
   }
 
+  protected onDocumentEscape(): void {
+    this.close();
+  }
+
   protected submit() {
-    const message = this.message();
+    const message = this.message().trim();
+    if (!message || this.isRunning()) {
+      return;
+    }
+
     this.message.set('');
     const store = this.store();
     if (store) {
@@ -150,7 +169,9 @@ export class AssistantChatComponent {
     }
   }
 
-  protected async onResumeInterrupt(event: any): Promise<void> {
+  protected async onResumeInterrupt(
+    event: ResumeInterruptEvent,
+  ): Promise<void> {
     const controller = this.interruptController();
     if (controller) {
       await controller.resolve(event.payload, event.interruptId);

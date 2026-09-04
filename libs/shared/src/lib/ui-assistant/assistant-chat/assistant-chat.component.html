@@ -1,135 +1,205 @@
 @if (store() && agentId()) {
-<button
-  (click)="toggle()"
-  id="ai-toggle"
-  class="ai-toggle"
-  aria-haspopup="dialog"
-  aria-controls="ai-panel"
->
-  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-    <path
-      d="M4 5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H9.83a2 2 0 0 0-1.41.59l-2.12 2.12A1 1 0 0 1 4 18.41V5Z"
-      stroke="currentColor"
-      stroke-width="1.5"
-    />
-  </svg>
-  <span>Assistant</span>
-</button>
-
-<div id="ai-backdrop" class="ai-backdrop"></div>
-
-<aside
-  id="ai-panel"
-  [class.open]="panelVisible()"
-  class="ai-panel"
-  role="dialog"
-  aria-modal="true"
-  aria-labelledby="ai-title"
->
-  <header class="ai-header">
-    <div class="ai-title">
-      <svg
-        width="22"
-        height="22"
-        viewBox="0 0 24 24"
-        fill="none"
-        aria-hidden="true"
-      >
+  <button
+    type="button"
+    (click)="toggle()"
+    id="ai-toggle"
+    class="fixed bottom-5 z-[1000] inline-flex items-center gap-2.5 rounded-full border border-gray-200/80 bg-white/90 px-4 py-3 text-sm font-semibold text-[var(--p-primary-color,#4f46e5)] shadow-[0_12px_40px_-12px_rgba(79,70,229,0.45)] backdrop-blur-md transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_16px_44px_-10px_rgba(79,70,229,0.55)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--p-primary-color,#4f46e5)] dark:border-gray-700 dark:bg-gray-900/90 dark:text-indigo-300 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+    [class.right-5]="!isLeft()"
+    [class.left-5]="isLeft()"
+    [class.pointer-events-none]="panelVisible()"
+    [class.scale-90]="panelVisible()"
+    [class.opacity-0]="panelVisible()"
+    aria-haspopup="dialog"
+    aria-controls="ai-panel"
+    [attr.aria-expanded]="panelVisible()"
+  >
+    <span
+      class="grid size-8 place-items-center rounded-full bg-[color-mix(in_srgb,var(--p-primary-color,#4f46e5)_16%,transparent)]"
+      aria-hidden="true"
+    >
+      <svg viewBox="0 0 24 24" fill="none" class="size-[18px]">
         <path
-          d="M12 2l2.39 4.84L20 7.27l-3.64 3.54.86 5.02L12 13.77 6.78 15.83l.86-5.02L4 7.27l5.61-.43L12 2Z"
+          d="M12 3l1.6 3.9L18 8.6l-3.5 2.9.9 4.4L12 14.2 8.6 15.9l.9-4.4L6 8.6l4.4-1.7L12 3Z"
           stroke="currentColor"
-          stroke-width="1.4"
+          stroke-width="1.5"
+          stroke-linejoin="round"
         />
       </svg>
-      <div>
-        <div id="ai-title">AI Assistant</div>
+    </span>
+    <span class="pr-1">Assistant</span>
+  </button>
+
+  <div
+    id="ai-backdrop"
+    class="fixed inset-0 z-[999] bg-slate-950/35 backdrop-blur-[2px] transition-opacity duration-200 motion-reduce:transition-none"
+    [class.opacity-0]="!panelVisible()"
+    [class.pointer-events-none]="!panelVisible()"
+    [class.opacity-100]="panelVisible()"
+    (click)="close()"
+  ></div>
+
+  <aside
+    id="ai-panel"
+    class="fixed inset-y-0 z-[1001] flex w-[min(100vw,26rem)] flex-col overflow-hidden border-gray-200 bg-white shadow-2xl transition-transform duration-300 ease-out dark:border-gray-800 dark:bg-gray-950 motion-reduce:transition-none"
+    [class.right-0]="!isLeft()"
+    [class.left-0]="isLeft()"
+    [class.border-l]="!isLeft()"
+    [class.border-r]="isLeft()"
+    [class.sm:rounded-l-2xl]="!isLeft()"
+    [class.sm:rounded-r-2xl]="isLeft()"
+    [class.translate-x-0]="panelVisible()"
+    [class.translate-x-full]="!panelVisible() && !isLeft()"
+    [class.-translate-x-full]="!panelVisible() && isLeft()"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="ai-title"
+    [attr.inert]="panelVisible() ? null : ''"
+    [attr.aria-hidden]="!panelVisible()"
+  >
+    <header
+      class="flex items-center justify-between gap-3 border-b border-gray-200/80 bg-gradient-to-br from-[color-mix(in_srgb,var(--p-primary-color,#4f46e5)_10%,white)] to-white px-4 py-3.5 dark:border-gray-800 dark:from-[color-mix(in_srgb,var(--p-primary-color,#4f46e5)_18%,#030712)] dark:to-gray-950"
+    >
+      <div class="flex min-w-0 items-center gap-3">
+        <span
+          class="grid size-10 shrink-0 place-items-center rounded-2xl bg-[color-mix(in_srgb,var(--p-primary-color,#4f46e5)_16%,transparent)] text-[var(--p-primary-color,#4f46e5)]"
+          aria-hidden="true"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M12 3l1.6 3.9L18 8.6l-3.5 2.9.9 4.4L12 14.2 8.6 15.9l.9-4.4L6 8.6l4.4-1.7L12 3Z"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </span>
+        <div class="min-w-0">
+          <div
+            id="ai-title"
+            class="truncate text-sm font-semibold tracking-tight text-gray-900 dark:text-gray-100"
+          >
+            Assistant
+          </div>
+          <p class="truncate text-xs text-gray-500 dark:text-gray-400">
+            Ask in your own words
+          </p>
+        </div>
       </div>
-    </div>
-    <div class="ai-actions">
-      @if (showModeSelector()) {
-      <select
-        class="mode-select"
-        aria-label="Agent mode"
-        [value]="mode()"
-        (change)="setMode($any($event.target).value)"
-      >
-        <option value="plan">Plan</option>
-        <option value="execution">Execution</option>
-      </select>
-      }
-      <button
-        (click)="toggle()"
-        class="icon-btn"
-        id="ai-close"
-        title="Schließen"
-        aria-label="Schließen"
-      >
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-          <path
-            d="M6 6l12 12M18 6 6 18"
-            stroke="currentColor"
-            stroke-width="1.8"
-            stroke-linecap="round"
-          />
-        </svg>
-      </button>
-    </div>
-  </header>
 
-  <section
-    id="ai-messages"
-    class="ai-messages"
-    aria-live="polite"
-    #messagesContainer
-  >
-    <app-chat-messages
-      [messages]="messages()"
-      [agentId]="agentId()!"
-      [greeting]="greeting()"
-      [pending]="isRunning()"
-      [pendingInterrupts]="interrupts()"
-      (resumeInterrupt)="onResumeInterrupt($event)"
-    />
-  </section>
+      <div class="flex shrink-0 items-center gap-1.5">
+        @if (showModeSelector()) {
+          <select
+            class="h-9 cursor-pointer appearance-none rounded-xl border border-gray-200 bg-white/80 bg-[length:10px] bg-[position:right_10px_center] bg-no-repeat py-0 pr-8 pl-3 text-xs font-medium text-gray-700 transition hover:bg-gray-50 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--p-primary-color,#4f46e5)] dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800"
+            style="
+              background-image: url(&quot;data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6' fill='none'><path d='M1 1l4 4 4-4' stroke='%236b7280' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/></svg>&quot;);
+            "
+            aria-label="Agent mode"
+            [value]="mode()"
+            (change)="setMode($any($event.target).value)"
+          >
+            <option value="plan">Plan</option>
+            <option value="execution">Execution</option>
+          </select>
+        }
+        <button
+          type="button"
+          (click)="close()"
+          class="grid size-9 place-items-center rounded-xl border border-gray-200 bg-white/70 text-gray-600 transition hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--p-primary-color,#4f46e5)] dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white"
+          id="ai-close"
+          title="Close"
+          aria-label="Close assistant"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M6 6l12 12M18 6 6 18"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+            />
+          </svg>
+        </button>
+      </div>
+    </header>
 
-  <form
-    id="ai-composer"
-    class="ai-composer"
-    autocomplete="off"
-    (ngSubmit)="submit()"
-  >
-    <div class="composer-inner">
-      <input
-        #composerInput
-        [(ngModel)]="message"
-        class="composer-input"
-        name="message"
-        placeholder="Your Question ..."
+    <section
+      id="ai-messages"
+      class="min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-4 py-4"
+      aria-live="polite"
+      #messagesContainer
+    >
+      <app-chat-messages
+        [messages]="messages()"
+        [agentId]="agentId()!"
+        [greeting]="greeting()"
+        [pending]="isRunning()"
+        [pendingInterrupts]="interrupts()"
+        (resumeInterrupt)="onResumeInterrupt($event)"
       />
-      @if (isRunning()) {
-      <button
-        type="button"
-        class="stop-btn"
-        (click)="stopRun()"
-        title="Aktuellen Run abbrechen"
-        aria-label="Aktuellen Run abbrechen"
+    </section>
+
+    <form
+      id="ai-composer"
+      class="border-t border-gray-200/80 bg-gray-50/80 p-3 dark:border-gray-800 dark:bg-gray-900/70"
+      autocomplete="off"
+      (ngSubmit)="submit()"
+    >
+      <div
+        class="flex items-end gap-2 rounded-2xl border border-gray-200 bg-white p-1.5 shadow-sm focus-within:border-[color-mix(in_srgb,var(--p-primary-color,#4f46e5)_45%,white)] focus-within:ring-2 focus-within:ring-[color-mix(in_srgb,var(--p-primary-color,#4f46e5)_20%,transparent)] dark:border-gray-700 dark:bg-gray-950"
       >
-        <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
-          <rect
-            x="6"
-            y="6"
-            width="12"
-            height="12"
-            rx="1.5"
-            fill="currentColor"
-          />
-        </svg>
-        <span>Stop</span>
-      </button>
-      }
-    </div>
-  </form>
-</aside>
-} @else {
-<div>Chat not available!</div>
+        <input
+          #composerInput
+          [(ngModel)]="message"
+          class="min-h-10 min-w-0 flex-1 bg-transparent px-3 py-2 text-sm text-gray-900 outline-none placeholder:text-gray-400 dark:text-gray-100 dark:placeholder:text-gray-500"
+          name="message"
+          placeholder="Ask a question…"
+          autocomplete="off"
+        />
+        @if (isRunning()) {
+          <button
+            type="button"
+            class="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-3 text-xs font-semibold text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800"
+            (click)="stopRun()"
+            title="Stop generating"
+            aria-label="Stop generating"
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true">
+              <rect
+                x="6"
+                y="6"
+                width="12"
+                height="12"
+                rx="1.5"
+                fill="currentColor"
+              />
+            </svg>
+            <span>Stop</span>
+          </button>
+        } @else {
+          <button
+            type="submit"
+            class="grid size-10 shrink-0 place-items-center rounded-xl bg-[var(--p-primary-color,#4f46e5)] text-white shadow-sm transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
+            [disabled]="!canSend()"
+            title="Send"
+            aria-label="Send message"
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M4.5 12h15M13 6.5 19.5 12 13 17.5"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </button>
+        }
+      </div>
+    </form>
+  </aside>
 }
