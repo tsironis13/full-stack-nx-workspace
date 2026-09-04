@@ -4,4 +4,17 @@
 
 @use 'styles/app';
 
+@import '@copilotkit/angular/styles.css';
+
 @custom-variant dark (&:where(.ecommerce-app-dark, .ecommerce-app-dark *));
+
+@keyframes shopping-assistant-in {
+  from {
+    opacity: 0;
+    transform: translateY(1rem) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

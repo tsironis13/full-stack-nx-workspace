@@ -1,0 +1,133 @@
+#shopping-assistant-panel {
+  --background: var(--card-background, #fff);
+  --foreground: var(--text-color, #0f172a);
+  --primary: var(--p-primary-color, #1e1b4b);
+  --primary-foreground: var(--p-primary-contrast-color, #fff);
+  --muted: var(--hover-background, #f4f4f5);
+  --muted-foreground: var(--text-secondary-color, #64748b);
+  --border: var(--border-color, #e4e4e7);
+  --popover: var(--overlay-background, #fff);
+  --input: var(--border-color, #e4e4e7);
+  --ring: var(--p-primary-color, #1e1b4b);
+
+  copilot-chat,
+  copilot-chat-view,
+  .copilotKitChat {
+    display: flex;
+    height: 100%;
+    min-height: 0;
+    flex-direction: column;
+  }
+
+  [data-testid='copilot-welcome-screen'] {
+    justify-content: flex-start;
+    gap: 1rem;
+    padding: 1.25rem 1rem 0.75rem;
+  }
+
+  [data-testid='copilot-welcome-screen'] > div {
+    display: flex;
+    height: 100%;
+    max-width: none;
+    flex: 1;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  [data-testid='copilot-welcome-screen'] h1 {
+    margin: 0;
+    max-width: 22rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    line-height: 1.45;
+    text-wrap: pretty;
+    color: var(--foreground);
+  }
+
+  [data-testid='copilot-welcome-screen'] .cpk\:mb-6 {
+    margin-bottom: 0.75rem;
+  }
+
+  [data-testid='copilot-welcome-screen'] .cpk\:w-full:last-child,
+  [data-testid='copilot-welcome-screen'] > div > .cpk\:w-full {
+    margin-top: auto;
+  }
+
+  copilot-chat-tools-menu,
+  copilot-chat-add-file-button,
+  copilot-chat-start-transcribe-button,
+  copilot-chat-cancel-transcribe-button,
+  copilot-chat-finish-transcribe-button {
+    display: none;
+  }
+
+  .copilotKitInput {
+    overflow: hidden;
+    background: var(--background);
+    box-shadow: none;
+    border: 1px solid var(--border);
+  }
+
+  [data-layout='compact'] {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.25rem 0.5rem;
+    min-height: 3rem;
+    padding: 0.35rem 0.4rem 0.35rem 0.85rem;
+  }
+
+  [data-layout='compact'] > div:first-child {
+    display: none;
+  }
+
+  [data-layout='compact'] > div:nth-child(2) {
+    min-height: 0;
+  }
+
+  textarea[copilotchattextarea],
+  .copilotKitInput textarea {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 2.25rem !important;
+    max-height: 7.5rem !important;
+    margin: 0;
+    padding: 0.45rem 0.15rem;
+    overflow-x: hidden;
+    overflow-y: auto;
+    border: 0;
+    background: transparent;
+    caret-color: var(--primary);
+    color: var(--foreground);
+    font-size: 0.875rem !important;
+    line-height: 1.375 !important;
+    resize: none;
+  }
+
+  .copilotKitInput textarea::placeholder {
+    color: var(--muted-foreground);
+    opacity: 1;
+  }
+
+  .copilotKitInput button[aria-label='Send message'] {
+    width: 2.25rem;
+    height: 2.25rem;
+    margin: 0;
+    background: var(--primary);
+    color: var(--primary-foreground);
+  }
+
+  .copilotKitInput button[aria-label='Send message']:disabled {
+    background: var(--muted);
+    color: var(--muted-foreground);
+    opacity: 1;
+  }
+
+  copilot-chat-view-disclaimer,
+  .copilotKitInput + * {
+    padding-top: 0.35rem;
+    font-size: 0.7rem;
+    line-height: 1.35;
+    color: var(--muted-foreground);
+  }
+}

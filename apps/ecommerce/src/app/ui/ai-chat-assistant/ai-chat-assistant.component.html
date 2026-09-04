@@ -1,0 +1,77 @@
+<button
+  #launcher
+  type="button"
+  class="group fixed left-[max(1.25rem,env(safe-area-inset-left))] bottom-[max(1.25rem,env(safe-area-inset-bottom))] z-[70] flex size-14 items-center justify-center rounded-full bg-linear-to-br from-indigo-950 via-indigo-800 to-indigo-600 text-white shadow-lg shadow-indigo-950/40 ring-2 ring-white/25 transition duration-200 hover:scale-105 hover:shadow-xl hover:shadow-indigo-900/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400 motion-reduce:transition-none motion-reduce:hover:scale-100"
+  [class.pointer-events-none]="open()"
+  [class.scale-75]="open()"
+  [class.opacity-0]="open()"
+  [attr.aria-expanded]="open()"
+  aria-controls="shopping-assistant-panel"
+  aria-haspopup="dialog"
+  [attr.aria-label]="open() ? 'Κλείσιμο βοηθού αγορών' : 'Άνοιγμα βοηθού αγορών'"
+  [attr.tabindex]="open() ? -1 : 0"
+  (click)="toggle()"
+>
+  <span
+    class="absolute -inset-1 rounded-full bg-indigo-400/30 blur-sm"
+    aria-hidden="true"
+  ></span>
+  <span
+    class="pointer-events-none absolute left-full ml-3 hidden whitespace-nowrap rounded-full bg-slate-900 px-3 py-1.5 text-xs font-medium text-white opacity-0 shadow-lg transition duration-200 group-hover:opacity-100 group-focus-visible:opacity-100 sm:block dark:bg-slate-100 dark:text-slate-900"
+  >
+    Βοηθός αγορών
+  </span>
+  <i class="pi pi-sparkles relative text-xl" aria-hidden="true"></i>
+</button>
+
+@if (open()) {
+  <div
+    class="fixed inset-0 z-[69] bg-slate-950/50 sm:bg-slate-950/20"
+    aria-hidden="true"
+    (click)="close()"
+  ></div>
+
+  <section
+    id="shopping-assistant-panel"
+    class="shopping-assistant-panel fixed inset-0 z-[70] flex flex-col overflow-hidden bg-white shadow-2xl ring-1 ring-indigo-950/10 sm:inset-auto sm:top-24 sm:bottom-6 sm:left-[max(1.5rem,env(safe-area-inset-left))] sm:w-[24.5rem] sm:rounded-2xl dark:bg-slate-900 dark:ring-white/10 motion-safe:animate-[shopping-assistant-in_200ms_ease-out]"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="shopping-assistant-title"
+    (keydown.escape)="close()"
+  >
+    <header
+      class="flex shrink-0 items-center gap-3 bg-linear-to-r from-indigo-950 via-indigo-800 to-indigo-600 px-4 py-3 text-white"
+    >
+      <span
+        class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-white/15 ring-1 ring-white/25"
+        aria-hidden="true"
+      >
+        <i class="pi pi-sparkles text-lg"></i>
+      </span>
+      <div class="min-w-0 flex-1">
+        <h2
+          id="shopping-assistant-title"
+          class="m-0 text-sm font-semibold tracking-tight"
+        >
+          Βοηθός αγορών
+        </h2>
+        <p class="m-0 truncate text-xs text-indigo-100/90">
+          Προτάσεις προϊόντων από την ανάγκη σου
+        </p>
+      </div>
+      <button
+        #closeButton
+        type="button"
+        class="flex size-9 shrink-0 items-center justify-center rounded-full text-white/90 transition hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+        aria-label="Κλείσιμο βοηθού αγορών"
+        (click)="close()"
+      >
+        <i class="pi pi-times text-sm" aria-hidden="true"></i>
+      </button>
+    </header>
+
+    <div class="flex min-h-0 flex-1 flex-col overflow-hidden">
+      <copilot-chat class="h-full min-h-0" [agentId]="agentId" />
+    </div>
+  </section>
+}

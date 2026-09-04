@@ -1,4 +1,7 @@
 import { Route } from '@angular/router';
+import { inject } from '@angular/core';
+
+import { ShoppingChatService } from './core/public-api';
 
 export const appRoutes: Route[] = [
   {
@@ -7,6 +10,9 @@ export const appRoutes: Route[] = [
   },
   {
     path: '',
+    resolve: {
+      shoppingChatService: () => inject(ShoppingChatService).init(),
+    },
     loadChildren: () => import('./layout/navigation/navigation.routes'),
   },
   {
