@@ -150,7 +150,7 @@ Search text, facet selection, sort, and pagination are **not** required to seria
 
 A storefront chat that recommends **Products** from a stated **product need**.
 
-v1 recommends only: ranked **Products**, a one-line why grounded in the retrieval fields, and a link to the product page (`/products/{id}`). It does not add to the **Cart**, change catalog filters, pick a **Product Item**, or answer account/order questions.
+v1 recommends only: ranked **Products** as in-chat **Product recommendation** cards (at most three per turn), plus a one-line why grounded in the retrieval fields. It does not add to the **Cart**, change catalog filters, pick a **Product Item**, or answer account/order questions.
 
 Avoid:
 

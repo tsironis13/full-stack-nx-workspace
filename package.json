@@ -109,6 +109,7 @@
     "jest-util": "^30.0.2",
     "jsdom": "~27.0.1",
     "jsonc-eslint-parser": "^2.1.0",
+    "madge": "^8.0.0",
     "mastra": "^1.27.2",
     "ng-packagr": "22.1.0",
     "nx": "^23.1.0",

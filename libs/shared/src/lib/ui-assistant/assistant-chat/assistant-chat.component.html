@@ -82,13 +82,14 @@
     aria-live="polite"
     #messagesContainer
   >
-    <!-- <app-chat-messages
-        [messages]="messages()"
-        [agentId]="agentId()!"
-        [greeting]="greeting()"
-        [pending]="isRunning()"
-        [pendingInterrupts]="interrupts()"
-        (resumeInterrupt)="onResumeInterrupt($event)" /> -->
+    <app-chat-messages
+      [messages]="messages()"
+      [agentId]="agentId()!"
+      [greeting]="greeting()"
+      [pending]="isRunning()"
+      [pendingInterrupts]="interrupts()"
+      (resumeInterrupt)="onResumeInterrupt($event)"
+    />
   </section>
 
   <form

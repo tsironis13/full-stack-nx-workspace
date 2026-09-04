@@ -1,0 +1,106 @@
+<article class="msg assistant">
+  <div class="avatar">🤖</div>
+  <div>
+    <div class="bubble bubble--markdown">
+      <copilot-chat-assistant-message-renderer
+        [content]="greeting()"
+        inputClass="cpk:prose cpk:max-w-full"
+      />
+    </div>
+    <div class="meta"></div>
+  </div>
+</article>
+
+@for (view of views(); track view.id) {
+  @if (view.text) {
+    <article class="msg {{ view.variant }}">
+      <div class="avatar">{{ view.avatar }}</div>
+      <div>
+        <div
+          class="bubble"
+          [class.bubble--markdown]="view.variant === 'assistant'"
+        >
+          @if (view.variant === 'assistant') {
+            <copilot-chat-assistant-message-renderer
+              [content]="view.text"
+              inputClass="cpk:prose cpk:max-w-full"
+            />
+          } @else {
+            {{ view.text }}
+          }
+        </div>
+        <div class="meta"></div>
+      </div>
+    </article>
+  }
+
+  @for (call of view.toolCalls; track call.id) {
+    <article class="msg {{ view.variant }}">
+      <div class="avatar">{{ view.avatar }}</div>
+      <div>
+        <div class="bubble">
+          <copilot-render-tool-calls
+            [message]="call.message"
+            [messages]="messages()"
+            [agentId]="agentId()"
+            [isLoading]="pending()"
+          />
+        </div>
+        <div class="meta"></div>
+      </div>
+    </article>
+  }
+
+  @if (view.activity) {
+    @let activity = view.activity;
+    <article class="msg {{ view.variant }}">
+      <div class="avatar">{{ view.avatar }}</div>
+      <div>
+        <div class="bubble" [class.bubble--a2ui]="activity.isSurface">
+          <!-- <app-copilot-activity
+            [message]="activity.message"
+            [agentId]="agentId()" /> -->
+        </div>
+        <div class="meta"></div>
+      </div>
+    </article>
+  }
+}
+
+@for (interrupt of interrupts(); track interrupt.id) {
+  <article class="msg assistant">
+    <div class="avatar">🤖</div>
+    <div>
+      <div class="bubble">
+        <p class="interrupt-message">{{ interrupt.message }}</p>
+        <div class="interrupt-actions">
+          @for (option of interrupt.options; track option.id) {
+            <button
+              type="button"
+              class="btn btn-default"
+              (click)="resolveInterrupt(interrupt.id, option.payload)"
+            >
+              {{ option.label }}
+            </button>
+          }
+        </div>
+      </div>
+      <div class="meta"></div>
+    </div>
+  </article>
+}
+
+@if (pending()) {
+  <article class="msg assistant">
+    <div class="avatar">🤖</div>
+    <div>
+      <div class="bubble">
+        <div class="ai-wait-indicator">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </div>
+  </article>
+}

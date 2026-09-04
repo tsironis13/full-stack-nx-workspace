@@ -3,6 +3,7 @@ import {
   afterRenderEffect,
   Component,
   computed,
+  effect,
   ElementRef,
   inject,
   type Signal,
@@ -30,6 +31,7 @@ import {
 //   ChatMessages,
 //   type ResumeInterruptEvent,
 // } from '../chat-messages/chat-messages';
+import { ChatMessagesComponent } from '../chat-messages/chat-messages.component';
 import { ChatRegistry } from '../chat-registry';
 
 const DEFAULT_GREETING = 'Hi! How can I help you?';
@@ -37,11 +39,11 @@ const DEFAULT_GREETING = 'Hi! How can I help you?';
 @Component({
   selector: 'app-assistant-chat',
   //imports: [FormsModule, ChatMessages],
-  imports: [FormsModule],
-  templateUrl: './assistant-chat.html',
-  styleUrls: ['./assistant-chat.css'],
+  imports: [FormsModule, ChatMessagesComponent],
+  templateUrl: './assistant-chat.component.html',
+  styleUrls: ['./assistant-chat.component.scss'],
 })
-export class AssistantChat {
+export class AssistantChatComponent {
   private chatRegistry = inject(ChatRegistry);
   private agentMode = inject(AgentModeService);
   private copilotKit = inject(CopilotKit);
@@ -60,6 +62,10 @@ export class AssistantChat {
 
   protected readonly store = signal<Signal<AgentStore> | undefined>(undefined);
   protected readonly agentId = signal<string | undefined>(undefined);
+
+  x = effect(() => {
+    //console.log('messages', this.messages());
+  });
 
   private readonly interruptController = signal<
     InterruptController | undefined
@@ -144,14 +150,12 @@ export class AssistantChat {
     }
   }
 
-  // protected async onResumeInterrupt(
-  //   event: ResumeInterruptEvent,
-  // ): Promise<void> {
-  //   const controller = this.interruptController();
-  //   if (controller) {
-  //     await controller.resolve(event.payload, event.interruptId);
-  //   }
-  // }
+  protected async onResumeInterrupt(event: any): Promise<void> {
+    const controller = this.interruptController();
+    if (controller) {
+      await controller.resolve(event.payload, event.interruptId);
+    }
+  }
 
   protected setMode(mode: AgentMode): void {
     this.agentMode.mode.set(mode);

@@ -42,9 +42,10 @@ Data rules
 
 Using results
 - Search returns up to 8 Products with similarity, category path, Main Product Item sale price, storefront path, a short excerpt, and options.
-- Present at most 3 Products whose fields actually support the need. If only one is honest, show one. If none are, say so in one sentence and ask one narrowing question.
-- For each recommendation: Product name as a markdown link to the storefront path (e.g. [Name](/products/12)), Sale Price when present, and one short why.
-- Reply in the shopper's language; a Greek why may still cite an English name.
+- Present at most 3 Products whose fields actually support the need. If only one is honest, show one. If none are, say so in one sentence and ask one narrowing question. Do not show Product cards when none fit.
+- Show each recommendation as an interactive Product card in the chat (one card per Product: id, name, Sale Price). Do not list Products as markdown links or a text catalog; the cards are the Product list.
+- Search before showing cards. Showing the cards ends the turn, so emit every card for this turn together after search is done.
+- You may add a short why in the same turn as the cards. Reply in the shopper's language; a Greek why may still cite an English name.
 
 When search fails (API or embedding error): say Product search is unavailable. Do not recommend from memory as if it were a new search.
 `,

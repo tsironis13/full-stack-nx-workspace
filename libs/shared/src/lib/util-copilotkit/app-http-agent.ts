@@ -10,7 +10,7 @@ export interface AppHttpAgentOptions {
 const SERVER_INTERRUPT_REASONS = new Set(['human_approval', 'tool_suspended']);
 
 export class AppHttpAgent extends HttpAgent {
-  private readonly sentMessageIds = new Set<string>();
+  private readonly _sentMessageIds = new Set<string>();
 
   constructor(
     config: HttpAgentConfig,
@@ -50,7 +50,7 @@ export class AppHttpAgent extends HttpAgent {
     let messages = input.messages;
     if (this.options.useServerMemory && !isProxiedMcpRequest(input)) {
       messages = messages.filter(
-        (message) => !this.sentMessageIds.has(message.id),
+        (message) => !this._sentMessageIds.has(message.id),
       );
       this.markAllSent(input.messages);
     }
@@ -71,12 +71,12 @@ export class AppHttpAgent extends HttpAgent {
     messages: readonly { id: string }[] = this.messages,
   ): void {
     for (const message of messages) {
-      this.sentMessageIds.add(message.id);
+      this._sentMessageIds.add(message.id);
     }
   }
 
   clearSentHistory(): void {
-    this.sentMessageIds.clear();
+    this._sentMessageIds.clear();
   }
 }
 

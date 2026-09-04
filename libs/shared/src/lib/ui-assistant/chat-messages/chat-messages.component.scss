@@ -1,0 +1,120 @@
+:host {
+  display: block;
+}
+
+.bubble {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.bubble--markdown {
+  //color: var(--text, inherit);
+  color: black;
+}
+
+:host ::ng-deep .bubble--markdown .cpk\:prose {
+  max-width: none;
+  color: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+:host ::ng-deep .bubble--markdown .cpk\:prose > :first-child {
+  margin-top: 0;
+}
+
+:host ::ng-deep .bubble--markdown .cpk\:prose > :last-child {
+  margin-bottom: 0;
+}
+
+:host ::ng-deep .bubble--markdown p {
+  margin: 0 0 0.75em;
+}
+
+:host ::ng-deep .bubble--markdown p:last-child {
+  margin-bottom: 0;
+}
+
+:host ::ng-deep .bubble--markdown ol,
+:host ::ng-deep .bubble--markdown ul {
+  margin: 0.5em 0 0.75em;
+  padding-left: 1.25em;
+}
+
+:host ::ng-deep .bubble--markdown ol {
+  list-style: decimal;
+}
+
+:host ::ng-deep .bubble--markdown ul {
+  list-style: disc;
+}
+
+:host ::ng-deep .bubble--markdown li {
+  margin: 0.35em 0;
+}
+
+:host ::ng-deep .bubble--markdown li > p {
+  margin: 0;
+}
+
+:host ::ng-deep .bubble--markdown a {
+  color: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+:host ::ng-deep .bubble--markdown strong {
+  font-weight: 700;
+}
+
+copilot-render-tool-calls ::ng-deep copilot-default-tool-renderer {
+  margin: 0;
+  padding: 0;
+}
+
+copilot-render-tool-calls ::ng-deep .tool-card {
+  border: 0;
+  background: inherit;
+}
+
+copilot-render-tool-calls ::ng-deep .tool-summary {
+  padding: 0;
+}
+
+.tool-call {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  width: fit-content;
+  font-size: calc(var(--font-size-sm) - 1pt);
+  line-height: 1.2;
+}
+
+.tool-call-label {
+  font-size: calc(var(--font-size-sm) - 1pt);
+  line-height: 1.2;
+}
+
+app-widget-container {
+  display: block;
+  margin: 0;
+}
+
+.interrupt-message {
+  margin: 0;
+}
+
+.interrupt-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.interrupt-actions .btn {
+  width: 100%;
+  white-space: nowrap;
+}
