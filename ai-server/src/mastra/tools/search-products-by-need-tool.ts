@@ -15,7 +15,7 @@ const productRecommendationSchema = z.object({
 function ecommerceApiBaseUrl(): string {
   const fromEnv = (
     globalThis as { process?: { env?: Record<string, string | undefined> } }
-  ).process?.env?.ECOMMERCE_API_URL?.trim();
+  ).process?.env?.BASE_URL?.trim();
   return (fromEnv || 'http://localhost:3001/api').replace(/\/$/, '');
 }
 
@@ -44,9 +44,7 @@ export const searchProductsByNeedTool = createTool({
 
     const response = await fetch(url, { signal: abortSignal });
     if (!response.ok) {
-      throw new Error(
-        `Product search failed with HTTP ${response.status}`,
-      );
+      throw new Error(`Product search failed with HTTP ${response.status}`);
     }
 
     const payload = (await response.json()) as {

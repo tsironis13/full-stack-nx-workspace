@@ -25,7 +25,7 @@ import { CartAclReadAdapter } from '../../domains/cart/application/anti-corrupti
   },
 })
 export class HeaderComponent {
-  protected readonly theme = signal<'light' | 'dark'>('light');
+  protected readonly theme = signal<'light' | 'dark'>('dark');
 
   readonly authStore = inject(AuthStore);
   private readonly router = inject(Router);

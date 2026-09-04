@@ -89,7 +89,7 @@
     "@swc/helpers": "~0.5.11",
     "@swc/jest": "~0.2.38",
     "@types/jest": "^30.0.0",
-    "@types/node": "20.19.9",
+    "@types/node": "^20.19.9",
     "@types/passport-jwt": "^4.0.1",
     "@typescript-eslint/utils": "^8.40.0",
     "@vitest/coverage-v8": "^4.0.0",

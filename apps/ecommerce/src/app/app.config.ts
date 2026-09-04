@@ -6,6 +6,7 @@ import {
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { provideCopilotKit } from '@copilotkit/angular';
 
 import { authInterceptor } from './core/public-api';
 import { providePrimeNG } from 'primeng/config';
@@ -16,6 +17,7 @@ import {
   AuthStore,
   AuthApiService,
 } from '@full-stack-nx-workspace/auth-web';
+import { provideEnvConfig } from '../environments/environment';
 
 const provideAuthServices = () => [
   AuthStore,
@@ -30,6 +32,7 @@ export const appConfig: ApplicationConfig = {
     provideZonelessChangeDetection(),
     provideRouter(appRoutes, withComponentInputBinding()),
     provideAnimationsAsync(),
+    provideEnvConfig(),
     providePrimeNG({
       theme: {
         preset: appTheme,
@@ -41,5 +44,8 @@ export const appConfig: ApplicationConfig = {
       },
     }),
     provideAuthServices(),
+    provideCopilotKit({
+      defaultToolRendering: true,
+    }),
   ],
 };

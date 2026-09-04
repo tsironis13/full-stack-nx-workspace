@@ -10,10 +10,11 @@ import {
 import { registerApiRoute } from '@mastra/core/server';
 
 import { shoppingAgent } from './agents/shopping-agent';
+import { weatherAgent } from './agents/weather-agent';
 import { agUiRouteHandler } from './routes/ag-ui-route';
 
 export const mastra = new Mastra({
-  agents: { shoppingAgent },
+  agents: { shoppingAgent, weatherAgent },
   storage: new LibSQLStore({
     id: 'ecommerce-storage',
     url: 'file:./ecommerce.db',

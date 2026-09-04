@@ -23,3 +23,6 @@ export {
   PriceRangeDisplayComponent,
 } from './lib/components/price-range-display/price-range-display.component';
 export { PaginatorComponent } from './lib/components/paginator/paginator.component';
+export { AppHttpAgent } from './lib/util-copilotkit/app-http-agent';
+export { initAgentStore } from './lib/util-copilotkit/init-agent.store';
+export { ChatRegistry } from './lib/ui-assistant/chat-registry';

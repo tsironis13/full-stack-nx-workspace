@@ -14,7 +14,7 @@ The primary catalog entity representing shared product information and marketing
 
 A Product is not directly purchasable; purchasable behavior belongs to Product Items.
 
-**Storefront catalog search (v1):** Text search matches **`products.name`** only.
+**Storefront catalog search (v1):** Text search matches **`products.name`** only. Need-language discovery is the **Shopping Assistant**, not this search box.
 
 Avoid:
 
@@ -141,6 +141,50 @@ Facets such as size and color use the **attribute** data tied to **Product Items
 ## Storefront catalog URL state (v1)
 
 Search text, facet selection, sort, and pagination are **not** required to serialize to the URL. Refreshing or sharing a generic catalog URL does not need to restore the same result set for v1.
+
+---
+
+# Shopping Assistant
+
+## Shopping Assistant
+
+A storefront chat that recommends **Products** from a stated **product need**.
+
+v1 recommends only: ranked **Products**, a one-line why grounded in the retrieval fields, and a link to the product page (`/products/{id}`). It does not add to the **Cart**, change catalog filters, pick a **Product Item**, or answer account/order questions.
+
+Avoid:
+
+- Catalog search (the **Storefront catalog search** `q` parameter)
+- Semantic search (implementation)
+- Sales chatbot / copilot (generic)
+
+---
+
+## Product need
+
+A shopper's use, constraint, or kind of **Product**, in natural language (for example “waterproof shoes for hiking”).
+
+Not a **Product** name keyword and not a catalog facet selection.
+
+Avoid:
+
+- Search string
+- Keywords
+- Intent (unless you mean this)
+
+---
+
+## Product recommendation
+
+A **Product** suggested for a **product need**, with a reason that may cite only: **Product** name, **Category** path, **Sale Price** on the **Main Product Item**, a short description/about excerpt, and **options** (attribute values on **Product Items**).
+
+The unit is **Product**, never **Product Item**. Similarity scores are internal ranking, not shopper copy. v1 shows at most three **Product recommendations** per turn.
+
+Avoid:
+
+- Search hit (technical)
+- SKU suggestion
+- Variant recommendation
 
 ---
 
@@ -669,6 +713,7 @@ Avoid:
 - A Product contains one or more Product Items
 - A Product Item belongs to exactly one Product
 - A Product should contain exactly one Main Product Item
+- A **Product recommendation** refers to a **Product**, not a **Product Item**
 - A Product may have many **Reviews**
 - A **Review** belongs to exactly one **Product**
 - A **Review** belongs to exactly one **Registered User**
@@ -766,6 +811,24 @@ Avoid:
 - **Review** submission and edit are available from the **Product** detail page and from **order history** for eligible **Registered Users**
 - **Orders** in **`pending`** or **`cancelled`** status do not establish a **verified purchase**
 - **Guest Users** may not submit **Reviews**, even when they placed an **Order** as a guest
+
+---
+
+## Shopping Assistant rules (v1)
+
+- The **Shopping Assistant** searches only when the message is a **product need**
+- Follow-up refinements reconstruct the **product need** and search again; references like “the second one” mean the last **Product recommendations**, not a new ranking
+- Weak matches may be declined; the assistant then asks one narrowing question instead of padding with poor **Products**
+- Reply in the shopper's language; do not translate **Product** names, **options**, or **Category** path
+- **Storefront catalog search** remains **`products.name`** only — the assistant is not the catalog `q` parameter
+- **Guest Users** and **Registered Users** may use the assistant; v1 does not bind conversation memory to a **Customer Account**
+
+---
+
+## Data rules
+
+- **Shopping Assistant** instructions describe when to retrieve **Products** for a **product need**; they do not name tools. The model selects a tool only when the shopper's request matches that tool's description. If no description matches, it does not call a tool.
+- A **Product recommendation** may cite only fields returned for that recommendation. The assistant must not invent a **Product**, specs, stock, or **Ratings**.
 
 ---
 
@@ -890,6 +953,22 @@ Domain expert:
 
 ---
 
+Dev:
+"Is the Shopping Assistant just catalog search in a chat bubble?"
+
+Domain expert:
+"No. Catalog search matches Product names. The Shopping Assistant takes a product need and returns Product recommendations with a grounded why."
+
+---
+
+Dev:
+"Should it recommend a size or color?"
+
+Domain expert:
+"Not in v1. It recommends the Product. Options on the recommendation are for explaining the fit, not for picking a Product Item."
+
+---
+
 # Flagged ambiguities
 
 ## "Product" vs "Product Item"
@@ -897,7 +976,16 @@ Domain expert:
 The Product is the catalog-level entity containing shared content.
 The Product Item is the purchasable entity containing pricing and business identifiers.
 
-These terms should never be used interchangeably.
+These terms should never be used interchangeably. A **Product recommendation** is always a **Product**.
+
+---
+
+## "Storefront catalog search" vs "Shopping Assistant"
+
+**Storefront catalog search** is name match on **`products.name`**, combined with catalog facets.
+The **Shopping Assistant** ranks **Products** for a **product need**. They are different entry points and must not share the catalog `q` contract. Decision record: [0005-shopping-assistant-retrieval-not-catalog-search](./adr/0005-shopping-assistant-retrieval-not-catalog-search.md).
+
+---
 
 ---
 
