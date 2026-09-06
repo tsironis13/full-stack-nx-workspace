@@ -150,13 +150,15 @@ Search text, facet selection, sort, and pagination are **not** required to seria
 
 A storefront chat that recommends **Products** from a stated **product need**.
 
-v1 recommends only: ranked **Products** as in-chat **Product recommendation** cards (at most three per turn), plus a one-line why grounded in the retrieval fields. It does not add to the **Cart**, change catalog filters, pick a **Product Item**, or answer account/order questions.
+v1 recommends only: ranked **Products** as in-chat **Product recommendation** cards (at most three per turn), plus a one-line why grounded in the retrieval fields. It does not itself add to the **Cart**, change catalog filters, pick a **Product Item**, or answer account/order questions. It may **start** a **Cart Item workflow** so the shopper can convert a last-turn **Product recommendation** into a **Cart Item**.
 
 Avoid:
 
 - Catalog search (the **Storefront catalog search** `q` parameter)
 - Semantic search (implementation)
 - Sales chatbot / copilot (generic)
+- Cart Builder (use **Cart Item workflow**)
+- Add-to-cart agent (it is a **workflow** the assistant may start, not a second persona)
 
 ---
 
@@ -185,6 +187,22 @@ Avoid:
 - Search hit (technical)
 - SKU suggestion
 - Variant recommendation
+
+---
+
+## Cart Item workflow
+
+A storefront chat workflow that creates **one Cart Item** from a **Product** in this thread’s last **Product recommendations**.
+
+**Shopping Assistant** may start it (card action or natural-language reference). The workflow matches **options** to a **Product Item**, then the storefront **Cart** path writes the **Cart Item**. It is not **Checkout**, not a second chat persona, and not **Shopping Assistant** drawing the pickers.
+
+Avoid:
+
+- Cart Builder
+- In-chat add (UI nickname — not the domain name)
+- Add-to-cart agent / buying copilot / purchase assistant / sub-agent
+- Variant picker
+- In-chat Checkout
 
 ---
 
@@ -714,6 +732,8 @@ Avoid:
 - A Product Item belongs to exactly one Product
 - A Product should contain exactly one Main Product Item
 - A **Product recommendation** refers to a **Product**, not a **Product Item**
+- A **Cart Item workflow** starts from one **Product** in the last **Product recommendations** and produces at most one **Cart Item**
+- A **Cart Item** created this way still references a **Product Item**, same as any other **Cart Item**
 - A Product may have many **Reviews**
 - A **Review** belongs to exactly one **Product**
 - A **Review** belongs to exactly one **Registered User**
@@ -822,6 +842,24 @@ Avoid:
 - Reply in the shopper's language; do not translate **Product** names, **options**, or **Category** path
 - **Storefront catalog search** remains **`products.name`** only — the assistant is not the catalog `q` parameter
 - **Guest Users** and **Registered Users** may use the assistant; v1 does not bind conversation memory to a **Customer Account**
+- The assistant does not pick a **Product Item** or write the **Cart**. On a card Add or an add-reference to a last **Product recommendation**, it may start a **Cart Item workflow** with that **Product** id and any option hints from the shopper’s message — never a **Product Item** id
+- The assistant does not author option-picker or confirm UI. Those surfaces belong to the **Cart Item workflow**
+
+---
+
+## Cart Item workflow rules (v1)
+
+- Valid start: a **Product** from **this thread’s last Product recommendations** only (card action or natural language). Not the product detail page, not a named **Product** with no prior recommendation
+- One in-flight run at a time; one run produces **exactly one Cart Item**
+- Never silently use the **Main Product Item** when the **Product** has more than one **Product Item**
+- Skip option pickers only when there is a single **Product Item**, or when the shopper’s hints uniquely identify one **In Stock Product Item**
+- The workflow matches hints to **options** on that **Product**’s **Product Items**. Ambiguous or missing hints → pickers. The model never submits a **Product Item** id
+- Never write an **Out of Stock Product Item**. Disable that combination in pickers. If every **Product Item** is out of stock, say so and stop. This chat path is stricter than product-detail add, which does not check **Inventory** today
+- After a unique **In Stock Product Item** is resolved, always confirm before write: **Product** name, chosen **options**, **Sale Price** on **that Product Item** (not the recommendation card’s **Main Product Item** price), quantity default 1 capped at **Inventory**
+- **Guest Users** and **Registered Users** may finish the run. Confirm uses the storefront **Cart** path (guest localStorage / registered server). The workflow does not `POST /cart`
+- A new **product need**, an add-reference to a **different** last recommendation, or explicit cancel **abandons** the run (no **Cart** write). Other messages leave pickers/confirm up
+- “Add the second and the third” resolves **one** **Product** (first mentioned, or ask which). No queue, no bundle
+- Does not collect **Shipping Address**, **Payment**, or **Guest Checkout Identity**, and does not create an **Order**. The success surface may **navigate** to existing `/checkout`
 
 ---
 
@@ -829,6 +867,7 @@ Avoid:
 
 - **Shopping Assistant** instructions describe when to retrieve **Products** for a **product need**; they do not name tools. The model selects a tool only when the shopper's request matches that tool's description. If no description matches, it does not call a tool.
 - A **Product recommendation** may cite only fields returned for that recommendation. The assistant must not invent a **Product**, specs, stock, or **Ratings**.
+- A **Cart Item workflow** may cite **Sale Price** and **options** only from the resolved **Product Item** (and **Inventory** for the quantity cap). It must not invent stock or a **Product Item**.
 
 ---
 
@@ -969,6 +1008,30 @@ Domain expert:
 
 ---
 
+Dev:
+"The shopper said add the second one in red 42. Does the Shopping Assistant put that in the Cart?"
+
+Domain expert:
+"No. The Shopping Assistant starts a Cart Item workflow with the Product and those option hints. The workflow matches a Product Item. The storefront Cart path writes the Cart Item after confirm."
+
+---
+
+Dev:
+"Can we default to the Main Product Item like the catalog grid?"
+
+Domain expert:
+"Not when other Product Items exist. Chat is not a grid scan. Confirm must show Sale Price on the Product Item being added — it may differ from the recommendation card."
+
+---
+
+Dev:
+"Is this in-chat Checkout?"
+
+Domain expert:
+"No. Success is a Cart Item. Checkout stays the existing page. A success control may navigate there; it must not collect an address or place an Order."
+
+---
+
 # Flagged ambiguities
 
 ## "Product" vs "Product Item"
@@ -984,6 +1047,25 @@ These terms should never be used interchangeably. A **Product recommendation** i
 
 **Storefront catalog search** is name match on **`products.name`**, combined with catalog facets.
 The **Shopping Assistant** ranks **Products** for a **product need**. They are different entry points and must not share the catalog `q` contract. Decision record: [0005-shopping-assistant-retrieval-not-catalog-search](./adr/0005-shopping-assistant-retrieval-not-catalog-search.md).
+
+---
+
+## "Shopping Assistant" vs "Cart Item workflow"
+
+**Shopping Assistant** retrieves **Product recommendations** for a **product need**. It does not pick a **Product Item**, write the **Cart**, or author the option-picker / confirm surfaces.
+**Cart Item workflow** converts one last-turn recommended **Product** into one **Cart Item**. Same storefront chat; different primitive (agent vs workflow). Decision record: [0007-cart-item-workflow-mastra-not-subagent](./adr/0007-cart-item-workflow-mastra-not-subagent.md).
+
+---
+
+## "Cart Item workflow" vs "Checkout"
+
+**Cart Item workflow** ends when a **Cart Item** exists. **Checkout** remains the existing single-page flow that creates an **Order**. A success-surface link to `/checkout` is navigation, not in-chat **Checkout**.
+
+---
+
+## "Cart Item workflow" stock vs product-detail add
+
+**Cart Item workflow** refuses **Out of Stock Product Item** writes. Product detail and `AddCartItemUseCase` do not check **Inventory** today. That inconsistency is deliberate for this chat path; it is not a silent change to the cart API. Decision record: [0006-cart-item-workflow-stock-and-cartstore](./adr/0006-cart-item-workflow-stock-and-cartstore.md).
 
 ---
 
