@@ -7,6 +7,8 @@ import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideCopilotKit } from '@copilotkit/angular';
+import { provideMarkdownRenderer } from '@a2ui/angular/v0_9';
+import { marked } from 'marked';
 
 import { authInterceptor } from './core/public-api';
 import { providePrimeNG } from 'primeng/config';
@@ -18,6 +20,10 @@ import {
   AuthApiService,
 } from '@full-stack-nx-workspace/auth-web';
 import { provideEnvConfig } from '../environments/environment';
+import {
+  a2uiActivityRendererConfig,
+  provideA2uiCatalog,
+} from '@full-stack-nx-workspace/shared';
 
 const provideAuthServices = () => [
   AuthStore,
@@ -46,6 +52,11 @@ export const appConfig: ApplicationConfig = {
     provideAuthServices(),
     provideCopilotKit({
       defaultToolRendering: true,
+      renderActivityMessages: [a2uiActivityRendererConfig],
     }),
+    provideA2uiCatalog(),
+    provideMarkdownRenderer(async (markdown) =>
+      marked.parse(String(markdown ?? '')),
+    ),
   ],
 };

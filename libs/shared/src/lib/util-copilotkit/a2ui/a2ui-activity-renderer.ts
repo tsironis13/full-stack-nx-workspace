@@ -1,0 +1,111 @@
+import { A2uiRendererService, SurfaceComponent } from '@a2ui/angular/v0_9';
+import type { A2uiMessage } from '@a2ui/web_core/v0_9';
+import { AbstractAgent, ActivityMessage } from '@ag-ui/client';
+import {
+  Component,
+  computed,
+  DestroyRef,
+  effect,
+  inject,
+  input,
+  Type,
+} from '@angular/core';
+import {
+  ActivityRenderer,
+  RenderActivityMessageConfig,
+} from '@copilotkit/angular';
+import { z } from 'zod';
+
+export const a2uiSurfaceContentSchema = z.object({
+  operations: z.array(z.custom<A2uiMessage>()),
+});
+
+export type A2uiSurfaceContent = z.infer<typeof a2uiSurfaceContentSchema>;
+
+/**
+ * CopilotKit activity renderer for `activityType: "a2ui-surface"` snapshots.
+ * Feeds the emitted A2UI operations into the existing `@a2ui/angular/v0_9`
+ * renderer and shows the resulting surface. Kept as legacy A2UI wiring: it does
+ * not adapt the catalog to `@copilotkit/a2ui-renderer`.
+ */
+@Component({
+  selector: 'app-a2ui-activity-renderer',
+  imports: [SurfaceComponent],
+  host: { class: 'a2ui-surface' },
+  template: `
+    @let surface = surfaceId();
+    @if (surface) {
+      <a2ui-v09-surface [surfaceId]="surface" />
+    }
+  `,
+})
+export class A2uiActivityRenderer implements ActivityRenderer<A2uiSurfaceContent> {
+  readonly activityType = input.required<string>();
+  readonly content = input.required<A2uiSurfaceContent>();
+  readonly message = input.required<ActivityMessage>();
+  readonly agent: any = input.required<AbstractAgent | undefined>();
+
+  private readonly renderer = inject(A2uiRendererService);
+  private renderedSurfaceId: string | null = null;
+
+  constructor() {
+    // An activity message describes exactly one surface, so it is built once:
+    // CopilotKit re-delivers the parsed content whenever the message is
+    // re-cloned, and the A2UI processor rejects a second `createSurface`.
+    effect(() => {
+      const operations = this.content().operations;
+      const surfaceId = getRenderedSurfaceId(operations);
+      if (!surfaceId || surfaceId === this.renderedSurfaceId) {
+        return;
+      }
+
+      this.releaseSurface();
+      this.renderedSurfaceId = surfaceId;
+      this.renderer.processMessages(operations);
+    });
+
+    inject(DestroyRef).onDestroy(() => {
+      this.releaseSurface();
+    });
+  }
+
+  private releaseSurface(): void {
+    if (this.renderedSurfaceId) {
+      this.renderer.surfaceGroup.deleteSurface(this.renderedSurfaceId);
+      this.renderedSurfaceId = null;
+    }
+  }
+
+  protected readonly surfaceId = computed(() =>
+    getRenderedSurfaceId(this.content().operations),
+  );
+}
+
+export const a2uiActivityRendererConfig: RenderActivityMessageConfig<A2uiSurfaceContent> =
+  {
+    activityType: 'a2ui-surface',
+    content: a2uiSurfaceContentSchema,
+    component: A2uiActivityRenderer as Type<
+      ActivityRenderer<A2uiSurfaceContent>
+    >,
+  };
+
+function getRenderedSurfaceId(operations: A2uiMessage[]): string | null {
+  for (const operation of operations) {
+    if ('createSurface' in operation && operation.createSurface.surfaceId) {
+      return operation.createSurface.surfaceId;
+    }
+
+    if (
+      'updateComponents' in operation &&
+      operation.updateComponents.surfaceId
+    ) {
+      return operation.updateComponents.surfaceId;
+    }
+
+    if ('updateDataModel' in operation && operation.updateDataModel.surfaceId) {
+      return operation.updateDataModel.surfaceId;
+    }
+  }
+  return null;
+}

@@ -31,3 +31,5 @@ export {
 export { ChatRegistry } from './lib/ui-assistant/chat-registry';
 export { createFrontendTool } from './lib/util-copilotkit/tool-definition';
 export { AssistantChatComponent } from './lib/ui-assistant/assistant-chat/assistant-chat.component';
+export { a2uiActivityRendererConfig } from './lib/util-copilotkit/a2ui/a2ui-activity-renderer';
+export { provideA2uiCatalog } from './lib/util-copilotkit/a2ui/provide-a2ui-catelog';

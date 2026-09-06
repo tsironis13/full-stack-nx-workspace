@@ -1,18 +1,13 @@
 import { type Interrupt } from '@ag-ui/core';
 import { NgTemplateOutlet } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  input,
-  output,
-  signal,
-} from '@angular/core';
+import { Component, computed, input, output, signal } from '@angular/core';
 import {
   CopilotChatAssistantMessageRenderer,
   type Message,
   RenderToolCalls,
 } from '@copilotkit/angular';
+
+import { CopilotActivity } from '../../util-copilotkit/activity/copilot-activity';
 
 type ActivityMessage = Extract<Message, { role: 'activity' }>;
 type AssistantMessage = Extract<Message, { role: 'assistant' }>;
@@ -76,10 +71,10 @@ interface ChatMessageView {
     CopilotChatAssistantMessageRenderer,
     RenderToolCalls,
     NgTemplateOutlet,
+    CopilotActivity,
   ],
   templateUrl: './chat-messages.component.html',
   styleUrl: './chat-messages.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'flex flex-col gap-3',
   },
