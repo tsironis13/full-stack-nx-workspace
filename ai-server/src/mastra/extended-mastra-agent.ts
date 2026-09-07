@@ -179,14 +179,14 @@ function readToolName(value: unknown): string | undefined {
 
 /**
  * Detects a tool result that carries an A2UI surface (`{ surfaceId, messages }`,
- * e.g. from the server-built `showTable` tool) and returns the surface id plus
+ * e.g. from the server-built `showTable` tool or a workflow tool wrapped as
+ * `{ result: { surfaceId, messages }, runId }`) and returns the surface id plus
  * its operation list so the caller can forward it as an `a2ui-surface`
  * ACTIVITY_SNAPSHOT. Shape-based, so any tool that returns a surface works.
  */
-function getA2uiSurface(
-  result: unknown,
+function readA2uiSurfaceFields(
+  record: UnknownRecord | undefined,
 ): { surfaceId: string; operations: unknown[] } | null {
-  const record = asRecord(result);
   const surfaceId = record?.['surfaceId'];
   const operations = record?.['messages'];
   return typeof surfaceId === 'string' &&
@@ -194,6 +194,16 @@ function getA2uiSurface(
     operations.length > 0
     ? { surfaceId, operations }
     : null;
+}
+
+function getA2uiSurface(
+  result: unknown,
+): { surfaceId: string; operations: unknown[] } | null {
+  const record = asRecord(result);
+  return (
+    readA2uiSurfaceFields(record) ??
+    readA2uiSurfaceFields(getNestedRecord(record, 'result'))
+  );
 }
 
 type PendingToolCalls = Map<string, { toolName: string; args: unknown }>;

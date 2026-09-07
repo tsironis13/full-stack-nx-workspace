@@ -1,14 +1,15 @@
+import { CurrencyPipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  inject,
   input,
-  OnInit,
 } from '@angular/core';
-import { JsonPipe } from '@angular/common';
 import { type AngularToolCall, type ToolRenderer } from '@copilotkit/angular';
 import { z } from 'zod';
 
 import { createFrontendTool } from '@full-stack-nx-workspace/shared';
+import { ShoppingStore } from '../application/public-api';
 
 const recommendedProductSchema = z.object({
   id: z.number().describe("The Product id from this turn's search results"),
@@ -27,52 +28,22 @@ type RecommendedProductWidgetArgs = z.infer<
 @Component({
   selector: 'app-recommended-product-widget',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [JsonPipe],
-  template: `
-    @let product = toolCall().args.product;
-    {{ product | json }}
-    <!-- @if (flight) {
-      @let status = toolCall().args.status ?? 'other';
-      <app-flight-card
-        [item]="flight"
-        [selected]="isSelected(flight.id)"
-        [readonly]="true"
-      >
-        @if (status === 'booked') {
-          <button
-            class="btn btn-default"
-            [routerLink]="['/checkin', { ticketId: flight.id }]"
-          >
-            Check in
-          </button>
-        } @else if (status === 'other') {
-          @if (isSelected(flight.id)) {
-            <button class="btn btn-default" (click)="select(flight.id, false)">
-              Remove
-            </button>
-          } @else {
-            <button class="btn btn-default" (click)="select(flight.id, true)">
-              Select
-            </button>
-          }
-        }
-      </app-flight-card>
-    } -->
-  `,
-  styles: `
-    :host {
-      display: block;
-    }
-  `,
+  imports: [CurrencyPipe],
+  templateUrl: './recommended-product.widget.html',
+  styleUrl: './recommended-product.widget.scss',
 })
-export class RecommendedProductWidget
-  implements ToolRenderer<RecommendedProductWidgetArgs>, OnInit
-{
+export class RecommendedProductWidget implements ToolRenderer<RecommendedProductWidgetArgs> {
   readonly toolCall =
     input.required<AngularToolCall<RecommendedProductWidgetArgs>>();
 
-  ngOnInit(): void {
-    console.log('RecommendedProductWidget', this.toolCall());
+  private readonly shoppingStore = inject(ShoppingStore);
+
+  protected addToCart(): void {
+    const product = this.toolCall().args.product;
+    if (!product) {
+      return;
+    }
+    this.shoppingStore.startFromRecommendation(product.id);
   }
 }
 

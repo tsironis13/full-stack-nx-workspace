@@ -7,6 +7,7 @@ import { OrdersModule } from '../modules/orders/orders.module';
 import { CartModule } from '../modules/cart/cart.module';
 import { ReviewsModule } from '../modules/reviews/reviews.module';
 import { ProductEmbeddingsModule } from '../modules/product-embeddings/product-embeddings.module';
+import { ProductItemConversionModule } from '../modules/product-item-conversion/product-item-conversion.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { ProductEmbeddingsModule } from '../modules/product-embeddings/product-e
     CartModule,
     ReviewsModule,
     ProductEmbeddingsModule,
+    ProductItemConversionModule,
   ],
 })
 export class AppModule {}

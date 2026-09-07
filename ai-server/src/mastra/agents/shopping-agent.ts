@@ -3,12 +3,13 @@ import { Memory } from '@mastra/memory';
 
 import { model } from '../config';
 import { searchProductsByNeedTool } from '../tools/search-products-by-need-tool';
+import { cartItemWorkflow } from '../workflows/cart-item-workflow';
 
 export const shoppingAgent = new Agent({
   id: 'shoppingAgent',
   name: 'Shopping Assistant',
   description:
-    'Recommends catalog Products from a shopper product need. Does not add to the Cart or change catalog filters.',
+    'Recommends catalog Products from a shopper product need. May start Cart Item conversion for a last-turn Product. Does not pick a Product Item, write the Cart, or change catalog filters.',
   metadata: {
     suggestedPrompts: [
       'lightweight laptop for university',
@@ -22,7 +23,7 @@ export const shoppingAgent = new Agent({
 When to search
 - Search only when the message is a product need (a kind of Product, a use, or a constraint such as "waterproof shoes for hiking").
 - Greetings: invite the shopper to describe what they need. Do not search.
-- Cart, checkout, orders, account: say you only recommend Products. Do not fake those actions. Do not search.
+- Cart, checkout, orders, account (except adding a last-turn recommended Product): say you only recommend Products. Do not fake those actions. Do not search.
 - Off-catalog topics: refuse. Do not search.
 
 Query
@@ -48,10 +49,19 @@ Using results
 - You may add a short why in the same turn as the cards. Reply in the shopper's language; a Greek why may still cite an English name.
 
 When search fails (API or embedding error): say Product search is unavailable. Do not recommend from memory as if it were a new search.
+
+When to convert a last-turn Product
+- Start conversion only when the shopper asks to add a Product from this thread's recommendations.
+- Pass that Product's id and any option hints they typed as raw text. Never pass a Product Item id. Do not pick size or color yourself.
+- Do not write the Cart. Do not author confirm or picker UI; that comes from the conversion result.
+- Greetings, product-need search, cart/checkout/account questions, and off-catalog topics: do not start conversion.
 `,
   model,
   tools: {
     search_products_by_need: searchProductsByNeedTool,
+  },
+  workflows: {
+    cartItem: cartItemWorkflow,
   },
   memory: new Memory(),
 });
