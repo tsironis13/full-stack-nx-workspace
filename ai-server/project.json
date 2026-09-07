@@ -1,0 +1,14 @@
+{
+  "name": "ai-server",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "ai-server/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "test": {
+      "options": {
+        "passWithNoTests": false
+      }
+    }
+  }
+}

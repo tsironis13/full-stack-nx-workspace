@@ -1,0 +1,37 @@
+import {
+  CART_ITEM_WORKFLOW_DESCRIPTION,
+  cartItemWorkflowInputSchema,
+} from './cart-item-workflow.contract';
+
+describe('Cart Item workflow start contract', () => {
+  it('accepts a last-turn Product id plus optional hintText, never a Product Item id', () => {
+    expect(cartItemWorkflowInputSchema.shape.productId).toBeDefined();
+    expect(cartItemWorkflowInputSchema.shape.hintText).toBeDefined();
+    expect(cartItemWorkflowInputSchema.shape).not.toHaveProperty(
+      'productItemId',
+    );
+
+    expect(cartItemWorkflowInputSchema.shape.productId.description).toMatch(
+      /Product id from this thread's last Product recommendations/i,
+    );
+    expect(cartItemWorkflowInputSchema.shape.productId.description).toMatch(
+      /Never a Product Item id/i,
+    );
+    expect(cartItemWorkflowInputSchema.shape.hintText.description).toMatch(
+      /option hints from this utterance/i,
+    );
+  });
+
+  it('describes starting conversion for one last-turn recommended Product, including natural-language add', () => {
+    expect(CART_ITEM_WORKFLOW_DESCRIPTION).toMatch(
+      /last Product recommendations/i,
+    );
+    expect(CART_ITEM_WORKFLOW_DESCRIPTION).toMatch(/the second one/i);
+    expect(CART_ITEM_WORKFLOW_DESCRIPTION).toMatch(/hintText/);
+    expect(CART_ITEM_WORKFLOW_DESCRIPTION).toMatch(/Never a Product Item id/i);
+    expect(CART_ITEM_WORKFLOW_DESCRIPTION).toMatch(
+      /no last-turn Product recommendation/i,
+    );
+    expect(CART_ITEM_WORKFLOW_DESCRIPTION).not.toMatch(/productItemId/);
+  });
+});
