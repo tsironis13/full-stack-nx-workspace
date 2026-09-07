@@ -1,0 +1,16 @@
+@let product = toolCall().args.product;
+@if (product) {
+  <article class="recommend-card">
+    <h3 class="recommend-card__name">{{ product.name }}</h3>
+    <p class="recommend-card__price">
+      {{ product.price | currency: 'EUR' : 'symbol' : '1.2-2' : 'el-GR' }}
+    </p>
+    <button
+      type="button"
+      class="recommend-card__add"
+      (click)="addToCart()"
+    >
+      Προσθήκη
+    </button>
+  </article>
+}

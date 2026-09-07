@@ -40,4 +40,19 @@ export type CatalogBrowseCartAddInput = {
   primaryImageUrl: string | null;
 };
 
+/**
+ * Add-to-cart input from **Cart Item workflow** confirm: an arbitrary
+ * **Product Item** (not necessarily the **Main Product Item**) plus quantity
+ * and a merchandising snapshot.
+ */
+export type CartProductItemAddInput = {
+  productId: number;
+  productItemId: number;
+  quantity: number;
+  name: string | null;
+  salePrice: number | null;
+  originalPrice: number | null;
+  primaryImageUrl: string | null;
+};
+
 export const CLIENT_CART_SCHEMA_VERSION = 1 as const;

@@ -1,7 +1,10 @@
 import { type } from '@ngrx/signals';
 import { eventGroup } from '@ngrx/signals/events';
 
-import type { CatalogBrowseCartAddInput } from '../domain/public-api';
+import type {
+  CartProductItemAddInput,
+  CatalogBrowseCartAddInput,
+} from '../domain/public-api';
 
 /**
  * Events dispatched by **Catalog** (and any other external bounded context) to
@@ -15,6 +18,19 @@ export const cartCatalogEvents = eventGroup({
     addFromBrowse: type<CatalogBrowseCartAddInput>(),
     /** Decrement the quantity of a **Cart Item** by 1; removes line when qty reaches 1. */
     decrementItem: type<{ mainProductItemId: number }>(),
+  },
+});
+
+/**
+ * Events dispatched by **Shopping** (Cart Item workflow confirm) to mutate
+ * **Cart** state. Defined here so **Cart** owns the write contract; the ACL
+ * re-exports them. Shopping must not call `CartStore` or reuse `addFromBrowse`.
+ */
+export const cartShoppingEvents = eventGroup({
+  source: 'Shopping',
+  events: {
+    /** Add (or merge into existing) an arbitrary **Product Item** line with quantity. */
+    addProductItem: type<CartProductItemAddInput>(),
   },
 });
 

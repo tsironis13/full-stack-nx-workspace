@@ -1,6 +1,7 @@
 export {
   CLIENT_CART_SCHEMA_VERSION,
   type CatalogBrowseCartAddInput,
+  type CartProductItemAddInput,
   type CatalogCartLineSnapshot,
   type ClientCartEnvelopeV1,
 } from './cart.models';

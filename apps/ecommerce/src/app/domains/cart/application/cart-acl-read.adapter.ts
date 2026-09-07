@@ -54,6 +54,17 @@ export class CartAclReadAdapter {
   readonly pendingMainProductItemId = this.store.pendingMainProductItemId;
 
   /**
+   * Last cart write error message, or `null`. Used by **Cart Item workflow**
+   * confirm so a failed server write can be shown without inventing a line.
+   */
+  readonly writeError = this.store.error;
+
+  /**
+   * `true` while a registered-user cart mutation is in flight.
+   */
+  readonly writePending = this.store.isPending;
+
+  /**
    * `true` when any server-cart item has `available: false` (archived product).
    * Guest-cart items (no `available` field) are treated as available and never
    * contribute to this flag.

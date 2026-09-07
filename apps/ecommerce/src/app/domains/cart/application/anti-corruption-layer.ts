@@ -5,6 +5,7 @@
  *
  * - **Write side** — re-exported event groups:
  *   - `cartCatalogEvents`: Catalog → Cart commands (add from browse, decrement).
+ *   - `cartShoppingEvents`: Shopping → Cart commands (add Product Item from confirm).
  *   - `cartUiEvents`: CartUI → Cart commands (increment, decrementOrRemove, remove).
  *   Foreign code dispatches these events; Cart's `CartStore` reduces them.
  *   Callers must never import `CartStore` or call its methods directly.
@@ -15,6 +16,14 @@
  *
  * Boundary rule: `layout` and other `domain-application` layers may import from
  * this file; `domain-feature` code imports via its own domain's `public-api.ts`.
+ *
+ * Events are re-exported from `./events` (not `./public-api`) so write-side
+ * consumers do not load `CartStore` through the application barrel.
  */
-export { CartAclReadAdapter } from './public-api';
-export { cartCatalogEvents, cartUiEvents } from './public-api';
+export { CartAclReadAdapter } from './cart-acl-read.adapter';
+export {
+  cartCatalogEvents,
+  cartShoppingEvents,
+  cartUiEvents,
+} from './events';
+export type { CartProductItemAddInput } from '../domain/public-api';

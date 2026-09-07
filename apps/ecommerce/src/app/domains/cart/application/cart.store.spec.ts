@@ -6,12 +6,18 @@ import { of, throwError } from 'rxjs';
 
 import { LocalStorageFacade } from '@full-stack-nx-workspace/shared';
 import { AuthStore } from '@full-stack-nx-workspace/auth-web';
+
+jest.mock('@full-stack-nx-workspace/shared', () =>
+  jest.requireActual(
+    '../../../../../../../libs/shared/src/lib/storage/local-storage.facade',
+  ),
+);
 import { CartApiService } from '../infrastructure/public-api';
 import {
   CLIENT_CART_SCHEMA_VERSION,
   GUEST_CART_LOCAL_STORAGE_KEY,
 } from '../domain/public-api';
-import { cartCatalogEvents, cartUiEvents } from './events';
+import { cartCatalogEvents, cartShoppingEvents, cartUiEvents } from './events';
 import type {
   CartApiResponseModel,
   CartItemApiModel,
@@ -43,6 +49,29 @@ function browsePayload(
     salePrice: 9.99,
     originalPrice: null as number | null,
     primaryImageUrl: null as string | null,
+    ...overrides,
+  };
+}
+
+function productItemPayload(
+  overrides: Partial<{
+    productId: number;
+    productItemId: number;
+    quantity: number;
+    name: string;
+    salePrice: number;
+    originalPrice: number | null;
+    primaryImageUrl: string | null;
+  }> = {},
+) {
+  return {
+    productId: 7,
+    productItemId: 42,
+    quantity: 2,
+    name: 'Trail Bottle',
+    salePrice: 19.5,
+    originalPrice: 24 as number | null,
+    primaryImageUrl: 'https://cdn.example/bottle.jpg' as string | null,
     ...overrides,
   };
 }
@@ -219,6 +248,36 @@ describe('CartStore', () => {
 
       expect(store.items()).toHaveLength(1);
       expect(store.items()[0].quantity).toBe(2);
+    });
+
+    it('addProductItem adds a line with the given quantity and persists guest cart', () => {
+      dispatcher.dispatch(
+        cartShoppingEvents.addProductItem(productItemPayload()),
+      );
+
+      expect(store.items()).toHaveLength(1);
+      expect(store.items()[0].mainProductItemId).toBe(42);
+      expect(store.items()[0].quantity).toBe(2);
+      expect(store.items()[0].name).toBe('Trail Bottle');
+      expect(store.items()[0].salePrice).toBe(19.5);
+      const raw = localStorage.getItem(GUEST_CART_LOCAL_STORAGE_KEY);
+      expect(raw).not.toBeNull();
+      expect(JSON.parse(raw as string).items).toHaveLength(1);
+    });
+
+    it('addProductItem merges quantity for the same Product Item', () => {
+      dispatcher.dispatch(
+        cartShoppingEvents.addProductItem(productItemPayload({ quantity: 2 })),
+      );
+      dispatcher.dispatch(
+        cartShoppingEvents.addProductItem(
+          productItemPayload({ quantity: 1, name: 'Refreshed' }),
+        ),
+      );
+
+      expect(store.items()).toHaveLength(1);
+      expect(store.items()[0].quantity).toBe(3);
+      expect(store.items()[0].name).toBe('Refreshed');
     });
 
     it('catalog decrementItem decrements guest line and persists', () => {
@@ -481,6 +540,30 @@ describe('CartStore', () => {
       });
       expect(store.items()[0].mainProductItemId).toBe(55);
       expect(store.items()[0].name).toBe('From API');
+    });
+
+    it('addProductItem calls addItem with Product Item id and quantity', async () => {
+      const response = makeServerCart([
+        makeServerItem({
+          id: 21,
+          productItemId: 42,
+          quantity: 2,
+          capturedName: 'Trail Bottle',
+        }),
+      ]);
+      mockAddItem.mockReturnValue(of(response));
+
+      dispatcher.dispatch(
+        cartShoppingEvents.addProductItem(productItemPayload()),
+      );
+      await flushStoreEffects();
+
+      expect(mockAddItem).toHaveBeenCalledWith({
+        productItemId: 42,
+        quantity: 2,
+      });
+      expect(store.items()[0].mainProductItemId).toBe(42);
+      expect(store.items()[0].quantity).toBe(2);
     });
 
     it('incrementLine calls updateItem with current quantity + 1', async () => {

@@ -41,6 +41,7 @@ import {
 import {
   addOrMergeLines,
   CLIENT_CART_SCHEMA_VERSION,
+  type CatalogBrowseCartAddInput,
   type CatalogCartLineSnapshot,
   type ClientCartEnvelopeV1,
   decrementLineQuantityOrRemove,
@@ -54,7 +55,7 @@ import type {
   CartApiResponseModel,
   MergeCartItemDto,
 } from '../infrastructure/public-api';
-import { cartCatalogEvents, cartUiEvents } from './events';
+import { cartCatalogEvents, cartShoppingEvents, cartUiEvents } from './events';
 
 // ---------------------------------------------------------------------------
 // State shape
@@ -145,6 +146,24 @@ function absorbOrSetError(store: object, err: unknown, message: string): void {
   if (!is401(err)) {
     patchState(store as never, setError(message));
   }
+}
+
+function toBrowseRow(payload: {
+  productId: number;
+  productItemId: number;
+  name: string | null;
+  salePrice: number | null;
+  originalPrice: number | null;
+  primaryImageUrl: string | null;
+}): CatalogBrowseCartAddInput {
+  return {
+    productId: payload.productId,
+    mainProductItemId: payload.productItemId,
+    name: payload.name,
+    salePrice: payload.salePrice,
+    originalPrice: payload.originalPrice,
+    primaryImageUrl: payload.primaryImageUrl,
+  };
 }
 
 function handleApiError(store: object, err: unknown): void {
@@ -382,6 +401,19 @@ export const CartStore = signalStore(
         });
       }),
     ),
+    /** Guest: addProductItem → add to local state with given quantity */
+    guestAddProductItem$: events.on(cartShoppingEvents.addProductItem).pipe(
+      filter(() => !store.authStore.isAuthenticated()),
+      tap(({ payload }) => {
+        patchState(store, {
+          items: addOrMergeLines(
+            store.items(),
+            toBrowseRow(payload),
+            payload.quantity,
+          ),
+        });
+      }),
+    ),
     /** Guest: decrementItem → decrement local state */
     guestDecrementItem$: events
       .on(cartCatalogEvents.decrementItem, cartUiEvents.decrementOrRemoveItem)
@@ -430,6 +462,7 @@ export const CartStore = signalStore(
     persistGuestCart$: events
       .on(
         cartCatalogEvents.addFromBrowse,
+        cartShoppingEvents.addProductItem,
         cartCatalogEvents.decrementItem,
         cartUiEvents.incrementItem,
         cartUiEvents.decrementOrRemoveItem,
@@ -451,6 +484,36 @@ export const CartStore = signalStore(
         });
         return store.cartApiService
           .addItem({ productItemId: payload.mainProductItemId, quantity: 1 })
+          .pipe(
+            tapResponse({
+              next: (res) =>
+                patchState(
+                  store,
+                  {
+                    ...mapCartResponse(res),
+                    pendingMainProductItemId: null,
+                  },
+                  setFulfilled(),
+                ),
+              error: (err) => handleApiError(store, err),
+            }),
+          );
+      }),
+    ),
+
+    /** Auth: addProductItem → POST /cart/items with requested quantity */
+    authAddProductItem$: events.on(cartShoppingEvents.addProductItem).pipe(
+      filter(() => store.authStore.isAuthenticated()),
+      switchMap(({ payload }) => {
+        patchState(store, {
+          ...setPending(),
+          pendingMainProductItemId: payload.productItemId,
+        });
+        return store.cartApiService
+          .addItem({
+            productItemId: payload.productItemId,
+            quantity: Math.max(1, Math.trunc(payload.quantity)),
+          })
           .pipe(
             tapResponse({
               next: (res) =>
