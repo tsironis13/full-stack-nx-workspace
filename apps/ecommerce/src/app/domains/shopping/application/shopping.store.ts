@@ -15,14 +15,19 @@ import { catchError, EMPTY, pipe, switchMap, tap } from 'rxjs';
 
 import { ChatRegistry } from '@full-stack-nx-workspace/shared';
 
+import { CartAclReadAdapter } from '../../cart/application/anti-corruption-layer';
 import {
-  CartAclReadAdapter,
-} from '../../cart/application/anti-corruption-layer';
-import { CartItemWorkflowApiService } from '../infrastructure/public-api';
+  CartItemWorkflowApiService,
+  ProductItemConversionApiService,
+} from '../infrastructure/public-api';
+import { interpretConfirmSubmit } from '../domain/public-api';
 import { CartItemConfirmHandler } from './cart-item-confirm.handler';
+import { liveInventoryFromConversion } from './live-inventory.mapper';
 import {
   buildAbandonedSurface,
+  buildConfirmSurfaceUpdate,
   buildMessageSurface,
+  buildOutOfStockWriteSurface,
   buildSuccessSurface,
   buildWriteErrorSurface,
   type A2uiEnvelope,
@@ -41,6 +46,7 @@ export const ShoppingStore = signalStore(
   withState<ShoppingWorkflowState>({ awaitingSurfaceId: null }),
   withProps(() => ({
     workflowApi: inject(CartItemWorkflowApiService),
+    conversionApi: inject(ProductItemConversionApiService),
     chatRegistry: inject(ChatRegistry),
     renderer: inject(A2uiRendererService),
     confirmHandler: inject(CartItemConfirmHandler),
@@ -98,6 +104,54 @@ export const ShoppingStore = signalStore(
       if (action.name !== 'submitAnswer') {
         return;
       }
+      const preview = interpretConfirmSubmit(action.context);
+      if (preview.kind === 'pick') {
+        store.presentUpdate(
+          buildConfirmSurfaceUpdate(action.surfaceId, preview.selection),
+        );
+        return;
+      }
+      if (preview.kind === 'add') {
+        store.conversionApi.convert(preview.payload.productId).subscribe({
+          next: (wire) => {
+            const live = liveInventoryFromConversion(
+              wire,
+              preview.payload.productItemId,
+            );
+            if (live == null || live <= 0) {
+              store.presentUpdate(
+                buildOutOfStockWriteSurface(action.surfaceId),
+              );
+              return;
+            }
+            const decision = store.confirmHandler.apply({
+              ...action.context,
+              inventory: String(live),
+            });
+            if (decision.kind !== 'add') {
+              store.presentUpdate(
+                buildOutOfStockWriteSurface(action.surfaceId),
+              );
+              return;
+            }
+            queueMicrotask(() => {
+              if (store.cartRead.writePending()) {
+                patchState(store, { awaitingSurfaceId: action.surfaceId });
+                return;
+              }
+              if (store.cartRead.writeError()) {
+                store.presentUpdate(buildWriteErrorSurface(action.surfaceId));
+                return;
+              }
+              store.presentUpdate(buildSuccessSurface(action.surfaceId));
+            });
+          },
+          error: () => {
+            store.presentUpdate(buildWriteErrorSurface(action.surfaceId));
+          },
+        });
+        return;
+      }
       const decision = store.confirmHandler.apply(action.context);
       if (decision.kind === 'cancel') {
         patchState(store, { awaitingSurfaceId: null });
@@ -106,22 +160,7 @@ export const ShoppingStore = signalStore(
       }
       if (decision.kind === 'checkout') {
         void store.router.navigate(['/checkout']);
-        return;
       }
-      if (decision.kind !== 'add') {
-        return;
-      }
-      queueMicrotask(() => {
-        if (store.cartRead.writePending()) {
-          patchState(store, { awaitingSurfaceId: action.surfaceId });
-          return;
-        }
-        if (store.cartRead.writeError()) {
-          store.presentUpdate(buildWriteErrorSurface(action.surfaceId));
-          return;
-        }
-        store.presentUpdate(buildSuccessSurface(action.surfaceId));
-      });
     },
   })),
   withHooks({

@@ -39,6 +39,16 @@ describe('interpretConfirmSubmit', () => {
     }
   });
 
+  it('does not write an Out of Stock Product Item', () => {
+    expect(
+      interpretConfirmSubmit({
+        ...addContext,
+        quantity: '1',
+        inventory: '0',
+      }),
+    ).toEqual({ kind: 'invalid' });
+  });
+
   it('treats a path-seeded abandon flag as cancel', () => {
     expect(interpretConfirmSubmit({ abandon: 'true' })).toEqual({
       kind: 'cancel',
@@ -49,5 +59,45 @@ describe('interpretConfirmSubmit', () => {
     expect(interpretConfirmSubmit({ goToCheckout: 'true' })).toEqual({
       kind: 'checkout',
     });
+  });
+
+  it('reads a unique in-stock picker CheckBox as a pick, not a Cart write', () => {
+    expect(
+      interpretConfirmSubmit({
+        pick: 'true',
+        productId: '7',
+        checked_1: true,
+        productItemId_1: '1',
+        inventory_1: '8',
+        name_1: 'Trail Bottle',
+        salePrice_1: '19.5',
+        originalPrice_1: '24',
+        imageUrl_1: '',
+        options_1: 'Color: Red',
+        checked_2: false,
+      }),
+    ).toEqual({
+      kind: 'pick',
+      selection: {
+        productId: 7,
+        productItemId: 1,
+        inventory: 8,
+        name: 'Trail Bottle',
+        salePrice: 19.5,
+        originalPrice: 24,
+        imageUrl: '',
+        options: 'Color: Red',
+      },
+    });
+  });
+
+  it('does not pick when no in-stock CheckBox is selected', () => {
+    expect(
+      interpretConfirmSubmit({
+        pick: 'true',
+        productId: '7',
+        checked_1: false,
+      }),
+    ).toEqual({ kind: 'invalid' });
   });
 });

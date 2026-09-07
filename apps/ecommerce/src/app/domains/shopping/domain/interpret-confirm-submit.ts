@@ -8,9 +8,21 @@ export type ConfirmCartAdd = {
   primaryImageUrl: string | null;
 };
 
+export type PickerSelection = {
+  productId: number;
+  productItemId: number;
+  inventory: number;
+  name: string | null;
+  salePrice: number | null;
+  originalPrice: number | null;
+  imageUrl: string | null;
+  options: string;
+};
+
 export type ConfirmSubmitDecision =
   | { kind: 'cancel' }
   | { kind: 'checkout' }
+  | { kind: 'pick'; selection: PickerSelection }
   | { kind: 'add'; payload: ConfirmCartAdd }
   | { kind: 'invalid' };
 
@@ -54,6 +66,9 @@ export function interpretConfirmSubmit(
   if (isFlag(context['goToCheckout'])) {
     return { kind: 'checkout' };
   }
+  if (isFlag(context['pick'])) {
+    return interpretPickerSubmit(context);
+  }
 
   const productId = asNumber(context['productId']);
   const productItemId = asNumber(context['productItemId']);
@@ -78,6 +93,43 @@ export function interpretConfirmSubmit(
       salePrice: asNumber(context['salePrice']),
       originalPrice: asNumber(context['originalPrice']),
       primaryImageUrl: asString(context['imageUrl']),
+    },
+  };
+}
+
+function interpretPickerSubmit(
+  context: Record<string, unknown>,
+): ConfirmSubmitDecision {
+  const productId = asNumber(context['productId']);
+  if (productId === null) {
+    return { kind: 'invalid' };
+  }
+
+  const checkedIds = Object.keys(context)
+    .filter((key) => key.startsWith('checked_') && isFlag(context[key]))
+    .map((key) => key.slice('checked_'.length));
+  if (checkedIds.length !== 1) {
+    return { kind: 'invalid' };
+  }
+
+  const id = checkedIds[0];
+  const productItemId = asNumber(context[`productItemId_${id}`]);
+  const inventory = asNumber(context[`inventory_${id}`]);
+  if (productItemId === null || inventory === null || inventory <= 0) {
+    return { kind: 'invalid' };
+  }
+
+  return {
+    kind: 'pick',
+    selection: {
+      productId,
+      productItemId,
+      inventory,
+      name: asString(context[`name_${id}`]),
+      salePrice: asNumber(context[`salePrice_${id}`]),
+      originalPrice: asNumber(context[`originalPrice_${id}`]),
+      imageUrl: asString(context[`imageUrl_${id}`]),
+      options: asString(context[`options_${id}`]) ?? '—',
     },
   };
 }

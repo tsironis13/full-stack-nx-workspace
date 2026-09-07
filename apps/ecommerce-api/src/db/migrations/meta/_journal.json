@@ -36,6 +36,13 @@
       "when": 1779200000000,
       "tag": "0004_product_item_inventory",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1779300000000,
+      "tag": "0005_product_item_inventory_oos_seed",
+      "breakpoints": true
     }
   ]
 }

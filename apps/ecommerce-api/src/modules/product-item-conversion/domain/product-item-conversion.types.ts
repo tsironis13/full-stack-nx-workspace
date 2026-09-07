@@ -24,8 +24,12 @@ export type MatchedProductItem = ConversionProductItem & {
   name: string | null;
 };
 
+export type PickerProductItem = MatchedProductItem & {
+  disabled: boolean;
+};
+
 export type ConvertProductItemResult =
   | { status: 'matched'; productItem: MatchedProductItem }
-  | { status: 'needs_options'; items: MatchedProductItem[] }
+  | { status: 'needs_options'; items: PickerProductItem[] }
   | { status: 'all_out_of_stock' }
   | { status: 'not_found' };
