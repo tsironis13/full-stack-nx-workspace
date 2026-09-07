@@ -10,8 +10,10 @@ function text(id: string, value: string, variant: 'h3' | 'body' = 'body') {
   return { id, component: 'Text', text: value, variant };
 }
 
+const confirmQuantityPath = { path: '/confirm/quantity' };
+
 const confirmSubmitContext = {
-  quantity: { path: '/confirm/quantity' },
+  quantity: confirmQuantityPath,
   productId: { path: '/confirm/productId' },
   productItemId: { path: '/confirm/productItemId' },
   inventory: { path: '/confirm/inventory' },
@@ -20,6 +22,31 @@ const confirmSubmitContext = {
   originalPrice: { path: '/confirm/originalPrice' },
   imageUrl: { path: '/confirm/imageUrl' },
 };
+
+function quantityRangeChecks(inventory: number) {
+  return [
+    {
+      condition: {
+        call: 'numeric',
+        args: {
+          value: confirmQuantityPath,
+          min: 1,
+        },
+      },
+      message: 'Η ποσότητα πρέπει να είναι τουλάχιστον 1',
+    },
+    {
+      condition: {
+        call: 'numeric',
+        args: {
+          value: confirmQuantityPath,
+          max: inventory,
+        },
+      },
+      message: `Έχετε φτάσει τη μέγιστη ποσότητα (${inventory})`,
+    },
+  ];
+}
 
 export function buildMessageSurface(
   surfaceId: string,
@@ -174,6 +201,147 @@ export function buildWriteErrorSurface(surfaceId: string): A2uiEnvelope {
               },
             },
             { id: 'cancel-label', component: 'Text', text: 'Ακύρωση' },
+          ],
+        },
+      },
+    ],
+  };
+}
+
+function formatPrice(value: number | null): string {
+  if (value == null || !Number.isFinite(value)) {
+    return '—';
+  }
+  return `€${value.toFixed(2)}`;
+}
+
+export function buildConfirmSurfaceUpdate(
+  surfaceId: string,
+  selection: {
+    productId: number;
+    productItemId: number;
+    inventory: number;
+    name: string | null;
+    salePrice: number | null;
+    originalPrice: number | null;
+    imageUrl: string | null;
+    options: string;
+  },
+): A2uiEnvelope {
+  const formChildren = selection.imageUrl
+    ? ['image', 'name', 'options', 'price', 'qty', 'qty-max', 'actions']
+    : ['name', 'options', 'price', 'qty', 'qty-max', 'actions'];
+
+  const components: Record<string, unknown>[] = [
+    { id: 'root', component: 'Column', children: ['card'] },
+    { id: 'card', component: 'Card', child: 'form' },
+    { id: 'form', component: 'Column', children: formChildren },
+  ];
+
+  if (selection.imageUrl) {
+    components.push({
+      id: 'image',
+      component: 'Image',
+      url: selection.imageUrl,
+      description: selection.name ?? 'Product',
+    });
+  }
+
+  components.push(
+    text('name', selection.name ?? '—', 'h3'),
+    text('options', selection.options),
+    text('price', formatPrice(selection.salePrice)),
+    {
+      id: 'qty',
+      component: 'TextField',
+      label: 'Ποσότητα',
+      variant: 'number',
+      value: confirmQuantityPath,
+      checks: quantityRangeChecks(selection.inventory),
+    },
+    text('qty-max', `Διαθέσιμα: ${selection.inventory}`),
+    {
+      id: 'actions',
+      component: 'Row',
+      children: ['submit', 'cancel'],
+    },
+    {
+      id: 'submit',
+      component: 'Button',
+      child: 'submit-label',
+      variant: 'primary',
+      checks: quantityRangeChecks(selection.inventory),
+      action: {
+        event: {
+          name: 'submitAnswer',
+          context: confirmSubmitContext,
+        },
+      },
+    },
+    { id: 'submit-label', component: 'Text', text: 'Προσθήκη στο καλάθι' },
+    {
+      id: 'cancel',
+      component: 'Button',
+      child: 'cancel-label',
+      action: {
+        event: {
+          name: 'submitAnswer',
+          context: { abandon: { path: '/confirm/abandon' } },
+        },
+      },
+    },
+    { id: 'cancel-label', component: 'Text', text: 'Ακύρωση' },
+  );
+
+  return {
+    surfaceId,
+    messages: [
+      { updateComponents: { surfaceId, components } },
+      {
+        updateDataModel: {
+          surfaceId,
+          path: '/confirm',
+          value: {
+            quantity: '1',
+            productId: String(selection.productId),
+            productItemId: String(selection.productItemId),
+            inventory: String(selection.inventory),
+            name: selection.name ?? '',
+            salePrice:
+              selection.salePrice == null ? '' : String(selection.salePrice),
+            originalPrice:
+              selection.originalPrice == null
+                ? ''
+                : String(selection.originalPrice),
+            imageUrl: selection.imageUrl ?? '',
+            abandon: 'true',
+          },
+        },
+      },
+    ],
+  };
+}
+
+export function buildOutOfStockWriteSurface(surfaceId: string): A2uiEnvelope {
+  return {
+    surfaceId,
+    messages: [
+      {
+        updateComponents: {
+          surfaceId,
+          components: [
+            { id: 'root', component: 'Column', children: ['card'] },
+            { id: 'card', component: 'Card', child: 'form' },
+            {
+              id: 'form',
+              component: 'Column',
+              children: ['title', 'body'],
+            },
+            text('title', 'Μη διαθέσιμο', 'h3'),
+            text(
+              'body',
+              'Αυτό το Product Item δεν είναι πλέον In Stock. Δεν προστέθηκε Cart Item.',
+            ),
           ],
         },
       },

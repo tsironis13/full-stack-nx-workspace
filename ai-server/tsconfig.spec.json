@@ -15,6 +15,7 @@
     "src/**/*.spec.ts",
     "src/**/*.d.ts",
     "src/mastra/agents/shopping-agent.instructions.ts",
-    "src/mastra/workflows/cart-item-workflow.contract.ts"
+    "src/mastra/workflows/cart-item-workflow.contract.ts",
+    "src/mastra/workflows/cart-item-workflow.surfaces.ts"
   ]
 }
