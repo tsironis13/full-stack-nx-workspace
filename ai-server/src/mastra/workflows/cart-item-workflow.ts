@@ -1,6 +1,12 @@
 import { createStep, createWorkflow } from '@mastra/core/workflows';
 import { z } from 'zod';
 
+import {
+  CART_ITEM_WORKFLOW_DESCRIPTION,
+  CART_ITEM_WORKFLOW_ID,
+  cartItemWorkflowInputSchema,
+} from './cart-item-workflow.contract';
+
 const BASIC_CATALOG_ID =
   'https://a2ui.org/specification/v0_9/catalogs/basic/catalog.json';
 
@@ -31,11 +37,6 @@ const conversionResultSchema = z.discriminatedUnion('status', [
   z.object({ status: z.literal('all_out_of_stock') }),
   z.object({ status: z.literal('not_found') }),
 ]);
-
-const workflowInputSchema = z.object({
-  productId: z.coerce.number().int().positive(),
-  hintText: z.string().optional(),
-});
 
 const a2uiMessageSchema = z.record(z.string(), z.unknown());
 
@@ -212,7 +213,7 @@ const convertProductItemStep = createStep({
   id: 'convert-product-item',
   description:
     'Resolve a Product plus optional option hints to a unique In Stock Product Item and return the A2UI confirm surface.',
-  inputSchema: workflowInputSchema,
+  inputSchema: cartItemWorkflowInputSchema,
   outputSchema: workflowOutputSchema,
   execute: async ({ inputData, abortSignal }) => {
     const { productId, hintText } = inputData;
@@ -261,10 +262,9 @@ const convertProductItemStep = createStep({
 });
 
 export const cartItemWorkflow = createWorkflow({
-  id: 'cart-item-workflow',
-  description:
-    'Start Cart Item conversion for a last-turn recommended Product. Input is the Product id plus optional raw option hints. Never a Product Item id. Returns an A2UI confirm surface; does not write the Cart.',
-  inputSchema: workflowInputSchema,
+  id: CART_ITEM_WORKFLOW_ID,
+  description: CART_ITEM_WORKFLOW_DESCRIPTION,
+  inputSchema: cartItemWorkflowInputSchema,
   outputSchema: workflowOutputSchema,
 })
   .then(convertProductItemStep)
