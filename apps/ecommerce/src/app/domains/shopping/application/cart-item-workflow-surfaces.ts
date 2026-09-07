@@ -10,8 +10,10 @@ function text(id: string, value: string, variant: 'h3' | 'body' = 'body') {
   return { id, component: 'Text', text: value, variant };
 }
 
+const confirmQuantityPath = { path: '/confirm/quantity' };
+
 const confirmSubmitContext = {
-  quantity: { path: '/confirm/quantity' },
+  quantity: confirmQuantityPath,
   productId: { path: '/confirm/productId' },
   productItemId: { path: '/confirm/productItemId' },
   inventory: { path: '/confirm/inventory' },
@@ -20,6 +22,31 @@ const confirmSubmitContext = {
   originalPrice: { path: '/confirm/originalPrice' },
   imageUrl: { path: '/confirm/imageUrl' },
 };
+
+function quantityRangeChecks(inventory: number) {
+  return [
+    {
+      condition: {
+        call: 'numeric',
+        args: {
+          value: confirmQuantityPath,
+          min: 1,
+        },
+      },
+      message: 'Η ποσότητα πρέπει να είναι τουλάχιστον 1',
+    },
+    {
+      condition: {
+        call: 'numeric',
+        args: {
+          value: confirmQuantityPath,
+          max: inventory,
+        },
+      },
+      message: `Έχετε φτάσει τη μέγιστη ποσότητα (${inventory})`,
+    },
+  ];
+}
 
 export function buildMessageSurface(
   surfaceId: string,
@@ -202,8 +229,8 @@ export function buildConfirmSurfaceUpdate(
   },
 ): A2uiEnvelope {
   const formChildren = selection.imageUrl
-    ? ['image', 'name', 'options', 'price', 'qty', 'actions']
-    : ['name', 'options', 'price', 'qty', 'actions'];
+    ? ['image', 'name', 'options', 'price', 'qty', 'qty-max', 'actions']
+    : ['name', 'options', 'price', 'qty', 'qty-max', 'actions'];
 
   const components: Record<string, unknown>[] = [
     { id: 'root', component: 'Column', children: ['card'] },
@@ -228,8 +255,11 @@ export function buildConfirmSurfaceUpdate(
       id: 'qty',
       component: 'TextField',
       label: 'Ποσότητα',
-      value: { path: '/confirm/quantity' },
+      variant: 'number',
+      value: confirmQuantityPath,
+      checks: quantityRangeChecks(selection.inventory),
     },
+    text('qty-max', `Διαθέσιμα: ${selection.inventory}`),
     {
       id: 'actions',
       component: 'Row',
@@ -240,6 +270,7 @@ export function buildConfirmSurfaceUpdate(
       component: 'Button',
       child: 'submit-label',
       variant: 'primary',
+      checks: quantityRangeChecks(selection.inventory),
       action: {
         event: {
           name: 'submitAnswer',
