@@ -34,4 +34,12 @@ describe('Cart Item workflow start contract', () => {
     );
     expect(CART_ITEM_WORKFLOW_DESCRIPTION).not.toMatch(/productItemId/);
   });
+
+  it('describes one in-flight conversion at a time; a new start replaces the current run', () => {
+    expect(CART_ITEM_WORKFLOW_DESCRIPTION).toMatch(
+      /one conversion at a time/i,
+    );
+    expect(CART_ITEM_WORKFLOW_DESCRIPTION).toMatch(/abandons/i);
+    expect(CART_ITEM_WORKFLOW_DESCRIPTION).toMatch(/no Cart write/i);
+  });
 });

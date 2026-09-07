@@ -9,7 +9,10 @@ import { type AngularToolCall, type ToolRenderer } from '@copilotkit/angular';
 import { z } from 'zod';
 
 import { createFrontendTool } from '@full-stack-nx-workspace/shared';
-import { ShoppingStore } from '../application/public-api';
+import {
+  notifyRecommendationTurn,
+  ShoppingStore,
+} from '../application/public-api';
 
 const recommendedProductSchema = z.object({
   id: z.number().describe("The Product id from this turn's search results"),
@@ -65,5 +68,8 @@ export const recommendedProductWidget = createFrontendTool({
   parameters: recommendedProductWidgetSchema,
   component: RecommendedProductWidget,
   followUp: false,
-  handler: async () => ({ shown: true }),
+  handler: async () => {
+    notifyRecommendationTurn();
+    return { shown: true };
+  },
 });

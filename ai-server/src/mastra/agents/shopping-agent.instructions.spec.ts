@@ -72,4 +72,48 @@ describe('Shopping Assistant conversion instructions', () => {
       /These instructions never name tools/i,
     );
   });
+
+  it('allows at most one in-flight conversion and never two confirms', () => {
+    expect(SHOPPING_AGENT_CONVERSION_INSTRUCTIONS).toMatch(
+      /at most one conversion at a time/i,
+    );
+    expect(SHOPPING_AGENT_CONVERSION_INSTRUCTIONS).toMatch(/two confirms/i);
+  });
+
+  it('abandons an in-flight conversion on a new product need so retrieval still works', () => {
+    expect(SHOPPING_AGENT_CONVERSION_INSTRUCTIONS).toMatch(
+      /new product need/i,
+    );
+    expect(SHOPPING_AGENT_CONVERSION_INSTRUCTIONS).toMatch(/abandoned/i);
+    expect(SHOPPING_AGENT_CONVERSION_INSTRUCTIONS).toMatch(/search again/i);
+    expect(SHOPPING_AGENT_CONVERSION_INSTRUCTIONS).toMatch(
+      /do not write the Cart/i,
+    );
+  });
+
+  it('switches to another last-turn Product instead of running two conversions', () => {
+    expect(SHOPPING_AGENT_CONVERSION_INSTRUCTIONS).toMatch(
+      /add the first one instead/i,
+    );
+    expect(SHOPPING_AGENT_CONVERSION_INSTRUCTIONS).toMatch(
+      /start conversion for that Product instead/i,
+    );
+  });
+
+  it('leaves pickers/confirm up on unrelated chatter with a short reminder', () => {
+    expect(SHOPPING_AGENT_CONVERSION_INSTRUCTIONS).toMatch(/wait/i);
+    expect(SHOPPING_AGENT_CONVERSION_INSTRUCTIONS).toMatch(/short reminder/i);
+    expect(SHOPPING_AGENT_CONVERSION_INSTRUCTIONS).toMatch(
+      /do not abandon/i,
+    );
+  });
+
+  it('allows a second conversion after success without a new search', () => {
+    expect(SHOPPING_AGENT_CONVERSION_INSTRUCTIONS).toMatch(
+      /After a successful Cart Item/i,
+    );
+    expect(SHOPPING_AGENT_CONVERSION_INSTRUCTIONS).toMatch(
+      /without a new search/i,
+    );
+  });
 });
