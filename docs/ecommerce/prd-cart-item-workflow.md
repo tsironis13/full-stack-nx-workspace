@@ -64,6 +64,13 @@ Deliver a **Cart Item workflow**: a Mastra workflow that **Shopping Assistant** 
 48. As a shopper, I want **Shopping Assistant** still to refuse account and **Order** questions, so that this workflow is conversion only.
 49. As a shopper, I want a second conversion after success for another last-turn recommendation, so that I can add another **Cart Item** without a new search.
 50. As a shopper, I want off-catalog chat during an idle assistant (no in-flight workflow) unchanged from today, so that retrieval rules stay intact.
+51. As a **Guest User**, I want conversion to start only when my add-reference uniquely identifies one last **shown** **Product recommendation** (ordinal, unique name, or a hint token on exactly one of those cards’ name or **options**), so that the assistant does not pick the first card or an unshown search hit.
+52. As a **Guest User**, I want “the basket one” (a hint that matches no shown card) to say that option is not on the last recommendations and ask which **Product**, with no search and no conversion, so that a miss is not treated as a Product pick.
+53. As a **Guest User**, I want a hint that matches several shown cards to name those cards and ask which, so that a shared option is not resolved by picking one.
+54. As a **Guest User**, I want conflicting ordinal/name/option in one add to ask which **Product**, so that “first mentioned” is only for two explicit adds.
+55. As a **Guest User**, I want an already unique ordinal or name plus an unmatched extra hint to still start conversion with that raw hint, so that compact card **options** do not block identity.
+56. As a **Guest User**, I want an ambiguous add-reference while pickers/confirm are up to leave that surface with a reminder, so that a second conversion does not start.
+57. As a shopper, I want synonym matching and conversion-probe matching out of last-turn identity, so that “basket” is not treated as Storage and conversion is not started to discover extra **options**.
 
 ---
 
@@ -104,7 +111,7 @@ Deliver a **Cart Item workflow**: a Mastra workflow that **Shopping Assistant** 
 
 **Shopping Assistant**
 
-- May start the workflow with `{ productId, optionHints? }` from a last-turn recommendation or card. Never a **Product Item** id.
+- May start the workflow with `{ productId, optionHints? }` from a uniquely identified last-turn **shown** recommendation or card. Never a **Product Item** id. Do not start when the add-reference is ambiguous.
 - Instructions: when to start conversion only. **Do not** attach Flight42-style “NEVER plain text / ALWAYS renderA2uiTool” rules. **Product recommendations** remain cards + short why.
 - Data rule unchanged: instructions describe jobs, not tool names.
 

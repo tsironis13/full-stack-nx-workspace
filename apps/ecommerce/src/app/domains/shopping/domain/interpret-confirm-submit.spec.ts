@@ -55,6 +55,19 @@ describe('interpretConfirmSubmit', () => {
     });
   });
 
+  it('cancels mid-pickers when abandon is set even if pick is also present', () => {
+    expect(
+      interpretConfirmSubmit({
+        pick: 'true',
+        abandon: 'true',
+        productId: '7',
+        checked_1: true,
+        productItemId_1: '1',
+        inventory_1: '8',
+      }),
+    ).toEqual({ kind: 'cancel' });
+  });
+
   it('treats goToCheckout as checkout navigation', () => {
     expect(interpretConfirmSubmit({ goToCheckout: 'true' })).toEqual({
       kind: 'checkout',
