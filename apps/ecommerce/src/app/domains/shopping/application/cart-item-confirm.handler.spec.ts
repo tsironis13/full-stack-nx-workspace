@@ -56,4 +56,25 @@ describe('CartItemConfirmHandler', () => {
     expect(handler.apply({ abandon: 'true' })).toEqual({ kind: 'cancel' });
     expect(spy).not.toHaveBeenCalled();
   });
+
+  it('does not dispatch on cancel mid-pickers', () => {
+    TestBed.configureTestingModule({
+      providers: [...provideDispatcher(), CartItemConfirmHandler],
+    });
+    const handler = TestBed.inject(CartItemConfirmHandler);
+    const dispatcher = TestBed.inject(Dispatcher);
+    const spy = jest.spyOn(dispatcher, 'dispatch');
+
+    expect(
+      handler.apply({
+        pick: 'true',
+        abandon: 'true',
+        productId: '7',
+        checked_1: true,
+        productItemId_1: '1',
+        inventory_1: '8',
+      }),
+    ).toEqual({ kind: 'cancel' });
+    expect(spy).not.toHaveBeenCalled();
+  });
 });

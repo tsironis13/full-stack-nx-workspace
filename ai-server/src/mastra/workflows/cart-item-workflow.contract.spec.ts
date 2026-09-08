@@ -12,7 +12,7 @@ describe('Cart Item workflow start contract', () => {
     );
 
     expect(cartItemWorkflowInputSchema.shape.productId.description).toMatch(
-      /Product id from this thread's last Product recommendations/i,
+      /uniquely identified Product from this thread's last shown/i,
     );
     expect(cartItemWorkflowInputSchema.shape.productId.description).toMatch(
       /Never a Product Item id/i,
@@ -24,9 +24,14 @@ describe('Cart Item workflow start contract', () => {
 
   it('describes starting conversion for one last-turn recommended Product, including natural-language add', () => {
     expect(CART_ITEM_WORKFLOW_DESCRIPTION).toMatch(
-      /last Product recommendations/i,
+      /last shown Product recommendation cards/i,
     );
     expect(CART_ITEM_WORKFLOW_DESCRIPTION).toMatch(/the second one/i);
+    expect(CART_ITEM_WORKFLOW_DESCRIPTION).toMatch(/uniquely identifies/i);
+    expect(CART_ITEM_WORKFLOW_DESCRIPTION).toMatch(/no synonyms/i);
+    expect(CART_ITEM_WORKFLOW_DESCRIPTION).toMatch(
+      /identity is ambiguous/i,
+    );
     expect(CART_ITEM_WORKFLOW_DESCRIPTION).toMatch(/hintText/);
     expect(CART_ITEM_WORKFLOW_DESCRIPTION).toMatch(/Never a Product Item id/i);
     expect(CART_ITEM_WORKFLOW_DESCRIPTION).toMatch(

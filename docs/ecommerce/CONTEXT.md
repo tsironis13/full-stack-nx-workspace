@@ -842,14 +842,15 @@ Avoid:
 - Reply in the shopper's language; do not translate **Product** names, **options**, or **Category** path
 - **Storefront catalog search** remains **`products.name`** only — the assistant is not the catalog `q` parameter
 - **Guest Users** and **Registered Users** may use the assistant; v1 does not bind conversation memory to a **Customer Account**
-- The assistant does not pick a **Product Item** or write the **Cart**. On a card Add or an add-reference to a last **Product recommendation**, it may start a **Cart Item workflow** with that **Product** id and any option hints from the shopper’s message — never a **Product Item** id
+- The assistant does not pick a **Product Item** or write the **Cart**. On a card Add or an add-reference that **uniquely identifies** one last shown **Product recommendation**, it may start a **Cart Item workflow** with that **Product** id and any option hints from the shopper’s message — never a **Product Item** id, never the first card, never an unshown search hit
+- Unique identity is an ordinal among those cards, a unique name among those cards, or a hint token that appears in exactly one of those cards’ name or **options** (case-insensitive). Synonyms are not a match. Zero or several card hits, or ordinal/name/option that disagree, are not unique: ask which, do not start conversion, do not search
 - The assistant does not author option-picker or confirm UI. Those surfaces belong to the **Cart Item workflow**
 
 ---
 
 ## Cart Item workflow rules (v1)
 
-- Valid start: a **Product** from **this thread’s last Product recommendations** only (card action or natural language). Not the product detail page, not a named **Product** with no prior recommendation
+- Valid start: a **Product** from **this thread’s last shown Product recommendations** only (card action, or natural language that uniquely identifies one of those cards). Not the product detail page, not a named **Product** with no prior recommendation, not an unshown search hit, not an ambiguous “the X one”
 - One in-flight run at a time; one run produces **exactly one Cart Item**
 - Never silently use the **Main Product Item** when the **Product** has more than one **Product Item**
 - Skip option pickers only when there is a single **Product Item**, or when the shopper’s hints uniquely identify one **In Stock Product Item**
@@ -857,8 +858,8 @@ Avoid:
 - Never write an **Out of Stock Product Item**. Disable that combination in pickers. If every **Product Item** is out of stock, say so and stop. This chat path is stricter than product-detail add, which does not check **Inventory** today
 - After a unique **In Stock Product Item** is resolved, always confirm before write: **Product** name, chosen **options**, **Sale Price** on **that Product Item** (not the recommendation card’s **Main Product Item** price), quantity default 1 capped at **Inventory**
 - **Guest Users** and **Registered Users** may finish the run. Confirm uses the storefront **Cart** path (guest localStorage / registered server). The workflow does not `POST /cart`
-- A new **product need**, an add-reference to a **different** last recommendation, or explicit cancel **abandons** the run (no **Cart** write). Other messages leave pickers/confirm up
-- “Add the second and the third” resolves **one** **Product** (first mentioned, or ask which). No queue, no bundle
+- A new **product need**, an add-reference to a **different** uniquely identified last recommendation, or explicit cancel **abandons** the run (no **Cart** write). Other messages — including an add-reference that does not uniquely identify a different last-turn **Product** — leave pickers/confirm up
+- “Add the second and the third” resolves **one** **Product** (first mentioned, or ask which). Conflicting ordinal/name/option in one add is not two adds: ask which. No queue, no bundle
 - Does not collect **Shipping Address**, **Payment**, or **Guest Checkout Identity**, and does not create an **Order**. The success surface may **navigate** to existing `/checkout`
 
 ---
@@ -1017,6 +1018,14 @@ Domain expert:
 ---
 
 Dev:
+"The last cards were three sofas. The shopper said the basket one. None of the cards mention basket. Does conversion start on the first sofa?"
+
+Domain expert:
+"No. That add-reference does not uniquely identify a last shown Product recommendation. The assistant asks which of those Products they mean. It does not search, it does not treat basket as a synonym of another option, and it does not start conversion to discover extra options."
+
+---
+
+Dev:
 "Can we default to the Main Product Item like the catalog grid?"
 
 Domain expert:
@@ -1052,8 +1061,14 @@ The **Shopping Assistant** ranks **Products** for a **product need**. They are d
 
 ## "Shopping Assistant" vs "Cart Item workflow"
 
-**Shopping Assistant** retrieves **Product recommendations** for a **product need**. It does not pick a **Product Item**, write the **Cart**, or author the option-picker / confirm surfaces.
+**Shopping Assistant** retrieves **Product recommendations** for a **product need**. It does not pick a **Product Item**, write the **Cart**, or author the option-picker / confirm surfaces. It starts a **Cart Item workflow** only when an add-reference uniquely identifies one last **shown** **Product recommendation**.
 **Cart Item workflow** converts one last-turn recommended **Product** into one **Cart Item**. Same storefront chat; different primitive (agent vs workflow). Decision record: [0007-cart-item-workflow-mastra-not-subagent](./adr/0007-cart-item-workflow-mastra-not-subagent.md).
+
+---
+
+## Last-turn “the X one” vs a new product need
+
+“The X one” after **Product recommendations** is an add-reference to those **shown** cards, not a new **product need** and not a synonym matcher. If X is not an ordinal, unique name, or literal token on exactly one of those cards’ name or **options**, the assistant asks which **Product**. It does not search and does not start conversion.
 
 ---
 

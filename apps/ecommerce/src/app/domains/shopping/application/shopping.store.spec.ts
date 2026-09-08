@@ -142,6 +142,40 @@ describe('ShoppingStore in-flight Cart Item workflow', () => {
     });
   });
 
+  it('abandons on explicit cancel mid-pickers without a Cart write', () => {
+    store.startFromRecommendation(7);
+    confirmHandler.apply.mockReturnValue({ kind: 'cancel' });
+    processMessages.mockClear();
+
+    store.handleAction({
+      name: 'submitAnswer',
+      surfaceId: 'srf-cart-item-7',
+      context: {
+        pick: 'true',
+        abandon: 'true',
+        productId: '7',
+        checked_1: true,
+        productItemId_1: '1',
+        inventory_1: '8',
+      },
+    });
+
+    expect(store.inFlightSurfaceId()).toBeNull();
+    expect(abandonedCalls(processMessages).length).toBeGreaterThanOrEqual(1);
+    expect(confirmHandler.apply).toHaveBeenCalled();
+  });
+
+  it('leaves pickers/confirm up on unrelated chatter', () => {
+    store.startFromRecommendation(7);
+    processMessages.mockClear();
+
+    store.applyInFlight({ type: 'chatter' });
+
+    expect(store.inFlightSurfaceId()).toBe('srf-cart-item-7');
+    expect(abandonedCalls(processMessages)).toHaveLength(0);
+    expect(confirmHandler.apply).not.toHaveBeenCalled();
+  });
+
   it('allows a second conversion after success without abandoning a live confirm', () => {
     store.startFromRecommendation(7);
     store.applyInFlight({ type: 'succeed' });
