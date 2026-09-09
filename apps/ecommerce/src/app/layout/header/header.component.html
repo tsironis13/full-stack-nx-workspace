@@ -1,12 +1,45 @@
 <div
   class="flex flex-1 flex-wrap items-center gap-3 gap-y-2 px-4 py-2 w-full min-w-0 justify-between"
 >
-  <h1 class="text-lg font-semibold m-0 shrink-0">Header</h1>
+  <h1 class="text-lg font-semibold m-0 shrink-0">{{ 'header.title' | transloco }}</h1>
 
   <div class="flex flex-wrap items-center gap-2 md:gap-3 justify-end ms-auto">
+    <div
+      class="inline-flex overflow-hidden rounded-md border border-gray-200 dark:border-gray-700"
+      role="group"
+      [attr.aria-label]="'uiLanguage.label' | transloco"
+    >
+      <button
+        type="button"
+        class="px-2.5 py-1 text-xs font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
+        [class.bg-gray-100]="uiLanguage.language() === 'el'"
+        [class.dark:bg-gray-800]="uiLanguage.language() === 'el'"
+        [class.font-semibold]="uiLanguage.language() === 'el'"
+        [attr.aria-pressed]="uiLanguage.language() === 'el'"
+        (click)="setLanguage('el')"
+      >
+        {{ 'uiLanguage.el' | transloco }}
+      </button>
+      <button
+        type="button"
+        class="px-2.5 py-1 text-xs font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
+        [class.bg-gray-100]="uiLanguage.language() === 'en'"
+        [class.dark:bg-gray-800]="uiLanguage.language() === 'en'"
+        [class.font-semibold]="uiLanguage.language() === 'en'"
+        [attr.aria-pressed]="uiLanguage.language() === 'en'"
+        (click)="setLanguage('en')"
+      >
+        {{ 'uiLanguage.en' | transloco }}
+      </button>
+    </div>
+
     <p-button
       [icon]="theme() === 'light' ? 'pi pi-moon' : 'pi pi-sun'"
-      [aria-label]="theme() === 'light' ? 'Toggle dark mode' : 'Toggle light mode'"
+      [aria-label]="
+        theme() === 'light'
+          ? ('header.themeLight' | transloco)
+          : ('header.themeDark' | transloco)
+      "
       [text]="true"
       (onClick)="toggleTheme()"
     />
@@ -14,14 +47,16 @@
     <span class="header__cart-wrapper">
       <p-button
         icon="pi pi-shopping-cart"
-        aria-label="Άνοιγμα καλαθιού"
+        [aria-label]="'header.openCart' | transloco"
         [text]="true"
         (onClick)="openCartDrawer()"
       />
       @if (cartRead.totalUnitCount() > 0) {
         <span
           class="header__cart-badge"
-          aria-label="{{ cartRead.totalUnitCount() }} αντικείμενα στο καλάθι"
+          [attr.aria-label]="
+            'header.cartCount' | transloco: { count: cartRead.totalUnitCount() }
+          "
         >
           {{ cartRead.totalUnitCount() }}
         </span>
@@ -34,7 +69,7 @@
           routerLink="/orders"
           class="text-sm hover:underline whitespace-nowrap px-1 text-[color:var(--p-primary-color)]"
         >
-          Οι παραγγελίες μου
+          {{ 'header.orders' | transloco }}
         </a>
         <span
           class="text-sm text-gray-700 dark:text-gray-200 max-w-[14rem] truncate inline-block align-middle"
@@ -44,11 +79,11 @@
         </span>
         <p-button
           icon="pi pi-sign-out"
-          label="Αποσύνδεση"
+          [label]="'header.logout' | transloco"
           severity="secondary"
           size="small"
           [text]="true"
-          aria-label="Αποσύνδεση"
+          [aria-label]="'header.logout' | transloco"
           type="button"
           (onClick)="logout()"
         />
@@ -56,7 +91,9 @@
     </div>
 
     <ng-template #loadingTemplate>
-      <span class="text-sm text-gray-500 dark:text-gray-400 px-1">Σύνδεση…</span>
+      <span class="text-sm text-gray-500 dark:text-gray-400 px-1">{{
+        'header.signingIn' | transloco
+      }}</span>
     </ng-template>
 
     <ng-template #notConnectedTemplate>
@@ -64,7 +101,7 @@
         routerLink="/login"
         class="text-sm hover:underline whitespace-nowrap px-1 text-[color:var(--p-primary-color)]"
       >
-        Σύνδεση
+        {{ 'header.signIn' | transloco }}
       </a>
     </ng-template>
   </div>

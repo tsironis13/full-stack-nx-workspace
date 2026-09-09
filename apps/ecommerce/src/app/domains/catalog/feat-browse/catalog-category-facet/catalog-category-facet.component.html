@@ -1,12 +1,20 @@
 @if (loading()) {
-  <p class="catalog-browse__facet-hint" role="status">Φόρτωση κατηγοριών…</p>
+  <p class="catalog-browse__facet-hint" role="status">{{
+    'catalog.category.loading' | transloco
+  }}</p>
 } @else if (error()) {
   <p class="catalog-browse__facet-error" role="alert">
-    Δεν ήταν δυνατή η φόρτωση των κατηγοριών για το φίλτρο.
+    {{ 'catalog.category.loadError' | transloco }}
   </p>
 } @else if (roots().length > 0) {
-  <div class="catalog-browse__facet" role="group" aria-label="Κύρια κατηγορία">
-    <span class="catalog-browse__facet-label">Κύρια κατηγορία</span>
+  <div
+    class="catalog-browse__facet"
+    role="group"
+    [attr.aria-label]="'catalog.category.label' | transloco"
+  >
+    <span class="catalog-browse__facet-label">{{
+      'catalog.category.label' | transloco
+    }}</span>
     <div class="catalog-browse__facet-chips">
       <button
         type="button"
@@ -14,7 +22,7 @@
         [class.catalog-browse__chip--active]="selectedId() === null"
         (click)="categorySelected.emit(null)"
       >
-        Όλα
+        {{ 'catalog.category.all' | transloco }}
       </button>
       @for (root of roots(); track root.id) {
         <button
@@ -28,7 +36,7 @@
       }
     </div>
     <p class="catalog-browse__facet-help">
-      Εμφανίζονται προϊόντα στην επιλεγμένη ρίζα και τις υποκατηγορίες της.
+      {{ 'catalog.category.hint' | transloco }}
     </p>
   </div>
 }

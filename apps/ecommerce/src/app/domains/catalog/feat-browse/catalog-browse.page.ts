@@ -1,14 +1,12 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  OnInit,
-} from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { PaginatorModule, PaginatorState } from 'primeng/paginator';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { TranslocoPipe } from '@jsverse/transloco';
 
-import { CatalogBrowseStore, type CatalogSort } from '../application/public-api';
-
+import {
+  CatalogBrowseStore,
+  type CatalogSort,
+} from '../application/public-api';
 import { CatalogAttributeFacetsComponent } from './catalog-attribute-facets/catalog-attribute-facets.component';
 import { CatalogBrowseToolbarComponent } from './catalog-browse-toolbar/catalog-browse-toolbar.component';
 import { CatalogCategoryFacetComponent } from './catalog-category-facet/catalog-category-facet.component';
@@ -20,7 +18,6 @@ import { CatalogProductCardComponent } from './catalog-product-card/catalog-prod
   selector: 'app-catalog-browse-page',
   templateUrl: './catalog-browse.page.html',
   styleUrl: './catalog-browse.page.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CatalogAttributeFacetsComponent,
     CatalogBrowseToolbarComponent,
@@ -30,16 +27,17 @@ import { CatalogProductCardComponent } from './catalog-product-card/catalog-prod
     CatalogProductCardComponent,
     PaginatorModule,
     ProgressSpinnerModule,
+    TranslocoPipe,
   ],
 })
 export class CatalogBrowsePageComponent implements OnInit {
   protected readonly store = inject(CatalogBrowseStore);
 
-  protected readonly sortOptions: { value: CatalogSort; label: string }[] = [
-    { value: 'newest', label: 'Νεότερα' },
-    { value: 'price_asc', label: 'Τιμή (αύξουσα)' },
-    { value: 'price_desc', label: 'Τιμή (φθίνουσα)' },
-    { value: 'rating_desc', label: 'Υψηλότερη βαθμολογία' },
+  protected readonly sortOptions: { value: CatalogSort; labelKey: string }[] = [
+    { value: 'newest', labelKey: 'catalog.sort.newest' },
+    { value: 'price_asc', labelKey: 'catalog.sort.priceAsc' },
+    { value: 'price_desc', labelKey: 'catalog.sort.priceDesc' },
+    { value: 'rating_desc', labelKey: 'catalog.sort.ratingDesc' },
   ];
 
   ngOnInit(): void {
@@ -65,14 +63,5 @@ export class CatalogBrowsePageComponent implements OnInit {
     this.store.setPage(nextPage);
     this.store.setPageSize(rows);
     this.store.load();
-  }
-
-  protected rangeLabel(page: number, pageSize: number, total: number): string {
-    if (total === 0) {
-      return 'Κανένα προϊόν';
-    }
-    const from = (page - 1) * pageSize + 1;
-    const to = Math.min(page * pageSize, total);
-    return `Εμφάνιση ${from}–${to} από ${total} προϊόντα`;
   }
 }

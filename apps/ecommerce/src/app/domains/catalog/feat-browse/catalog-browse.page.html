@@ -1,10 +1,7 @@
 <div class="catalog-browse">
   <header class="catalog-browse__header">
-    <h2 class="catalog-browse__title">Κατάλογος</h2>
-    <p class="catalog-browse__subtitle">
-      Περιήγηση προϊόντων (κύρια κατηγορία, αναζήτηση ονόματος, εύρος τιμής
-      πώλησης, ταξινόμηση, σελιδοποίηση)
-    </p>
+    <h2 class="catalog-browse__title">{{ 'catalog.title' | transloco }}</h2>
+    <p class="catalog-browse__subtitle">{{ 'catalog.subtitle' | transloco }}</p>
   </header>
 
   <app-catalog-category-facet
@@ -34,52 +31,54 @@
   />
 
   @if (store.facets().length > 0) {
-    <app-catalog-attribute-facets
-      [facets]="store.facets()"
-      [selectedFilters]="store.selectedAttributeFilters()"
-      (valueChanged)="store.setAttributeFilter($event.attributeId, $event.valueId)"
-      (filtersCleared)="store.clearAttributeFilters()"
+  <app-catalog-attribute-facets
+    [facets]="store.facets()"
+    [selectedFilters]="store.selectedAttributeFilters()"
+    (valueChanged)="store.setAttributeFilter($event.attributeId, $event.valueId)"
+    (filtersCleared)="store.clearAttributeFilters()"
+  />
+  } @if (store.loading()) {
+  <div class="catalog-browse__state" role="status" aria-live="polite">
+    <p-progress-spinner
+      aria-hidden="true"
+      styleClass="catalog-browse__spinner"
     />
+    <span>{{ 'catalog.loading' | transloco }}</span>
+  </div>
+  } @else if (store.error()) {
+  <div class="catalog-browse__state catalog-browse__state--error" role="alert">
+    <p>{{ 'catalog.loadError' | transloco }}</p>
+    <button type="button" class="catalog-browse__btn" (click)="store.load()">
+      {{ 'catalog.retry' | transloco }}
+    </button>
+  </div>
+  } @else if (store.data(); as catalog) {
+  <p class="catalog-browse__summary">
+    {{ 'catalog.range' | transloco:{'from': catalog.page, 'to':
+    catalog.pageSize, 'total': catalog.total} }}
+  </p>
+
+  @if (catalog.items.length === 0) {
+  <p class="catalog-browse__empty" role="status">
+    {{ 'catalog.empty' | transloco }}
+  </p>
+  } @else {
+  <ul class="catalog-browse__grid">
+    @for (item of catalog.items; track item.productId) {
+    <li class="catalog-card">
+      <app-catalog-product-card [item]="item" />
+    </li>
+    }
+  </ul>
   }
 
-  @if (store.loading()) {
-    <div class="catalog-browse__state" role="status" aria-live="polite">
-      <p-progress-spinner aria-hidden="true" styleClass="catalog-browse__spinner" />
-      <span>Φόρτωση καταλόγου…</span>
-    </div>
-  } @else if (store.error()) {
-    <div class="catalog-browse__state catalog-browse__state--error" role="alert">
-      <p>Δεν ήταν δυνατή η φόρτωση του καταλόγου. Δοκιμάστε ξανά.</p>
-      <button type="button" class="catalog-browse__btn" (click)="store.load()">
-        Επανάληψη
-      </button>
-    </div>
-  } @else if (store.data(); as catalog) {
-    <p class="catalog-browse__summary">
-      {{ rangeLabel(catalog.page, catalog.pageSize, catalog.total) }}
-    </p>
-
-    @if (catalog.items.length === 0) {
-      <p class="catalog-browse__empty" role="status">
-        Δεν βρέθηκαν προϊόντα. Δοκιμάστε άλλα κριτήρια αναζήτησης.
-      </p>
-    } @else {
-      <ul class="catalog-browse__grid">
-        @for (item of catalog.items; track item.productId) {
-          <li class="catalog-card">
-            <app-catalog-product-card [item]="item" />
-          </li>
-        }
-      </ul>
-    }
-
-    <p-paginator
-      [first]="(catalog.page - 1) * catalog.pageSize"
-      [rows]="catalog.pageSize"
-      [totalRecords]="catalog.total"
-      [rowsPerPageOptions]="[12, 24, 48]"
-      (onPageChange)="onPageChange($event)"
-      styleClass="catalog-browse__paginator"
-    />
+  <p-paginator
+    [first]="(catalog.page - 1) * catalog.pageSize"
+    [rows]="catalog.pageSize"
+    [totalRecords]="catalog.total"
+    [rowsPerPageOptions]="[12, 24, 48]"
+    (onPageChange)="onPageChange($event)"
+    styleClass="catalog-browse__paginator"
+  />
   }
 </div>

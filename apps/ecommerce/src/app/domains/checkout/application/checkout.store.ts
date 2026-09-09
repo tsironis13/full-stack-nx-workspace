@@ -12,6 +12,7 @@ import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { pipe, switchMap, tap } from 'rxjs';
 import { tapResponse } from '@ngrx/operators';
 import { AuthStore } from '@full-stack-nx-workspace/auth-web';
+import { mapHttpErrorToTranslocoKey } from '../../../core/public-api';
 
 import {
   CartAclReadAdapter,
@@ -118,10 +119,7 @@ export const CheckoutStore = signalStore(
               error: (err: unknown) =>
                 patchState(store, {
                   status: 'error',
-                  error:
-                    err instanceof Error
-                      ? err.message
-                      : 'Παρουσιάστηκε σφάλμα. Παρακαλώ δοκιμάστε ξανά.',
+                  error: mapHttpErrorToTranslocoKey(err).key,
                 }),
             }),
           );

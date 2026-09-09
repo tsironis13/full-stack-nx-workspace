@@ -1,0 +1,5 @@
+# Transloco for storefront UI Language, not Angular compile-time i18n
+
+The storefront needs Greek (default) and English **UI Language** with an in-app header switch and no per-locale rebuild. We use **Transloco** v9 runtime JSON in **`ecommerce`**, loaded from `apps/ecommerce/public/assets/i18n/{el,en}.json`. We did **not** use `@angular/localize` (already in `project.json` as `extract-i18n`) because that bakes one bundle per locale and requires a reload to switch. **UI Language** is remembered in this browser only; it is not a **Customer Account** preference.
+
+Keys Manager extract/find are Nx targets (`i18n-extract`, `i18n-find`) with `--project ecommerce --config .` and a workspace-root `transloco.config.js`. `--config .` is required so cosmiconfig reads that file from the workspace root; `--project` alone searches `sourceRoot`. Paths use `${sourceRoot}` so files land in `public/assets/i18n`, not TKM's default `src/assets/i18n`. Those targets must not set `cwd` — TKM resolves Prettier from the workspace root.

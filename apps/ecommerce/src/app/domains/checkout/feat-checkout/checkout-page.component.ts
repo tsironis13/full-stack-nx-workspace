@@ -20,6 +20,7 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { FluidModule } from 'primeng/fluid';
 import { MessageModule } from 'primeng/message';
+import { TranslocoPipe } from '@jsverse/transloco';
 
 import { AuthStore } from '@full-stack-nx-workspace/auth-web';
 
@@ -43,6 +44,7 @@ function formatEur(amount: number): string {
     InputTextModule,
     FluidModule,
     MessageModule,
+    TranslocoPipe,
   ],
 })
 export class CheckoutPageComponent implements OnInit, OnDestroy {

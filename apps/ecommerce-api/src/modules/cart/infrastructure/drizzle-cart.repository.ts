@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { asc, eq, and } from 'drizzle-orm';
 
 import { DrizzleService } from '../../../drizzle/drizzle.service';
@@ -7,6 +7,10 @@ import { cartItems } from '../../../db/schema/cart-items';
 import { productItems } from '../../../db/schema/product-items';
 import { CartRepository } from '../domain/repositories/cart.repository';
 import { Cart } from '../domain/cart.types';
+import {
+  codedNotFound,
+  MachineMessageCode,
+} from '../../../shared/machine-message';
 
 @Injectable()
 export class DrizzleCartRepository implements CartRepository {
@@ -82,7 +86,11 @@ export class DrizzleCartRepository implements CartRepository {
       );
 
     if (!item) {
-      throw new NotFoundException(`Cart item ${params.cartItemId} not found`);
+      throw codedNotFound(
+        MachineMessageCode.cartItemNotFound,
+        `Cart item ${params.cartItemId} not found`,
+        { cartItemId: params.cartItemId },
+      );
     }
 
     await this.drizzle.db
@@ -112,7 +120,11 @@ export class DrizzleCartRepository implements CartRepository {
       );
 
     if (!item) {
-      throw new NotFoundException(`Cart item ${params.cartItemId} not found`);
+      throw codedNotFound(
+        MachineMessageCode.cartItemNotFound,
+        `Cart item ${params.cartItemId} not found`,
+        { cartItemId: params.cartItemId },
+      );
     }
 
     await this.drizzle.db

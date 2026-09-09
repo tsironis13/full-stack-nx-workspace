@@ -6,6 +6,7 @@ import {
 } from '@angular/core';
 
 import { ButtonModule } from 'primeng/button';
+import { TranslocoPipe } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-cart-unavailable-line-alert',
@@ -16,7 +17,7 @@ import { ButtonModule } from 'primeng/button';
     class: 'cart-unavailable-line-alert',
     '[class.cart-unavailable-line-alert--compact]': 'density() === "compact"',
   },
-  imports: [ButtonModule],
+  imports: [ButtonModule, TranslocoPipe],
 })
 export class CartUnavailableLineAlertComponent {
   /** Matches tighter layouts (e.g. cart drawer). */

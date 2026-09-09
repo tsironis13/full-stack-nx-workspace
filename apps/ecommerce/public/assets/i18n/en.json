@@ -1,0 +1,283 @@
+{
+  "cart": {
+    "checkout": "Proceed to checkout",
+    "continue": "Continue shopping",
+    "empty": "Your cart is empty.",
+    "item": {
+      "notFound": "That cart item was not found."
+    },
+    "items": "Products in the cart",
+    "newPrice": "New price: {{price}}",
+    "productFallback": "Product",
+    "quantity": {
+      "min": "Quantity must be at least 1"
+    },
+    "remove": "Remove product",
+    "removeUnavailable": "Remove unavailable product",
+    "title": "Shopping cart",
+    "total": "Total",
+    "unavailable": "No longer available",
+    "updatingLine": "Updating line",
+    "viewCart": "View cart"
+  },
+  "cartItemWorkflow": {
+    "abandoned": {
+      "body": "No Cart Item was added.",
+      "title": "Cancelled"
+    },
+    "allOutOfStock": {
+      "body": "No Product Item is in stock.",
+      "title": "Unavailable"
+    },
+    "available": "Available: {{inventory}}",
+    "cancel": "Cancel",
+    "confirm": {
+      "submit": "Add to cart"
+    },
+    "continue": "Continue",
+    "notFound": {
+      "body": "There is no Product with that id.",
+      "title": "Product not found"
+    },
+    "outOfStockOption": "{{label}} — unavailable",
+    "outOfStockWrite": {
+      "body": "This Product Item is no longer in stock. No Cart Item was added.",
+      "title": "Unavailable"
+    },
+    "picker": {
+      "body": "Choose an in-stock product item. Unavailable combinations are disabled.",
+      "title": "Choose options"
+    },
+    "quantity": {
+      "label": "Quantity",
+      "max": "You have reached the maximum quantity ({{inventory}})",
+      "min": "Quantity must be at least 1"
+    },
+    "retry": "Try again",
+    "startFailed": {
+      "body": "The Cart Item workflow could not start. Please try again.",
+      "title": "Conversion failed"
+    },
+    "success": {
+      "body": "The product was added as a Cart Item.",
+      "checkout": "Go to checkout",
+      "title": "Added to cart"
+    },
+    "writeError": {
+      "body": "The Cart Item was not saved. Try again or cancel.",
+      "title": "Could not add"
+    }
+  },
+  "catalog": {
+    "apply": "Apply",
+    "attributeFilter": {
+      "attributeId": "The attribute id is not valid.",
+      "format": "The attribute filter is not valid.",
+      "valueId": "The attribute value is not valid."
+    },
+    "attributes": {
+      "clear": "Clear attribute filters",
+      "fallback": "Attribute"
+    },
+    "category": {
+      "all": "All",
+      "hint": "Products in the selected root and its child categories are included.",
+      "label": "Root category",
+      "loadError": "Could not load categories for the filter.",
+      "loading": "Loading categories…"
+    },
+    "categoryRoot": {
+      "invalid": "The selected category is not valid."
+    },
+    "decreaseQty": "Decrease quantity",
+    "empty": "No products found. Try different search criteria.",
+    "imagePlaceholder": "Image",
+    "increaseQty": "Increase quantity",
+    "loadError": "Could not load the catalog. Please try again.",
+    "loading": "Loading catalog…",
+    "minRating": {
+      "invalid": "Minimum rating must be a whole number from 1 to 5."
+    },
+    "moreOptions": "+{{count}} more options",
+    "none": "No products",
+    "price": {
+      "apply": "Apply prices",
+      "aria": "Sale price range (main product item)",
+      "clear": "Clear",
+      "hint": "The slider sets a 0–10,000 € range (approximate). When the minimum is 0 or the maximum is the upper bound, that bound is not sent to the API. The price is the sale price of the main product item, as on cards and sort; other options of the same product do not change the filter.",
+      "inverted": "The minimum price cannot exceed the maximum.",
+      "label": "Sale price range (EUR)",
+      "negative": "The price cannot be negative.",
+      "notFinite": "The price must be a number.",
+      "range": "The price range is not valid."
+    },
+    "productAlt": "Product",
+    "productFallback": "product",
+    "quantityFor": "Quantity for {{name}}",
+    "range": "Showing {{from}}–{{to}} of {{total}} products",
+    "rating": {
+      "all": "All",
+      "andUp": "{{stars}}★ and up",
+      "aria": "Minimum rating",
+      "hint": "Only products with an average rating at or above the threshold are shown (unrated products are excluded).",
+      "label": "Minimum rating"
+    },
+    "ratingAria": "Average rating {{average}} out of 5, {{count}} reviews",
+    "retry": "Retry",
+    "searchLabel": "Name search",
+    "searchPlaceholder": "Product name",
+    "sort": {
+      "newest": "Newest",
+      "priceAsc": "Price (low to high)",
+      "priceDesc": "Price (high to low)",
+      "ratingDesc": "Highest rated"
+    },
+    "sortLabel": "Sort",
+    "subtitle": "Browse products (root category, name search, sale price range, sort, pagination)",
+    "title": "Catalog",
+    "viewProduct": "View {{name}}"
+  },
+  "checkout": {
+    "address": "Address",
+    "addressLine2": "Address line 2",
+    "addressRequired": "Address is required.",
+    "cardNumber": "Card number",
+    "city": "City",
+    "cityRequired": "City is required.",
+    "confirmationSubtitle": "Thank you for your purchase. You will receive a confirmation shortly.",
+    "confirmationTitle": "Your order was placed!",
+    "confirmed": "Confirmed",
+    "contact": "Contact details",
+    "contactEmail": "Contact email",
+    "country": "Country",
+    "countryRequired": "Country is required.",
+    "cvv": "CVV",
+    "date": "Date",
+    "email": "Email",
+    "emailInvalid": "Enter a valid email address.",
+    "emailRequired": "Email is required.",
+    "emptyCart": "The cart is empty.",
+    "expiry": "Expiry",
+    "expiryPlaceholder": "MM/YY",
+    "fullName": "Full name",
+    "fullNameRequired": "Full name is required.",
+    "orderNumber": "Order number",
+    "orderProducts": "Order products",
+    "payment": "Payment details",
+    "paymentNote": "Demo app — no real card is required.",
+    "phone": "Phone",
+    "phoneRequired": "Phone is required.",
+    "placeOrder": "Place order",
+    "postalCode": "Postal code",
+    "postalCodeRequired": "Postal code is required.",
+    "products": "Products",
+    "shipping": "Shipping address",
+    "status": "Status",
+    "summary": "Order summary",
+    "summaryAria": "Order summary",
+    "title": "Checkout",
+    "total": "Total"
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again.",
+    "http": {
+      "401": "Please sign in.",
+      "403": "You do not have permission for this action.",
+      "404": "Not found.",
+      "409": "This action conflicts with the current state.",
+      "422": "The submitted details are not valid.",
+      "503": "The service is unavailable. Please try again later."
+    }
+  },
+  "header": {
+    "cartCount": "{{count}} items in the cart",
+    "logout": "Sign out",
+    "openCart": "Open cart",
+    "orders": "My orders",
+    "signIn": "Sign in",
+    "signingIn": "Signing in…",
+    "themeDark": "Switch to light theme",
+    "themeLight": "Switch to dark theme",
+    "title": "Header"
+  },
+  "login": {
+    "email": "Email",
+    "emailInvalid": "Enter a valid email address.",
+    "emailRequired": "Email is required.",
+    "password": "Password",
+    "passwordRequired": "Password is required.",
+    "submit": "Sign in"
+  },
+  "orders": {
+    "editReview": "Edit review",
+    "empty": "You have no completed orders yet.",
+    "identity": {
+      "conflict": "An account and a guest email cannot both be set.",
+      "missing": "Sign-in or a guest email is required."
+    },
+    "loadError": "Could not load orders. Please try again.",
+    "loading": "Loading orders…",
+    "order": "Order #{{id}}",
+    "productFallback": "Product",
+    "retry": "Retry",
+    "title": "My orders",
+    "writeReview": "Write a review"
+  },
+  "product": {
+    "aggregateAria": "Average rating {{average}} out of 5, {{count}} reviews",
+    "back": "Back to catalog",
+    "bodyLabel": "Comment",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "genericError": "Something went wrong. Please try again.",
+    "loadingReviews": "Loading reviews…",
+    "noReviews": "No reviews yet",
+    "notEligible": "Only shoppers who bought this product can write a review.",
+    "ratingLegend": "Rating *",
+    "ratingRequired": "Choose a rating from 1 to 5 stars.",
+    "retry": "Retry",
+    "reviewCount": "{{count}} reviews",
+    "reviewLoadError": "Could not load the review.",
+    "reviewRatingAria": "{{rating}} out of 5 stars",
+    "reviewSubmitError": "Could not submit the review.",
+    "reviews": "Reviews",
+    "reviewsLoadError": "Could not load reviews. Please try again.",
+    "save": "Save",
+    "signInToReview": "Sign in",
+    "signInToReviewRest": " to write a review for this product.",
+    "submit": "Submit review",
+    "title": "Product",
+    "titleLabel": "Title",
+    "writeHeading": "Your review"
+  },
+  "productItem": {
+    "notFound": "That purchasable product was not found."
+  },
+  "reviews": {
+    "alreadyExists": "You have already reviewed this product.",
+    "notFound": "You have no review for this product.",
+    "product": {
+      "notFound": "The product was not found."
+    },
+    "rating": {
+      "invalid": "Rating must be a whole number from 1 to 5."
+    },
+    "verifiedPurchase": {
+      "required": "A verified purchase is required to review this product."
+    }
+  },
+  "search": {
+    "query": {
+      "empty": "Search query must not be empty."
+    }
+  },
+  "shopping": {
+    "add": "Add"
+  },
+  "uiLanguage": {
+    "el": "Ελληνικά",
+    "en": "English",
+    "label": "Language"
+  }
+}

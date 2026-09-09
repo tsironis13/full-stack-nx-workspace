@@ -14,6 +14,9 @@ import type { A2uiMessage } from '@a2ui/web_core/v0_9';
 import { catchError, EMPTY, pipe, switchMap, tap } from 'rxjs';
 
 import { ChatRegistry } from '@full-stack-nx-workspace/shared';
+import { TranslocoService } from '@jsverse/transloco';
+
+import { localizeA2uiValue } from '../../../core/public-api';
 
 import { CartAclReadAdapter } from '../../cart/application/anti-corruption-layer';
 import {
@@ -85,26 +88,36 @@ export const ShoppingStore = signalStore(
       confirmHandler: inject(CartItemConfirmHandler),
       cartRead: inject(CartAclReadAdapter),
       router: inject(Router),
+      transloco: inject(TranslocoService),
     };
   }),
-  withMethods((store) => ({
+  withMethods((store) => {
+    const localize = (envelope: A2uiEnvelope): A2uiEnvelope =>
+      localizeA2uiValue(envelope, (key, params) =>
+        store.transloco.translate(key, params),
+      ) as A2uiEnvelope;
+
+    return {
     presentSurface(envelope: A2uiEnvelope): void {
+      const localized = localize(envelope);
       const agentStore = store.chatRegistry.store;
       if (!agentStore) {
-        store.renderer.processMessages(toA2uiMessages(envelope.messages));
+        store.renderer.processMessages(toA2uiMessages(localized.messages));
         return;
       }
       agentStore().agent.addMessage({
-        id: envelope.surfaceId,
+        id: localized.surfaceId,
         role: 'activity',
         activityType: 'a2ui-surface',
-        content: { operations: envelope.messages },
+        content: { operations: localized.messages },
       });
     },
     presentUpdate(envelope: A2uiEnvelope): void {
-      store.renderer.processMessages(toA2uiMessages(envelope.messages));
+      const localized = localize(envelope);
+      store.renderer.processMessages(toA2uiMessages(localized.messages));
     },
-  })),
+    };
+  }),
   withMethods((store) => {
     const patchInFlight = (next: InFlightSnapshot): void => {
       patchState(store, {
@@ -174,8 +187,8 @@ export const ShoppingStore = signalStore(
               store.presentSurface(
                 buildMessageSurface(
                   `srf-cart-item-error-${productId}`,
-                  'Η μετατροπή απέτυχε',
-                  'Δεν ήταν δυνατή η έναρξη του Cart Item workflow. Δοκιμάστε ξανά.',
+                  'cartItemWorkflow.startFailed.title',
+                  'cartItemWorkflow.startFailed.body',
                 ),
               );
               return EMPTY;

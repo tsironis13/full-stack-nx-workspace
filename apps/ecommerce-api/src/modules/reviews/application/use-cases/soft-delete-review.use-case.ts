@@ -1,6 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 import { ReviewsRepository } from '../../domain/repositories/reviews.repository';
+import {
+  codedNotFound,
+  MachineMessageCode,
+} from '../../../../shared/machine-message';
 
 export interface SoftDeleteReviewCommand {
   productId: number;
@@ -18,7 +22,10 @@ export class SoftDeleteReviewUseCase {
     });
 
     if (!existing || existing.hiddenAt != null) {
-      throw new NotFoundException('You have no review for this product');
+      throw codedNotFound(
+        MachineMessageCode.reviewsNotFound,
+        'You have no review for this product',
+      );
     }
 
     await this.reviewsRepository.hideReview({

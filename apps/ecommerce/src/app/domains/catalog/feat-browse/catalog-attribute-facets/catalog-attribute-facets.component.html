@@ -6,7 +6,7 @@
         class="catalog-browse__btn catalog-browse__btn--secondary catalog-browse__btn--sm"
         (click)="filtersCleared.emit()"
       >
-        Καθαρισμός φίλτρων ιδιοτήτων
+        {{ 'catalog.attributes.clear' | transloco }}
       </button>
     </div>
   }
@@ -14,7 +14,7 @@
     <div
       class="catalog-browse__facet"
       role="group"
-      [attr.aria-label]="facet.name ?? 'Ιδιότητα'"
+      [attr.aria-label]="facet.name ?? ('catalog.attributes.fallback' | transloco)"
     >
       <span class="catalog-browse__facet-label">{{ facet.name ?? '—' }}</span>
       <ul class="catalog-browse__facet-values" role="list">
@@ -26,7 +26,7 @@
                 class="catalog-browse__facet-checkbox"
                 [checked]="isSelected(facet.attributeId, val.valueId)"
                 (change)="onCheckboxChange(facet.attributeId, val.valueId, $any($event.target).checked)"
-                [attr.aria-label]="(facet.name ?? 'Ιδιότητα') + ': ' + (val.value ?? '—')"
+                [attr.aria-label]="(facet.name ?? ('catalog.attributes.fallback' | transloco)) + ': ' + (val.value ?? '—')"
               />
               <span>{{ val.value ?? '—' }}</span>
             </label>

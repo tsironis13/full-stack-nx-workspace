@@ -11,6 +11,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { CardModule } from 'primeng/card';
 import { FloatLabel } from 'primeng/floatlabel';
 import { Router } from '@angular/router';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
 import { AuthStore } from '@full-stack-nx-workspace/auth-web';
 
@@ -18,11 +19,19 @@ import { AuthStore } from '@full-stack-nx-workspace/auth-web';
   selector: 'app-login',
   templateUrl: './login.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ButtonModule, InputTextModule, FormField, CardModule, FloatLabel],
+  imports: [
+    ButtonModule,
+    InputTextModule,
+    FormField,
+    CardModule,
+    FloatLabel,
+    TranslocoPipe,
+  ],
 })
 export class LoginComponent {
   protected readonly authStore = inject(AuthStore);
   private readonly router = inject(Router);
+  private readonly transloco = inject(TranslocoService);
 
   protected readonly onSuccessUserLoginEffect = effect(() => {
     const authUser = this.authStore.authUser();    
@@ -40,9 +49,15 @@ export class LoginComponent {
       password: string;
     }>,
     (schemaPath) => {
-      required(schemaPath.email, { message: 'Email is required' });
-      email(schemaPath.email, { message: 'Enter a valid email address' });
-      required(schemaPath.password, { message: 'Password is required' });
+      required(schemaPath.email, {
+        message: this.transloco.translate('login.emailRequired'),
+      });
+      email(schemaPath.email, {
+        message: this.transloco.translate('login.emailInvalid'),
+      });
+      required(schemaPath.password, {
+        message: this.transloco.translate('login.passwordRequired'),
+      });
     },
   );
 

@@ -16,15 +16,17 @@ import { NgTemplateOutlet } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { PaginatorModule, PaginatorState } from 'primeng/paginator';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+
+import { UiLanguageService } from '../../../core/public-api';
 
 import { AuthStore } from '@full-stack-nx-workspace/auth-web';
 
 import type { ReviewDraft } from '../application/public-api';
 import {
-  aggregateRatingAriaLabel,
+  formatAverageRatingForDisplay,
   ProductDetailStore,
   ReviewSubmissionStore,
-  reviewRatingAriaLabel,
 } from '../application/public-api';
 
 @Component({
@@ -38,6 +40,7 @@ import {
     NgTemplateOutlet,
     PaginatorModule,
     ProgressSpinnerModule,
+    TranslocoPipe,
   ],
 })
 export class ProductDetailPageComponent implements OnInit {
@@ -46,10 +49,10 @@ export class ProductDetailPageComponent implements OnInit {
   protected readonly store = inject(ProductDetailStore);
   protected readonly submission = inject(ReviewSubmissionStore);
   protected readonly auth = inject(AuthStore);
+  private readonly transloco = inject(TranslocoService);
+  private readonly uiLanguage = inject(UiLanguageService);
 
   private readonly fb = inject(FormBuilder);
-
-  protected readonly reviewRatingAriaLabel = reviewRatingAriaLabel;
 
   protected readonly editing = signal(false);
 
@@ -63,11 +66,15 @@ export class ProductDetailPageComponent implements OnInit {
   });
 
   protected readonly aggregateLabel = computed(() => {
+    this.uiLanguage.language();
     const data = this.store.data();
     if (!data?.averageRating || data.reviewCount === 0) {
       return null;
     }
-    return aggregateRatingAriaLabel(data.averageRating, data.reviewCount);
+    return this.transloco.translate('product.aggregateAria', {
+      average: formatAverageRatingForDisplay(data.averageRating),
+      count: data.reviewCount,
+    });
   });
 
   ngOnInit(): void {
@@ -138,6 +145,11 @@ export class ProductDetailPageComponent implements OnInit {
       title: title.trim() ? title.trim() : null,
       body: body.trim() ? body.trim() : null,
     };
+  }
+
+  protected reviewRatingAriaLabel(rating: number): string {
+    this.uiLanguage.language();
+    return this.transloco.translate('product.reviewRatingAria', { rating });
   }
 
   protected formatReviewDate(value: Date): string {

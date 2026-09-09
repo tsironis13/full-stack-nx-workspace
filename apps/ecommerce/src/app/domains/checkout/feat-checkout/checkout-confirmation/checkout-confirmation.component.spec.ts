@@ -13,6 +13,7 @@ import type {
   ConfirmedOrderItemWire,
   ShippingAddressWire,
 } from '../../application/public-api';
+import { ecommerceTranslocoTestingModule } from '../../../../core/public-api';
 
 @Component({
   selector: 'app-stub-catalog',
@@ -69,6 +70,7 @@ function createStoreMock(overrides: {
 describe('CheckoutConfirmationComponent', () => {
   async function setup(storeMock: ReturnType<typeof createStoreMock>) {
     TestBed.configureTestingModule({
+      imports: [ecommerceTranslocoTestingModule()],
       providers: [
         provideRouter([
           {

@@ -11,6 +11,7 @@ import {
   ReviewSubmissionStore,
 } from '../application/public-api';
 import { ProductDetailPageComponent } from './product-detail.page';
+import { ecommerceTranslocoTestingModule } from '../../../core/public-api';
 
 describe('ProductDetailPageComponent', () => {
   let loadingSig: WritableSignal<boolean>;
@@ -49,7 +50,7 @@ describe('ProductDetailPageComponent', () => {
     loadMineMock = jest.fn();
 
     TestBed.configureTestingModule({
-      imports: [ProductDetailPageComponent],
+      imports: [ProductDetailPageComponent, ecommerceTranslocoTestingModule()],
       providers: [
         {
           provide: ProductDetailStore,

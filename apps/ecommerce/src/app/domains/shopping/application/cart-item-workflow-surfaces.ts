@@ -1,3 +1,5 @@
+import { encodeMachineText } from '../../../core/public-api';
+
 export const BASIC_CATALOG_ID =
   'https://a2ui.org/specification/v0_9/catalogs/basic/catalog.json';
 
@@ -33,7 +35,7 @@ function quantityRangeChecks(inventory: number) {
           min: 1,
         },
       },
-      message: 'Η ποσότητα πρέπει να είναι τουλάχιστον 1',
+      message: 'cartItemWorkflow.quantity.min',
     },
     {
       condition: {
@@ -43,7 +45,9 @@ function quantityRangeChecks(inventory: number) {
           max: inventory,
         },
       },
-      message: `Έχετε φτάσει τη μέγιστη ποσότητα (${inventory})`,
+      message: encodeMachineText('cartItemWorkflow.quantity.max', {
+        inventory,
+      }),
     },
   ];
 }
@@ -94,8 +98,8 @@ export function buildAbandonedSurface(surfaceId: string): A2uiEnvelope {
               component: 'Column',
               children: ['title', 'body'],
             },
-            text('title', 'Ακυρώθηκε', 'h3'),
-            text('body', 'Δεν προστέθηκε Cart Item.'),
+            text('title', 'cartItemWorkflow.abandoned.title', 'h3'),
+            text('body', 'cartItemWorkflow.abandoned.body'),
           ],
         },
       },
@@ -118,8 +122,8 @@ export function buildSuccessSurface(surfaceId: string): A2uiEnvelope {
               component: 'Column',
               children: ['title', 'body', 'checkout'],
             },
-            text('title', 'Προστέθηκε στο καλάθι', 'h3'),
-            text('body', 'Το προϊόν προστέθηκε ως ένα Cart Item.'),
+            text('title', 'cartItemWorkflow.success.title', 'h3'),
+            text('body', 'cartItemWorkflow.success.body'),
             {
               id: 'checkout',
               component: 'Button',
@@ -136,7 +140,7 @@ export function buildSuccessSurface(surfaceId: string): A2uiEnvelope {
             {
               id: 'checkout-label',
               component: 'Text',
-              text: 'Μετάβαση στο ταμείο',
+              text: 'cartItemWorkflow.success.checkout',
             },
           ],
         },
@@ -167,10 +171,10 @@ export function buildWriteErrorSurface(surfaceId: string): A2uiEnvelope {
               component: 'Column',
               children: ['title', 'body', 'actions'],
             },
-            text('title', 'Αποτυχία προσθήκης', 'h3'),
+            text('title', 'cartItemWorkflow.writeError.title', 'h3'),
             text(
               'body',
-              'Το Cart Item δεν αποθηκεύτηκε. Δοκιμάστε ξανά ή ακυρώστε.',
+              'cartItemWorkflow.writeError.body',
             ),
             {
               id: 'actions',
@@ -188,7 +192,7 @@ export function buildWriteErrorSurface(surfaceId: string): A2uiEnvelope {
                 },
               },
             },
-            { id: 'retry-label', component: 'Text', text: 'Δοκιμή ξανά' },
+            { id: 'retry-label', component: 'Text', text: 'cartItemWorkflow.retry' },
             {
               id: 'cancel',
               component: 'Button',
@@ -200,7 +204,7 @@ export function buildWriteErrorSurface(surfaceId: string): A2uiEnvelope {
                 },
               },
             },
-            { id: 'cancel-label', component: 'Text', text: 'Ακύρωση' },
+            { id: 'cancel-label', component: 'Text', text: 'cartItemWorkflow.cancel' },
           ],
         },
       },
@@ -254,12 +258,17 @@ export function buildConfirmSurfaceUpdate(
     {
       id: 'qty',
       component: 'TextField',
-      label: 'Ποσότητα',
+      label: 'cartItemWorkflow.quantity.label',
       variant: 'number',
       value: confirmQuantityPath,
       checks: quantityRangeChecks(selection.inventory),
     },
-    text('qty-max', `Διαθέσιμα: ${selection.inventory}`),
+    text(
+      'qty-max',
+      encodeMachineText('cartItemWorkflow.available', {
+        inventory: selection.inventory,
+      }),
+    ),
     {
       id: 'actions',
       component: 'Row',
@@ -278,7 +287,7 @@ export function buildConfirmSurfaceUpdate(
         },
       },
     },
-    { id: 'submit-label', component: 'Text', text: 'Προσθήκη στο καλάθι' },
+    { id: 'submit-label', component: 'Text', text: 'cartItemWorkflow.confirm.submit' },
     {
       id: 'cancel',
       component: 'Button',
@@ -290,7 +299,7 @@ export function buildConfirmSurfaceUpdate(
         },
       },
     },
-    { id: 'cancel-label', component: 'Text', text: 'Ακύρωση' },
+    { id: 'cancel-label', component: 'Text', text: 'cartItemWorkflow.cancel' },
   );
 
   return {
@@ -337,10 +346,10 @@ export function buildOutOfStockWriteSurface(surfaceId: string): A2uiEnvelope {
               component: 'Column',
               children: ['title', 'body'],
             },
-            text('title', 'Μη διαθέσιμο', 'h3'),
+            text('title', 'cartItemWorkflow.outOfStockWrite.title', 'h3'),
             text(
               'body',
-              'Αυτό το Product Item δεν είναι πλέον In Stock. Δεν προστέθηκε Cart Item.',
+              'cartItemWorkflow.outOfStockWrite.body',
             ),
           ],
         },

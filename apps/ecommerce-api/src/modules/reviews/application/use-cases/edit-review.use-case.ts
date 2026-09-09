@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 import { ReviewsRepository } from '../../domain/repositories/reviews.repository';
 import {
@@ -12,6 +8,11 @@ import {
 import type { AuthorProfile } from '../../domain/review.types';
 import { MyReviewResponseDto } from '../dto/my-review-response.dto';
 import { toMyReviewResponse } from '../review-response.mapper';
+import {
+  codedBadRequest,
+  codedNotFound,
+  MachineMessageCode,
+} from '../../../../shared/machine-message';
 
 export interface EditReviewCommand {
   productId: number;
@@ -33,12 +34,18 @@ export class EditReviewUseCase {
     });
 
     if (!existing || existing.hiddenAt != null) {
-      throw new NotFoundException('You have no review for this product');
+      throw codedNotFound(
+        MachineMessageCode.reviewsNotFound,
+        'You have no review for this product',
+      );
     }
 
     const rating = command.rating ?? existing.rating;
     if (!isValidRating(rating)) {
-      throw new BadRequestException('Rating must be a whole number from 1 to 5');
+      throw codedBadRequest(
+        MachineMessageCode.reviewsRatingInvalid,
+        'Rating must be a whole number from 1 to 5',
+      );
     }
 
     const title =

@@ -1,10 +1,12 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { TranslocoPipe } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-catalog-category-facet',
   templateUrl: './catalog-category-facet.component.html',
   styleUrl: './catalog-category-facet.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [TranslocoPipe],
 })
 export class CatalogCategoryFacetComponent {
   readonly roots = input.required<{ id: number; name: string | null }[]>();

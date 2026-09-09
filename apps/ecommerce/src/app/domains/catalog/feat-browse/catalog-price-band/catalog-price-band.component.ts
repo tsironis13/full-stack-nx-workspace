@@ -13,6 +13,7 @@ import {
   PriceRangeDisplayTemplateDirective,
   PriceRangeSliderComponent,
 } from '@full-stack-nx-workspace/shared';
+import { TranslocoPipe } from '@jsverse/transloco';
 
 const FLOOR = 0;
 const CEIL = 10_000;
@@ -31,6 +32,7 @@ export interface PriceRange {
     PriceRangeDisplayComponent,
     PriceRangeDisplayTemplateDirective,
     PriceRangeSliderComponent,
+    TranslocoPipe,
   ],
 })
 export class CatalogPriceBandComponent implements OnInit {
@@ -65,9 +67,7 @@ export class CatalogPriceBandComponent implements OnInit {
     const low = this.sliderLow();
     const high = this.sliderHigh();
     if (low > high) {
-      this.filterError.set(
-        'Η ελάχιστη τιμή δεν μπορεί να υπερβαίνει τη μέγιστη.'
-      );
+      this.filterError.set('catalog.price.inverted');
       return;
     }
     this.priceRangeChanged.emit({

@@ -299,6 +299,7 @@ May:
 
 - Browse products
 - Add items to cart
+- Select a **UI Language**
 
 Cannot:
 
@@ -323,6 +324,7 @@ May:
 - View order history
 - Save addresses
 - Manage profile information
+- Select a **UI Language**
 
 Avoid:
 
@@ -365,6 +367,36 @@ Avoid:
 
 - Membership
 - Profile Account
+
+---
+
+## UI Language
+
+The storefront display language the shopper has selected.
+
+v1 values: **Greek** (default) and **English**.
+
+Applies to storefront chrome (header, catalog, checkout, cart page), **Product recommendation** actions, **Cart Item workflow** action labels, and machine messages from **ecommerce-api** and **ai-server**.
+
+Does not apply to **Product** names, **options**, or **Category** path. Does not constrain **Shopping Assistant** input or replies — those follow the **shopper's language**.
+
+Avoid:
+
+- Locale (number/date formatting — not this)
+- Site language
+- Preferred language (use **UI Language**)
+- Chat language (use **shopper's language**)
+
+---
+
+## Shopper's language
+
+The language of the shopper's current **Shopping Assistant** utterance (Greek or English in v1). Independent of **UI Language**.
+
+Avoid:
+
+- Chat locale
+- Detected language (implementation)
 
 ---
 
@@ -750,6 +782,8 @@ Avoid:
 - An Order Item stores a snapshot of Product Item pricing and metadata
 - A Shipment belongs to an Order
 - A Payment belongs to an Order
+- A **Guest User** or **Registered User** may have one selected **UI Language**
+- **UI Language** and **shopper's language** are independent
 
 ---
 
@@ -772,6 +806,11 @@ Avoid:
 - A Guest User may place an Order using a Guest Checkout Identity (email-only); no account is created
 - Orders must belong to a Registered User or a Guest Checkout Identity
 - Admin Users may access management functionality unavailable to storefront Users
+- Default **UI Language** is **Greek**; **English** is the other v1 value
+- Storefront chrome and machine messages follow **UI Language**; **Product** names, **options**, and **Category** path do not
+- Number and date formatting stay on the Greek locale in v1. **UI Language** does not change how **Sale Price** or dates are written
+- **UI Language** is remembered on this browser only in v1. It is not a **Customer Account** preference. Sign-in does not change it. A new browser starts at **Greek**
+- **UI Language** is a storefront concern. It does not apply to **Admin User** management workflows
 
 ---
 
@@ -839,7 +878,7 @@ Avoid:
 - The **Shopping Assistant** searches only when the message is a **product need**
 - Follow-up refinements reconstruct the **product need** and search again; references like “the second one” mean the last **Product recommendations**, not a new ranking
 - Weak matches may be declined; the assistant then asks one narrowing question instead of padding with poor **Products**
-- Reply in the shopper's language; do not translate **Product** names, **options**, or **Category** path
+- Reply in the **shopper's language**; do not translate **Product** names, **options**, or **Category** path. **UI Language** does not change which language the shopper may type, or which language the assistant replies in
 - **Storefront catalog search** remains **`products.name`** only — the assistant is not the catalog `q` parameter
 - **Guest Users** and **Registered Users** may use the assistant; v1 does not bind conversation memory to a **Customer Account**
 - The assistant does not pick a **Product Item** or write the **Cart**. On a card Add or an add-reference that **uniquely identifies** one last shown **Product recommendation**, it may start a **Cart Item workflow** with that **Product** id and any option hints from the shopper’s message — never a **Product Item** id, never the first card, never an unshown search hit
@@ -861,6 +900,7 @@ Avoid:
 - A new **product need**, an add-reference to a **different** uniquely identified last recommendation, or explicit cancel **abandons** the run (no **Cart** write). Other messages — including an add-reference that does not uniquely identify a different last-turn **Product** — leave pickers/confirm up
 - “Add the second and the third” resolves **one** **Product** (first mentioned, or ask which). Conflicting ordinal/name/option in one add is not two adds: ask which. No queue, no bundle
 - Does not collect **Shipping Address**, **Payment**, or **Guest Checkout Identity**, and does not create an **Order**. The success surface may **navigate** to existing `/checkout`
+- Action labels and machine messages on this path follow **UI Language**; **Product** name, **options**, and **Category** path stay in stored form
 
 ---
 
@@ -869,6 +909,8 @@ Avoid:
 - **Shopping Assistant** instructions describe when to retrieve **Products** for a **product need**; they do not name tools. The model selects a tool only when the shopper's request matches that tool's description. If no description matches, it does not call a tool.
 - A **Product recommendation** may cite only fields returned for that recommendation. The assistant must not invent a **Product**, specs, stock, or **Ratings**.
 - A **Cart Item workflow** may cite **Sale Price** and **options** only from the resolved **Product Item** (and **Inventory** for the quantity cap). It must not invent stock or a **Product Item**.
+- Machine messages from **ecommerce-api** and **ai-server** (errors, **Cart Item workflow** chrome, **Product recommendation** actions) are identified by a stable code, not by display text. The storefront renders them in **UI Language**.
+- If a failure has a machine-message code, that code wins. If not, the storefront may use a message for the kind of failure (for example not found, sign-in required). Anything unrecognized uses a generic message. Never the raw server string.
 
 ---
 
@@ -1041,6 +1083,14 @@ Domain expert:
 
 ---
 
+Dev:
+"The shopper picked English and typed a Greek product need. What language is Add, and what language does the assistant reply in?"
+
+Domain expert:
+"Add follows UI Language — English. The assistant replies in the shopper's language — Greek. Product names stay as stored."
+
+---
+
 # Flagged ambiguities
 
 ## "Product" vs "Product Item"
@@ -1081,6 +1131,13 @@ The **Shopping Assistant** ranks **Products** for a **product need**. They are d
 ## "Cart Item workflow" stock vs product-detail add
 
 **Cart Item workflow** refuses **Out of Stock Product Item** writes. Product detail and `AddCartItemUseCase` do not check **Inventory** today. That inconsistency is deliberate for this chat path; it is not a silent change to the cart API. Decision record: [0006-cart-item-workflow-stock-and-cartstore](./adr/0006-cart-item-workflow-stock-and-cartstore.md).
+
+---
+
+## "UI Language" vs "shopper's language"
+
+**UI Language** is the selected storefront display language (Greek default, English). It drives chrome, **Product recommendation** / **Cart Item workflow** action labels, and API / ai-server machine messages.
+**Shopper's language** is the language of the current chat utterance. The **Shopping Assistant** accepts Greek or English input and replies in that language regardless of **UI Language**.
 
 ---
 

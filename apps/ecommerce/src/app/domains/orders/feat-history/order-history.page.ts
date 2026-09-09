@@ -6,6 +6,7 @@ import {
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { TranslocoPipe } from '@jsverse/transloco';
 
 import { OrderHistoryStore } from '../application/public-api';
 
@@ -14,7 +15,7 @@ import { OrderHistoryStore } from '../application/public-api';
   templateUrl: './order-history.page.html',
   styleUrl: './order-history.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, ProgressSpinnerModule],
+  imports: [RouterLink, ProgressSpinnerModule, TranslocoPipe],
 })
 export class OrderHistoryPageComponent implements OnInit {
   protected readonly store = inject(OrderHistoryStore);

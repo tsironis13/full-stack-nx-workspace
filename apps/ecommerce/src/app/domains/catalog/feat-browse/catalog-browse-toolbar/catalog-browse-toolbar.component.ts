@@ -6,6 +6,7 @@ import {
   signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { TranslocoPipe } from '@jsverse/transloco';
 
 import type { CatalogSort } from '../../application/public-api';
 
@@ -14,11 +15,13 @@ import type { CatalogSort } from '../../application/public-api';
   templateUrl: './catalog-browse-toolbar.component.html',
   styleUrl: './catalog-browse-toolbar.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule],
+  imports: [FormsModule, TranslocoPipe],
 })
 export class CatalogBrowseToolbarComponent {
   readonly sort = input.required<CatalogSort>();
-  readonly sortOptions = input.required<{ value: CatalogSort; label: string }[]>();
+  readonly sortOptions = input.required<
+    { value: CatalogSort; labelKey: string }[]
+  >();
 
   readonly searchApplied = output<string>();
   readonly sortChanged = output<CatalogSort>();

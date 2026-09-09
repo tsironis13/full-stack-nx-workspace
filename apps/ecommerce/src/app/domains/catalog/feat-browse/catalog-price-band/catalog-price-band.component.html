@@ -1,9 +1,11 @@
 <div
   class="catalog-browse__price-band"
   role="group"
-  aria-label="Εύρος τιμής πώλησης (κύριο προϊόν)"
+  [attr.aria-label]="'catalog.price.aria' | transloco"
 >
-  <span class="catalog-browse__facet-label">Εύρος τιμής πώλησης (EUR)</span>
+  <span class="catalog-browse__facet-label">{{
+    'catalog.price.label' | transloco
+  }}</span>
   <div class="catalog-browse__price-slider-wrap">
     <app-price-range-slider
       class="catalog-browse__price-slider"
@@ -23,24 +25,20 @@
   </div>
   <div class="catalog-browse__price-actions catalog-browse__price-actions--below-slider">
     <button type="button" class="catalog-browse__btn" (click)="onApply()">
-      Εφαρμογή τιμών
+      {{ 'catalog.price.apply' | transloco }}
     </button>
     <button
       type="button"
       class="catalog-browse__btn catalog-browse__btn--secondary"
       (click)="onClear()"
     >
-      Καθαρισμός
+      {{ 'catalog.price.clear' | transloco }}
     </button>
   </div>
   @if (filterError(); as err) {
-    <p class="catalog-browse__facet-error" role="alert">{{ err }}</p>
+    <p class="catalog-browse__facet-error" role="alert">{{ err | transloco }}</p>
   }
   <p class="catalog-browse__facet-help">
-    Ο συρτής ορίζει εύρος 0–10&nbsp;000&nbsp;€ (προσέγγιση). Όταν η ελάχιστη
-    είναι στο 0 ή η μέγιστη στο άνω όριο, το αντίστοιχο όριο δεν εφαρμόζεται
-    στο API. Η τιμή είναι η <strong>τιμή πώλησης</strong> του
-    <strong>κύριου προϊόντος</strong>, όπως στις κάρτες και την ταξινόμηση·
-    άλλες επιλογές του ίδιου προϊόντος δεν αλλάζουν το φίλτρο.
+    {{ 'catalog.price.hint' | transloco }}
   </p>
 </div>

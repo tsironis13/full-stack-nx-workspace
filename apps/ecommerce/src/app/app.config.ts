@@ -10,7 +10,7 @@ import { provideCopilotKit } from '@copilotkit/angular';
 import { provideMarkdownRenderer } from '@a2ui/angular/v0_9';
 import { marked } from 'marked';
 
-import { authInterceptor } from './core/public-api';
+import { authInterceptor, provideEcommerceI18n } from './core/public-api';
 import { providePrimeNG } from 'primeng/config';
 import { appRoutes } from './app.routes';
 import { appTheme } from '../themes/app-theme';
@@ -39,6 +39,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(appRoutes, withComponentInputBinding()),
     provideAnimationsAsync(),
     provideEnvConfig(),
+    provideEcommerceI18n(),
     providePrimeNG({
       theme: {
         preset: appTheme,

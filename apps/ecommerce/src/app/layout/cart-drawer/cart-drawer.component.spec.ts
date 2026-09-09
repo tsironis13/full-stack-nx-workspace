@@ -8,6 +8,7 @@ import {
   cartUiEvents,
 } from '../../domains/cart/application/anti-corruption-layer';
 import { CartDrawerComponent } from './cart-drawer.component';
+import { ecommerceTranslocoTestingModule } from '../../core/public-api';
 
 /** Fixture shape aligned with cart line snapshots (layout specs do not import domain barrels). */
 interface CartDrawerLineFixture {
@@ -37,7 +38,7 @@ describe('CartDrawerComponent', () => {
     );
 
     TestBed.configureTestingModule({
-      imports: [CartDrawerComponent],
+      imports: [CartDrawerComponent, ecommerceTranslocoTestingModule()],
       providers: [
         ...provideDispatcher(),
         {

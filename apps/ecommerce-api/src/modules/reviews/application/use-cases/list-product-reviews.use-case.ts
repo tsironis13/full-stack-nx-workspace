@@ -1,7 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 import { ReviewsRepository } from '../../domain/repositories/reviews.repository';
 import { ProductReviewsResponseDto } from '../dto/product-reviews-response.dto';
+import {
+  codedNotFound,
+  MachineMessageCode,
+} from '../../../../shared/machine-message';
 
 export type ListProductReviewsQuery = {
   productId: number;
@@ -18,8 +22,10 @@ export class ListProductReviewsUseCase {
   ): Promise<ProductReviewsResponseDto> {
     const exists = await this.reviewsRepository.productExists(query.productId);
     if (!exists) {
-      throw new NotFoundException(
+      throw codedNotFound(
+        MachineMessageCode.reviewsProductNotFound,
         `Product ${query.productId} not found`,
+        { productId: query.productId },
       );
     }
 

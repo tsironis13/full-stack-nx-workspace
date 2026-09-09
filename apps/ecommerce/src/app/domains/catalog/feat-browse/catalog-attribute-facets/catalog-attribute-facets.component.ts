@@ -7,6 +7,7 @@ import {
 } from '@angular/core';
 
 import type { AttributeFacet } from '../../application/public-api';
+import { TranslocoPipe } from '@jsverse/transloco';
 
 export interface FacetValueChange {
   attributeId: number;
@@ -18,6 +19,7 @@ export interface FacetValueChange {
   templateUrl: './catalog-attribute-facets.component.html',
   styleUrl: './catalog-attribute-facets.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [TranslocoPipe],
 })
 export class CatalogAttributeFacetsComponent {
   readonly facets = input.required<AttributeFacet[]>();

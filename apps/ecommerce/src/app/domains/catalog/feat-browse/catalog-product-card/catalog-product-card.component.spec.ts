@@ -57,7 +57,9 @@ describe('CatalogProductCardComponent', () => {
       reviewCount: 3,
     });
 
-    const ratingEl = fixture.debugElement.query(By.css('.catalog-card__rating'));
+    const ratingEl = fixture.debugElement.query(
+      By.css('.catalog-card__rating'),
+    );
     expect(ratingEl).toBeTruthy();
     expect(ratingEl.nativeElement.textContent).toContain('4.7★');
     expect(ratingEl.nativeElement.textContent).toContain('(3)');
@@ -69,7 +71,9 @@ describe('CatalogProductCardComponent', () => {
   it('hides the star score when the product has no reviews', () => {
     const fixture = createFixture(baseItem);
 
-    const ratingEl = fixture.debugElement.query(By.css('.catalog-card__rating'));
+    const ratingEl = fixture.debugElement.query(
+      By.css('.catalog-card__rating'),
+    );
     expect(ratingEl).toBeNull();
     expect(fixture.nativeElement.textContent).not.toContain('★');
   });

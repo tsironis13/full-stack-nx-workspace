@@ -42,7 +42,7 @@ describe('buildConfirmSurfaceUpdate quantity', () => {
                 max: 8,
               },
             },
-            message: 'Έχετε φτάσει τη μέγιστη ποσότητα (8)',
+            message: 'cartItemWorkflow.quantity.max|{"inventory":8}',
           }),
         ]),
       }),
@@ -50,7 +50,7 @@ describe('buildConfirmSurfaceUpdate quantity', () => {
     expect(hint).toEqual(
       expect.objectContaining({
         component: 'Text',
-        text: 'Διαθέσιμα: 8',
+        text: 'cartItemWorkflow.available|{"inventory":8}',
       }),
     );
     expect(submit).toEqual(

@@ -12,6 +12,7 @@ import { DrawerModule } from 'primeng/drawer';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { CartQuantityControlComponent } from '@full-stack-nx-workspace/shared';
 import { injectDispatch } from '@ngrx/signals/events';
+import { TranslocoPipe } from '@jsverse/transloco';
 
 import {
   CartAclReadAdapter,
@@ -41,6 +42,7 @@ function formatEur(amount: number): string {
     CartQuantityControlComponent,
     CartUnavailableLineAlertComponent,
     CartPriceChangedLineComponent,
+    TranslocoPipe,
   ],
 })
 export class CartDrawerComponent {

@@ -1,11 +1,11 @@
 <div class="cart-page">
-  <h1 class="cart-page__title">Καλάθι αγορών</h1>
+  <h1 class="cart-page__title">{{ 'cart.title' | transloco }}</h1>
 
   @if (store.items().length === 0) {
     <div class="cart-page__empty">
-      <p class="cart-page__empty-text">Το καλάθι σας είναι άδειο.</p>
+      <p class="cart-page__empty-text">{{ 'cart.empty' | transloco }}</p>
       <p-button
-        label="Συνέχεια αγορών"
+        [label]="'cart.continue' | transloco"
         icon="pi pi-arrow-left"
         [routerLink]="['/catalog']"
         severity="secondary"
@@ -13,7 +13,7 @@
     </div>
   } @else {
     <div class="cart-page__with-items">
-    <ul class="cart-page__items" aria-label="Προϊόντα στο καλάθι">
+    <ul class="cart-page__items" [attr.aria-label]="'cart.items' | transloco">
       @for (line of store.items(); track line.mainProductItemId) {
         <li class="cart-item" [class.cart-item--unavailable]="line.available === false">
           @if (store.pendingMainProductItemId() === line.mainProductItemId) {
@@ -22,7 +22,7 @@
               role="status"
               aria-live="polite"
               aria-busy="true"
-              aria-label="Ενημέρωση γραμμής"
+              [attr.aria-label]="'cart.updatingLine' | transloco"
             >
               <p-progress-spinner  strokeWidth="4" styleClass="cart-page__spinner" />
             </div>
@@ -36,7 +36,7 @@
             <img
               class="cart-item__image"
               [src]="line.primaryImageUrl"
-              [alt]="line.name ?? 'Προϊόν'"
+              [alt]="line.name ?? ('cart.productFallback' | transloco)"
               width="80"
               height="80"
             />
@@ -62,7 +62,7 @@
                 [text]="true"
                 severity="danger"
                 size="small"
-                aria-label="Αφαίρεση προϊόντος"
+                [aria-label]="'cart.remove' | transloco"
                 (onClick)="onRemove(line.mainProductItemId)"
               />
             </div>
@@ -76,17 +76,17 @@
 
     <div class="cart-page__summary">
       <p class="cart-page__total">
-        Σύνολο: <strong>{{ formattedSubtotal() }}</strong>
+        {{ 'cart.total' | transloco }}: <strong>{{ formattedSubtotal() }}</strong>
       </p>
       <div class="cart-page__actions">
         <p-button
-          label="Συνέχεια αγορών"
+          [label]="'cart.continue' | transloco"
           icon="pi pi-arrow-left"
           [routerLink]="['/catalog']"
           severity="secondary"
         />
         <p-button
-          label="Προχώρηση στο ταμείο"
+          [label]="'cart.checkout' | transloco"
           icon="pi pi-arrow-right"
           iconPos="right"
           [routerLink]="['/checkout']"

@@ -1,10 +1,4 @@
-import {
-  BadRequestException,
-  ConflictException,
-  ForbiddenException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 import { ReviewsRepository } from '../../domain/repositories/reviews.repository';
 import { VerifiedPurchaseRepository } from '../../domain/repositories/verified-purchase.repository';
@@ -15,6 +9,13 @@ import {
 import type { AuthorProfile } from '../../domain/review.types';
 import { MyReviewResponseDto } from '../dto/my-review-response.dto';
 import { toMyReviewResponse } from '../review-response.mapper';
+import {
+  codedBadRequest,
+  codedConflict,
+  codedForbidden,
+  codedNotFound,
+  MachineMessageCode,
+} from '../../../../shared/machine-message';
 
 export interface SubmitReviewCommand {
   productId: number;
@@ -34,14 +35,21 @@ export class SubmitReviewUseCase {
 
   async execute(command: SubmitReviewCommand): Promise<MyReviewResponseDto> {
     if (!isValidRating(command.rating)) {
-      throw new BadRequestException('Rating must be a whole number from 1 to 5');
+      throw codedBadRequest(
+        MachineMessageCode.reviewsRatingInvalid,
+        'Rating must be a whole number from 1 to 5',
+      );
     }
 
     const productExists = await this.reviewsRepository.productExists(
       command.productId,
     );
     if (!productExists) {
-      throw new NotFoundException(`Product ${command.productId} not found`);
+      throw codedNotFound(
+        MachineMessageCode.reviewsProductNotFound,
+        `Product ${command.productId} not found`,
+        { productId: command.productId },
+      );
     }
 
     const verified = await this.verifiedPurchaseRepository.hasVerifiedPurchase({
@@ -49,7 +57,8 @@ export class SubmitReviewUseCase {
       productId: command.productId,
     });
     if (!verified) {
-      throw new ForbiddenException(
+      throw codedForbidden(
+        MachineMessageCode.reviewsVerifiedPurchaseRequired,
         'A verified purchase is required to review this product',
       );
     }
@@ -63,7 +72,8 @@ export class SubmitReviewUseCase {
 
     if (existing) {
       if (existing.hiddenAt == null) {
-        throw new ConflictException(
+        throw codedConflict(
+          MachineMessageCode.reviewsAlreadyExists,
           'You have already reviewed this product',
         );
       }

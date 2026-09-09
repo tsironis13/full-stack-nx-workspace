@@ -2,7 +2,11 @@
   <a
     class="catalog-card__link"
     [routerLink]="['/products', item().productId]"
-    [attr.aria-label]="'Προβολή ' + (item().name ?? 'προϊόντος')"
+    [attr.aria-label]="
+      'catalog.viewProduct'
+        | transloco
+          : { name: item().name ?? ('catalog.productFallback' | transloco) }
+    "
   >
     <img
       class="catalog-card__img"
@@ -15,13 +19,12 @@
 </div>
 <div class="catalog-card__body">
   <h3 class="catalog-card__name">
-    <a [routerLink]="['/products', item().productId]">{{ item().name ?? '—' }}</a>
+    <a [routerLink]="['/products', item().productId]">{{
+      item().name ?? '—'
+    }}</a>
   </h3>
   @if (hasRating()) {
-    <p
-      class="catalog-card__rating"
-      [attr.aria-label]="ratingAriaLabel()"
-    >
+    <p class="catalog-card__rating" [attr.aria-label]="ratingAriaLabel()">
       <span class="catalog-card__rating-score" aria-hidden="true">
         {{ displayedAverageRating() }}★
       </span>
@@ -39,19 +42,26 @@
   </p>
   @if (item().additionalOptionsCount > 0) {
     <p class="catalog-card__options">
-      +{{ item().additionalOptionsCount }} επιπλέον επιλογές
+      {{
+        'catalog.moreOptions'
+          | transloco: { count: item().additionalOptionsCount }
+      }}
     </p>
   }
   <div
     class="catalog-card__cart"
     role="group"
     [attr.aria-busy]="lineServerMutationPending()"
-    [attr.aria-label]="'Ποσότητα για ' + (item().name ?? 'προϊόν')"
+    [attr.aria-label]="
+      'catalog.quantityFor'
+        | transloco
+          : { name: item().name ?? ('catalog.productFallback' | transloco) }
+    "
   >
     <button
       type="button"
       class="catalog-card__cart-btn catalog-card__cart-btn--minus"
-      aria-label="Μείωση ποσότητας"
+      [attr.aria-label]="'catalog.decreaseQty' | transloco"
       [disabled]="cartQuantity() === 0 || lineServerMutationPending()"
       (click)="onDecrementFromCart()"
     >
@@ -59,7 +69,10 @@
     </button>
     <span class="catalog-card__cart-qty" aria-live="polite" aria-atomic="true">
       @if (lineServerMutationPending()) {
-        <p-progress-spinner  strokeWidth="4" styleClass="catalog-card__qty-spinner" />
+        <p-progress-spinner
+          strokeWidth="4"
+          styleClass="catalog-card__qty-spinner"
+        />
       } @else {
         {{ cartQuantity() }}
       }
@@ -67,7 +80,7 @@
     <button
       type="button"
       class="catalog-card__cart-btn catalog-card__cart-btn--plus"
-      aria-label="Αύξηση ποσότητας"
+      [attr.aria-label]="'catalog.increaseQty' | transloco"
       [disabled]="lineServerMutationPending()"
       (click)="onAddToCart()"
     >

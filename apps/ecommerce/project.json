@@ -72,6 +72,12 @@
         "buildTarget": "ecommerce:build"
       }
     },
+    "i18n-extract": {
+      "command": "transloco-keys-manager extract --project ecommerce"
+    },
+    "i18n-find": {
+      "command": "transloco-keys-manager find --project ecommerce"
+    },
     "lint": {
       "executor": "@nx/eslint:lint"
     },

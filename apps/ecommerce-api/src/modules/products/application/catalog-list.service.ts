@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 import { CatalogRepository } from '../infrastructure/catalog.repository';
 import {
@@ -7,6 +7,10 @@ import {
   CatalogListServiceInput,
 } from '../domain/catalog.types';
 import { CatalogListResponseDto } from './dto/catalog-list-response.dto';
+import {
+  codedBadRequest,
+  MachineMessageCode,
+} from '../../../shared/machine-message';
 
 @Injectable()
 export class CatalogListService {
@@ -27,8 +31,9 @@ export class CatalogListService {
         query.categoryRootId
       );
       if (!ok) {
-        throw new BadRequestException(
-          'categoryRootId must reference an active root category'
+        throw codedBadRequest(
+          MachineMessageCode.catalogCategoryRootInvalid,
+          'categoryRootId must reference an active root category',
         );
       }
     }
@@ -84,8 +89,9 @@ export class CatalogListService {
       return undefined;
     }
     if (!Number.isInteger(raw) || raw < 1 || raw > 5) {
-      throw new BadRequestException(
-        'minRating must be an integer between 1 and 5'
+      throw codedBadRequest(
+        MachineMessageCode.catalogMinRatingInvalid,
+        'minRating must be an integer between 1 and 5',
       );
     }
     return raw;
@@ -103,8 +109,9 @@ export class CatalogListService {
       salePriceMax !== undefined &&
       salePriceMin > salePriceMax
     ) {
-      throw new BadRequestException(
-        'minSalePrice must be less than or equal to maxSalePrice'
+      throw codedBadRequest(
+        MachineMessageCode.catalogPriceRange,
+        'minSalePrice must be less than or equal to maxSalePrice',
       );
     }
 
@@ -121,10 +128,18 @@ export class CatalogListService {
     }
     const n = Number(trimmed);
     if (!Number.isFinite(n)) {
-      throw new BadRequestException(`${queryKey} must be a finite number`);
+      throw codedBadRequest(
+        MachineMessageCode.catalogPriceNotFinite,
+        `${queryKey} must be a finite number`,
+        { queryKey },
+      );
     }
     if (n < 0) {
-      throw new BadRequestException(`${queryKey} must be >= 0`);
+      throw codedBadRequest(
+        MachineMessageCode.catalogPriceNegative,
+        `${queryKey} must be >= 0`,
+        { queryKey },
+      );
     }
     return n;
   }
@@ -145,20 +160,23 @@ export class CatalogListService {
     for (const entry of entries) {
       const parts = entry.split(':');
       if (parts.length !== 2) {
-        throw new BadRequestException(
-          `attributeFilter values must be in "attributeId:valueId" format; got "${entry}"`
+        throw codedBadRequest(
+          MachineMessageCode.catalogAttributeFilterFormat,
+          `attributeFilter values must be in "attributeId:valueId" format; got "${entry}"`,
         );
       }
       const attributeId = parseInt(parts[0], 10);
       const valueId = parseInt(parts[1], 10);
       if (!Number.isFinite(attributeId) || attributeId <= 0) {
-        throw new BadRequestException(
-          `attributeFilter attributeId must be a positive integer; got "${parts[0]}"`
+        throw codedBadRequest(
+          MachineMessageCode.catalogAttributeFilterAttributeId,
+          `attributeFilter attributeId must be a positive integer; got "${parts[0]}"`,
         );
       }
       if (!Number.isFinite(valueId) || valueId <= 0) {
-        throw new BadRequestException(
-          `attributeFilter valueId must be a positive integer; got "${parts[1]}"`
+        throw codedBadRequest(
+          MachineMessageCode.catalogAttributeFilterValueId,
+          `attributeFilter valueId must be a positive integer; got "${parts[1]}"`,
         );
       }
       filters.push({ attributeId, valueId });

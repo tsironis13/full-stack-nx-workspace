@@ -6,6 +6,7 @@ import { By } from '@angular/platform-browser';
 import type { OrderHistoryOrder } from '../application/public-api';
 import { OrderHistoryStore } from '../application/public-api';
 import { OrderHistoryPageComponent } from './order-history.page';
+import { ecommerceTranslocoTestingModule } from '../../../core/public-api';
 
 describe('OrderHistoryPageComponent', () => {
   let loadingSig: WritableSignal<boolean>;
@@ -22,7 +23,7 @@ describe('OrderHistoryPageComponent', () => {
     loadMock = jest.fn();
 
     TestBed.configureTestingModule({
-      imports: [OrderHistoryPageComponent],
+      imports: [OrderHistoryPageComponent, ecommerceTranslocoTestingModule()],
       providers: [
         {
           provide: OrderHistoryStore,

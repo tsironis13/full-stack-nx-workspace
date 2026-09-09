@@ -1,5 +1,5 @@
 <div class="checkout-page">
-  <h1 class="checkout-page__title">Ολοκλήρωση παραγγελίας</h1>
+  <h1 class="checkout-page__title">{{ 'checkout.title' | transloco }}</h1>
 
   <div class="checkout-page__layout">
     <!-- Left column: forms -->
@@ -13,11 +13,11 @@
       @if (!isAuthenticated()) {
         <section class="checkout-section" aria-labelledby="guest-email-heading">
           <h2 class="checkout-section__title" id="guest-email-heading">
-            Στοιχεία επικοινωνίας
+            {{ 'checkout.contact' | transloco }}
           </h2>
           <div class="form-field">
             <label class="form-field__label" for="guestEmail">
-              Email <span aria-hidden="true">*</span>
+              {{ 'checkout.email' | transloco }} <span aria-hidden="true">*</span>
             </label>
             <input
               pInputText
@@ -29,9 +29,9 @@
               aria-required="true"
             />
             @if (form.get('guestEmail')?.errors?.['required'] && form.get('guestEmail')?.touched) {
-              <span class="form-field__error" role="alert">Το email είναι υποχρεωτικό.</span>
+              <span class="form-field__error" role="alert">{{ 'checkout.emailRequired' | transloco }}</span>
             } @else if (form.get('guestEmail')?.errors?.['email'] && form.get('guestEmail')?.touched) {
-              <span class="form-field__error" role="alert">Πληκτρολογήστε έγκυρη διεύθυνση email.</span>
+              <span class="form-field__error" role="alert">{{ 'checkout.emailInvalid' | transloco }}</span>
             }
           </div>
         </section>
@@ -44,12 +44,12 @@
         formGroupName="shippingAddress"
       >
         <h2 class="checkout-section__title" id="shipping-heading">
-          Διεύθυνση αποστολής
+            {{ 'checkout.shipping' | transloco }}
         </h2>
 
         <div class="form-field">
           <label class="form-field__label" for="fullName">
-            Ονοματεπώνυμο <span aria-hidden="true">*</span>
+            {{ 'checkout.fullName' | transloco }} <span aria-hidden="true">*</span>
           </label>
           <input
             pInputText
@@ -61,13 +61,13 @@
             aria-required="true"
           />
           @if (form.get('shippingAddress.fullName')?.errors?.['required'] && form.get('shippingAddress.fullName')?.touched) {
-            <span class="form-field__error" role="alert">Το ονοματεπώνυμο είναι υποχρεωτικό.</span>
+            <span class="form-field__error" role="alert">{{ 'checkout.fullNameRequired' | transloco }}</span>
           }
         </div>
 
         <div class="form-field">
           <label class="form-field__label" for="streetAddress">
-            Διεύθυνση <span aria-hidden="true">*</span>
+            {{ 'checkout.address' | transloco }} <span aria-hidden="true">*</span>
           </label>
           <input
             pInputText
@@ -79,13 +79,13 @@
             aria-required="true"
           />
           @if (form.get('shippingAddress.streetAddress')?.errors?.['required'] && form.get('shippingAddress.streetAddress')?.touched) {
-            <span class="form-field__error" role="alert">Η διεύθυνση είναι υποχρεωτική.</span>
+            <span class="form-field__error" role="alert">{{ 'checkout.addressRequired' | transloco }}</span>
           }
         </div>
 
         <div class="form-field">
           <label class="form-field__label" for="addressLine2">
-            Διεύθυνση (γραμμή 2)
+            {{ 'checkout.addressLine2' | transloco }}
           </label>
           <input
             pInputText
@@ -99,7 +99,7 @@
         <div class="form-row">
           <div class="form-field">
             <label class="form-field__label" for="city">
-              Πόλη <span aria-hidden="true">*</span>
+              {{ 'checkout.city' | transloco }} <span aria-hidden="true">*</span>
             </label>
             <input
               pInputText
@@ -111,13 +111,13 @@
               aria-required="true"
             />
             @if (form.get('shippingAddress.city')?.errors?.['required'] && form.get('shippingAddress.city')?.touched) {
-              <span class="form-field__error" role="alert">Η πόλη είναι υποχρεωτική.</span>
+              <span class="form-field__error" role="alert">{{ 'checkout.cityRequired' | transloco }}</span>
             }
           </div>
 
           <div class="form-field">
             <label class="form-field__label" for="postalCode">
-              ΤΚ <span aria-hidden="true">*</span>
+              {{ 'checkout.postalCode' | transloco }} <span aria-hidden="true">*</span>
             </label>
             <input
               pInputText
@@ -129,14 +129,14 @@
               aria-required="true"
             />
             @if (form.get('shippingAddress.postalCode')?.errors?.['required'] && form.get('shippingAddress.postalCode')?.touched) {
-              <span class="form-field__error" role="alert">Ο ΤΚ είναι υποχρεωτικός.</span>
+              <span class="form-field__error" role="alert">{{ 'checkout.postalCodeRequired' | transloco }}</span>
             }
           </div>
         </div>
 
         <div class="form-field">
           <label class="form-field__label" for="country">
-            Χώρα <span aria-hidden="true">*</span>
+            {{ 'checkout.country' | transloco }} <span aria-hidden="true">*</span>
           </label>
           <input
             pInputText
@@ -148,13 +148,13 @@
             aria-required="true"
           />
           @if (form.get('shippingAddress.country')?.errors?.['required'] && form.get('shippingAddress.country')?.touched) {
-            <span class="form-field__error" role="alert">Η χώρα είναι υποχρεωτική.</span>
+            <span class="form-field__error" role="alert">{{ 'checkout.countryRequired' | transloco }}</span>
           }
         </div>
 
         <div class="form-field">
           <label class="form-field__label" for="phone">
-            Τηλέφωνο <span aria-hidden="true">*</span>
+            {{ 'checkout.phone' | transloco }} <span aria-hidden="true">*</span>
           </label>
           <input
             pInputText
@@ -166,7 +166,7 @@
             aria-required="true"
           />
           @if (form.get('shippingAddress.phone')?.errors?.['required'] && form.get('shippingAddress.phone')?.touched) {
-            <span class="form-field__error" role="alert">Το τηλέφωνο είναι υποχρεωτικό.</span>
+            <span class="form-field__error" role="alert">{{ 'checkout.phoneRequired' | transloco }}</span>
           }
         </div>
       </section>
@@ -178,14 +178,14 @@
         formGroupName="payment"
       >
         <h2 class="checkout-section__title" id="payment-heading">
-          Στοιχεία πληρωμής
+          {{ 'checkout.payment' | transloco }}
         </h2>
         <p class="checkout-section__note">
-          Δοκιμαστική εφαρμογή — δεν απαιτείται πραγματική κάρτα.
+          {{ 'checkout.paymentNote' | transloco }}
         </p>
 
         <div class="form-field">
-          <label class="form-field__label" for="cardNumber">Αριθμός κάρτας</label>
+          <label class="form-field__label" for="cardNumber">{{ 'checkout.cardNumber' | transloco }}</label>
           <input
             pInputText
             id="cardNumber"
@@ -198,18 +198,18 @@
 
         <div class="form-row">
           <div class="form-field">
-            <label class="form-field__label" for="expiry">Λήξη</label>
+            <label class="form-field__label" for="expiry">{{ 'checkout.expiry' | transloco }}</label>
             <input
               pInputText
               id="expiry"
               type="text"
               formControlName="expiry"
               autocomplete="cc-exp"
-              placeholder="ΜΜ/ΕΕ"
+              [placeholder]="'checkout.expiryPlaceholder' | transloco"
             />
           </div>
           <div class="form-field">
-            <label class="form-field__label" for="cvv">CVV</label>
+            <label class="form-field__label" for="cvv">{{ 'checkout.cvv' | transloco }}</label>
             <input
               pInputText
               id="cvv"
@@ -226,14 +226,14 @@
       @if (status() === 'error') {
         <p-message
           severity="error"          
-        >Παρουσιάστηκε σφάλμα. Παρακαλώ δοκιμάστε ξανά.</p-message>
+        >{{ error() ? (error()! | transloco) : ('errors.generic' | transloco) }}</p-message>
       }
 
       <!-- Submit -->
       <div class="checkout-page__actions">
         <p-button
           type="submit"
-          label="Ολοκλήρωση παραγγελίας"
+          [label]="'checkout.placeOrder' | transloco"
           icon="pi pi-check"
           iconPos="right"
           [loading]="isSubmitting()"
@@ -244,13 +244,13 @@
     </form>
 
     <!-- Right column: order summary -->
-    <aside class="checkout-summary" aria-label="Σύνοψη παραγγελίας">
-      <h2 class="checkout-section__title">Σύνοψη παραγγελίας</h2>
+    <aside class="checkout-summary" [attr.aria-label]="'checkout.summaryAria' | transloco">
+      <h2 class="checkout-section__title">{{ 'checkout.summary' | transloco }}</h2>
 
       @if (cartItems().length === 0) {
-        <p class="checkout-summary__empty">Το καλάθι είναι άδειο.</p>
+        <p class="checkout-summary__empty">{{ 'checkout.emptyCart' | transloco }}</p>
       } @else {
-        <ul class="checkout-summary__items" aria-label="Προϊόντα">
+        <ul class="checkout-summary__items" [attr.aria-label]="'checkout.products' | transloco">
           @for (line of cartItems(); track line.mainProductItemId) {
             <li class="checkout-summary__item">
               <span class="checkout-summary__item-name">
@@ -265,7 +265,7 @@
         </ul>
 
         <div class="checkout-summary__total">
-          <span>Σύνολο</span>
+          <span>{{ 'checkout.total' | transloco }}</span>
           <strong>{{ formatEur(cartSubtotal()) }}</strong>
         </div>
       }

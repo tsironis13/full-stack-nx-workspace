@@ -27,6 +27,7 @@
     "@angular/router": "22.1.0",
     "@copilotkit/angular": "^0.4.0",
     "@genkit-ai/compat-oai": "^1.25.0",
+    "@jsverse/transloco": "^9.0.0-alpha.1",
     "@knaadh/nestjs-drizzle-postgres": "^1.2.0",
     "@mastra/core": "^1.63.2",
     "@mastra/libsql": "^1.22.2",

@@ -5,30 +5,30 @@
         <i class="pi pi-check-circle"></i>
       </div>
 
-      <h1 class="confirmation-page__title">Η παραγγελία σας καταχωρήθηκε!</h1>
+      <h1 class="confirmation-page__title">{{ 'checkout.confirmationTitle' | transloco }}</h1>
       <p class="confirmation-page__subtitle">
-        Σας ευχαριστούμε για την αγορά σας. Θα λάβετε επιβεβαίωση σύντομα.
+        {{ 'checkout.confirmationSubtitle' | transloco }}
       </p>
 
       <div class="confirmation-page__details">
         <div class="confirmation-detail">
-          <span class="confirmation-detail__label">Αριθμός παραγγελίας</span>
+          <span class="confirmation-detail__label">{{ 'checkout.orderNumber' | transloco }}</span>
           <strong class="confirmation-detail__value">#{{ confirmedOrder()!.orderId }}</strong>
         </div>
         <div class="confirmation-detail">
-          <span class="confirmation-detail__label">Κατάσταση</span>
+          <span class="confirmation-detail__label">{{ 'checkout.status' | transloco }}</span>
           <strong class="confirmation-detail__value confirmation-detail__value--confirmed">
-            Επιβεβαιωμένη
+            {{ 'checkout.confirmed' | transloco }}
           </strong>
         </div>
         <div class="confirmation-detail">
-          <span class="confirmation-detail__label">Σύνολο</span>
+          <span class="confirmation-detail__label">{{ 'checkout.total' | transloco }}</span>
           <strong class="confirmation-detail__value">
             {{ formatEur(confirmedOrder()!.totalAmount) }}
           </strong>
         </div>
         <div class="confirmation-detail">
-          <span class="confirmation-detail__label">Ημερομηνία</span>
+          <span class="confirmation-detail__label">{{ 'checkout.date' | transloco }}</span>
           <span class="confirmation-detail__value">
             {{ formatDate(confirmedOrder()!.createdAt) }}
           </span>
@@ -37,14 +37,14 @@
 
       @if (confirmedGuestEmail()) {
         <div class="confirmation-page__section">
-          <h2 class="confirmation-page__section-title">Email επικοινωνίας</h2>
+          <h2 class="confirmation-page__section-title">{{ 'checkout.contactEmail' | transloco }}</h2>
           <p class="confirmation-guest-email">{{ confirmedGuestEmail() }}</p>
         </div>
       }
 
       @if (confirmedItems()?.length) {
         <div class="confirmation-page__section">
-          <h2 class="confirmation-page__section-title">Προϊόντα παραγγελίας</h2>
+          <h2 class="confirmation-page__section-title">{{ 'checkout.orderProducts' | transloco }}</h2>
           <ul class="confirmation-items" role="list">
             @for (item of confirmedItems(); track $index) {
               <li class="confirmation-item">
@@ -61,7 +61,7 @@
 
       @if (confirmedShippingAddress()) {
         <div class="confirmation-page__section">
-          <h2 class="confirmation-page__section-title">Διεύθυνση αποστολής</h2>
+          <h2 class="confirmation-page__section-title">{{ 'checkout.shipping' | transloco }}</h2>
           <address class="confirmation-address">
             <span>{{ confirmedShippingAddress()!.fullName }}</span>
             <span>{{ confirmedShippingAddress()!.streetAddress }}</span>
@@ -77,7 +77,7 @@
 
       <div class="confirmation-page__actions">
         <p-button
-          label="Συνέχεια αγορών"
+          [label]="'cart.continue' | transloco"
           icon="pi pi-arrow-left"
           severity="secondary"
           [routerLink]="['/catalog']"

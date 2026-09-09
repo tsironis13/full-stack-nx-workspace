@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+
+import {
+  codedBadRequest,
+  MachineMessageCode,
+} from '../../../../shared/machine-message';
 
 import { CartRepository } from '../../domain/repositories/cart.repository';
 import { CartResponseDto } from '../dto/cart-response.dto';
@@ -15,7 +20,10 @@ export class UpdateCartItemUseCase {
 
   async execute(command: UpdateCartItemCommand): Promise<CartResponseDto> {
     if (command.quantity < 1) {
-      throw new BadRequestException('Quantity must be at least 1');
+      throw codedBadRequest(
+        MachineMessageCode.cartQuantityMin,
+        'Quantity must be at least 1',
+      );
     }
 
     const cart = await this.cartRepository.updateItemQuantity({

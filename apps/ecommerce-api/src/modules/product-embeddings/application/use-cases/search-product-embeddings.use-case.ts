@@ -4,7 +4,7 @@
  * recommendation projections. Storefront catalog v1 still searches
  * `products.name` only.
  */
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 import { EmbeddingClient } from '../../domain/embedding-client';
 import type { ProductRecommendationProjection } from '../../domain/product-embedding.types';
@@ -12,6 +12,10 @@ import { ProductRecommendationProjectionBuilder } from '../../domain/product-rec
 import { formatEcommerceSearchQuery } from '../../domain/qwen3-embedding.instructions';
 import { ProductEmbeddingSourceRepository } from '../../domain/repositories/product-embedding-source.repository';
 import { ProductEmbeddingsRepository } from '../../domain/repositories/product-embeddings.repository';
+import {
+  codedBadRequest,
+  MachineMessageCode,
+} from '../../../../shared/machine-message';
 
 const DEFAULT_LIMIT = 8;
 const MAX_LIMIT = 20;
@@ -32,7 +36,10 @@ export class SearchProductEmbeddingsUseCase {
   }): Promise<ProductRecommendationProjection[]> {
     const query = params.query.trim();
     if (!query) {
-      throw new BadRequestException('Search query must not be empty');
+      throw codedBadRequest(
+        MachineMessageCode.searchQueryEmpty,
+        'Search query must not be empty',
+      );
     }
 
     const limit = Math.min(

@@ -1,17 +1,17 @@
 <div class="product-detail">
   <nav class="product-detail__nav">
-    <a routerLink="/catalog">Επιστροφή στον κατάλογο</a>
+    <a routerLink="/catalog">{{ 'product.back' | transloco }}</a>
   </nav>
 
   <header class="product-detail__header">
-    <h1 class="product-detail__title">Προϊόν</h1>
+    <h1 class="product-detail__title">{{ 'product.title' | transloco }}</h1>
   </header>
 
   <section
     class="product-detail__reviews"
     aria-labelledby="product-reviews-heading"
   >
-    <h2 id="product-reviews-heading">Κριτικές</h2>
+    <h2 id="product-reviews-heading">{{ 'product.reviews' | transloco }}</h2>
 
     @if (store.loading()) {
     <div class="product-detail__state" role="status" aria-live="polite">
@@ -19,20 +19,20 @@
         aria-hidden="true"
         styleClass="product-detail__spinner"
       />
-      <span>Φόρτωση κριτικών…</span>
+      <span>{{ 'product.loadingReviews' | transloco }}</span>
     </div>
     } @else if (store.error()) {
     <div
       class="product-detail__state product-detail__state--error"
       role="alert"
     >
-      <p>Δεν ήταν δυνατή η φόρτωση των κριτικών. Δοκιμάστε ξανά.</p>
+      <p>{{ 'product.reviewsLoadError' | transloco }}</p>
       <button
         type="button"
         class="product-detail__btn"
         (click)="store.load(+id())"
       >
-        Επανάληψη
+        {{ 'product.retry' | transloco }}
       </button>
     </div>
     } @else if (store.data(); as reviews) { @if (store.hasReviews()) {
@@ -41,12 +41,12 @@
         {{ store.displayedAverageRating() }}★
       </span>
       <span class="product-detail__aggregate-count">
-        {{ reviews.reviewCount }} κριτικές
+        {{ 'product.reviewCount' | transloco: { count: reviews.reviewCount } }}
       </span>
     </div>
     } @else {
     <p class="product-detail__empty" role="status">
-      Δεν υπάρχουν κριτικές ακόμα
+      {{ 'product.noReviews' | transloco }}
     </p>
     } @if (reviews.items.length > 0) {
     <ul class="product-detail__review-list">
@@ -101,16 +101,15 @@
     class="product-detail__write"
     aria-labelledby="product-review-write-heading"
   >
-    <h2 id="product-review-write-heading">Η κριτική σου</h2>
+    <h2 id="product-review-write-heading">{{ 'product.writeHeading' | transloco }}</h2>
 
     @if (!auth.isAuthenticated()) {
     <p class="product-detail__gate" role="status">
-      <a routerLink="/auth/login">Συνδέσου</a> για να γράψεις κριτική για αυτό
-      το προϊόν.
+      <a routerLink="/auth/login">{{ 'product.signInToReview' | transloco }}</a>{{ 'product.signInToReviewRest' | transloco }}
     </p>
     } @else if (submission.notEligible()) {
     <p class="product-detail__gate" role="status">
-      Μόνο όσοι έχουν αγοράσει αυτό το προϊόν μπορούν να γράψουν κριτική.
+      {{ 'product.notEligible' | transloco }}
     </p>
     } @else if (submission.myReview(); as myReview) { @if (!editing()) {
     <div class="product-detail__my-review">
@@ -141,7 +140,7 @@
           [disabled]="submission.saving()"
           (click)="startEdit()"
         >
-          Επεξεργασία
+          {{ 'product.edit' | transloco }}
         </button>
         <button
           type="button"
@@ -149,7 +148,7 @@
           [disabled]="submission.saving()"
           (click)="deleteReview()"
         >
-          Διαγραφή
+          {{ 'product.delete' | transloco }}
         </button>
       </div>
     </div>
@@ -159,7 +158,7 @@
     <ng-container [ngTemplateOutlet]="reviewFormTpl" />
     } @if (submission.error()) {
     <p class="product-detail__write-error" role="alert">
-      Κάτι πήγε στραβά. Δοκιμάστε ξανά.
+      {{ 'product.genericError' | transloco }}
     </p>
     }
   </section>
@@ -171,7 +170,7 @@
       (ngSubmit)="editing() ? saveEdit() : submitReview()"
     >
       <fieldset class="product-detail__form-rating">
-        <legend>Βαθμολογία *</legend>
+        <legend>{{ 'product.ratingLegend' | transloco }}</legend>
         <div class="product-detail__rating-stars">
           @for (star of stars(); track star) {
           <button
@@ -188,18 +187,18 @@
         </div>
         @if (isRatingInvalid()) {
         <p class="product-detail__field-error" role="alert">
-          Επίλεξε βαθμολογία από 1 έως 5 αστέρια.
+          {{ 'product.ratingRequired' | transloco }}
         </p>
         }
       </fieldset>
 
       <label class="product-detail__form-field">
-        <span>Τίτλος</span>
+        <span>{{ 'product.titleLabel' | transloco }}</span>
         <input type="text" formControlName="title" maxlength="120" />
       </label>
 
       <label class="product-detail__form-field">
-        <span>Σχόλιο</span>
+        <span>{{ 'product.bodyLabel' | transloco }}</span>
         <textarea formControlName="body" rows="4" maxlength="2000"></textarea>
       </label>
 
@@ -209,7 +208,7 @@
           class="product-detail__btn product-detail__btn--primary"
           [disabled]="submission.saving()"
         >
-          {{ editing() ? 'Αποθήκευση' : 'Υποβολή κριτικής' }}
+          {{ (editing() ? 'product.save' : 'product.submit') | transloco }}
         </button>
         @if (editing()) {
         <button
@@ -218,7 +217,7 @@
           [disabled]="submission.saving()"
           (click)="cancelEdit()"
         >
-          Ακύρωση
+          {{ 'product.cancel' | transloco }}
         </button>
         }
       </div>

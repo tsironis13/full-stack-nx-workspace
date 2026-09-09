@@ -1,6 +1,8 @@
 <div class="catalog-browse__toolbar">
   <div class="catalog-browse__field catalog-browse__field--search">
-    <label class="catalog-browse__label" for="catalog-search">Αναζήτηση ονόματος</label>
+    <label class="catalog-browse__label" for="catalog-search">{{
+      'catalog.searchLabel' | transloco
+    }}</label>
     <div class="catalog-browse__search-row">
       <input
         id="catalog-search"
@@ -9,15 +11,17 @@
         [ngModel]="searchDraft()"
         (ngModelChange)="searchDraft.set($event)"
         (keydown.enter)="onApply()"
-        placeholder="Onoma proiontos"
+        [placeholder]="'catalog.searchPlaceholder' | transloco"
       />
       <button type="button" class="catalog-browse__btn" (click)="onApply()">
-        Εφαρμογή
+        {{ 'catalog.apply' | transloco }}
       </button>
     </div>
   </div>
   <div class="catalog-browse__field">
-    <label class="catalog-browse__label" for="catalog-sort">Ταξινόμηση</label>
+    <label class="catalog-browse__label" for="catalog-sort">{{
+      'catalog.sortLabel' | transloco
+    }}</label>
     <select
       id="catalog-sort"
       class="catalog-browse__select"
@@ -25,7 +29,7 @@
       (ngModelChange)="sortChanged.emit($event)"
     >
       @for (opt of sortOptions(); track opt.value) {
-        <option [ngValue]="opt.value">{{ opt.label }}</option>
+        <option [ngValue]="opt.value">{{ opt.labelKey | transloco }}</option>
       }
     </select>
   </div>

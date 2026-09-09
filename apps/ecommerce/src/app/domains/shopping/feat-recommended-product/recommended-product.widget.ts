@@ -6,6 +6,7 @@ import {
   input,
 } from '@angular/core';
 import { type AngularToolCall, type ToolRenderer } from '@copilotkit/angular';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { z } from 'zod';
 
 import { createFrontendTool } from '@full-stack-nx-workspace/shared';
@@ -31,7 +32,7 @@ type RecommendedProductWidgetArgs = z.infer<
 @Component({
   selector: 'app-recommended-product-widget',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CurrencyPipe],
+  imports: [CurrencyPipe, TranslocoPipe],
   templateUrl: './recommended-product.widget.html',
   styleUrl: './recommended-product.widget.scss',
 })

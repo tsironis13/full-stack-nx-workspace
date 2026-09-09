@@ -1,13 +1,16 @@
 import {
-  BadRequestException,
   Injectable,
-  NotFoundException,
 } from '@nestjs/common';
 
 import { OrdersRepository } from '../../domain/repositories/orders.repository';
 import { PlaceOrderResponseDto } from '../dto/place-order-response.dto';
 import { ProductItemsRepository } from '../../domain/repositories/product-items.repository';
 import { ClearCartUseCase } from '../../../cart/application/use-cases/clear-cart.use-case';
+import {
+  codedBadRequest,
+  codedNotFound,
+  MachineMessageCode,
+} from '../../../../shared/machine-message';
 
 export interface PlaceOrderCommand {
   userId: string | null;
@@ -44,8 +47,10 @@ export class PlaceOrderUseCase {
         (p) => Number(p.id) === requestedItem.productItemId,
       );
       if (!found) {
-        throw new NotFoundException(
+        throw codedNotFound(
+          MachineMessageCode.productItemNotFound,
           `Product item ${requestedItem.productItemId} not found`,
+          { productItemId: requestedItem.productItemId },
         );
       }
     }
@@ -99,13 +104,15 @@ export class PlaceOrderUseCase {
     const hasGuest = !!guestEmail;
 
     if (!hasUser && !hasGuest) {
-      throw new BadRequestException(
+      throw codedBadRequest(
+        MachineMessageCode.ordersIdentityMissing,
         'Either userId or guestEmail must be provided',
       );
     }
 
     if (hasUser && hasGuest) {
-      throw new BadRequestException(
+      throw codedBadRequest(
+        MachineMessageCode.ordersIdentityConflict,
         'Only one of userId or guestEmail may be set — not both',
       );
     }

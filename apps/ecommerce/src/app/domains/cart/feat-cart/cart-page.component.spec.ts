@@ -5,6 +5,7 @@ import { By } from '@angular/platform-browser';
 
 import { CartStore } from '../application/public-api';
 import { CartPageComponent } from './cart-page.component';
+import { ecommerceTranslocoTestingModule } from '../../../core/public-api';
 
 /** Snapshot fields the cart page template reads (keeps specs free of domain barrels). */
 interface CartPageLineFixture {
@@ -32,7 +33,7 @@ describe('CartPageComponent', () => {
     removeLine = jest.fn();
 
     TestBed.configureTestingModule({
-      imports: [CartPageComponent],
+      imports: [CartPageComponent, ecommerceTranslocoTestingModule()],
       providers: [
         {
           provide: CartStore,

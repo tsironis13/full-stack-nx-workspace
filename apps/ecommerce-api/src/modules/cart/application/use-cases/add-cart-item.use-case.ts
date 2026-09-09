@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+
+import {
+  codedNotFound,
+  MachineMessageCode,
+} from '../../../../shared/machine-message';
 
 import { CartRepository } from '../../domain/repositories/cart.repository';
 import { CartResponseDto } from '../dto/cart-response.dto';
@@ -31,8 +36,10 @@ export class AddCartItemUseCase {
     const snapshot = await this.snapshotProvider.findById(command.productItemId);
 
     if (!snapshot) {
-      throw new NotFoundException(
+      throw codedNotFound(
+        MachineMessageCode.productItemNotFound,
         `Product item ${command.productItemId} not found`,
+        { productItemId: command.productItemId },
       );
     }
 
