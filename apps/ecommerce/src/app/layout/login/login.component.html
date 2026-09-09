@@ -1,43 +1,43 @@
 <div class="flex flex-col md:flex-row justify-center">
-  <p-card
-    class="w-full md:w-3/12 flex flex-col items-center justify-center gap-3 mt-10"
-  >
-    <div class="flex flex-col gap-6">
-      <p-floatlabel variant="on">
-        <input
-          pInputText
-          id="email"
-          [formField]="loginForm.email"
-          type="text"
-          autocomplete="off"
-          class="w-full"
-        />
-        <label for="email">{{ 'login.email' | transloco }}</label>
-      </p-floatlabel>
-
-      <div class="flex flex-col gap-2">
-        <p-floatlabel variant="on">
+  <lib-card class="w-full md:w-3/12 mt-10">
+    <ng-template libCardBody>
+      <form class="flex flex-col gap-6 p-4" (submit)="$event.preventDefault(); login()">
+        <lib-field
+          [label]="'login.email' | transloco"
+          controlId="login-email"
+          [error]="emailError() | transloco"
+        >
           <input
-            pInputText
-            id="password"
-            [formField]="loginForm.password"
-            type="password"
-            autocomplete="off"
-            class="w-full"
+            libInput
+            type="email"
+            autocomplete="username"
+            [formField]="loginForm.email"
           />
-          <label for="password">{{ 'login.password' | transloco }}</label>
-        </p-floatlabel>
-      </div>
-      <div class="flex">
-        <p-button
-          [label]="'login.submit' | transloco"
+        </lib-field>
+
+        <lib-field
+          [label]="'login.password' | transloco"
+          controlId="login-password"
+          [error]="passwordError() | transloco"
+        >
+          <input
+            libInput
+            type="password"
+            autocomplete="current-password"
+            [formField]="loginForm.password"
+          />
+        </lib-field>
+
+        <button
+          libButton
           type="submit"
-          [disabled]="loginForm().invalid()"
-          (click)="login()"
-          icon="pi pi-user"
           class="w-full"
-        />
-      </div>
-    </div>
-  </p-card>
+          [disabled]="loginForm().invalid()"
+        >
+          <i class="pi pi-user" aria-hidden="true"></i>
+          {{ 'login.submit' | transloco }}
+        </button>
+      </form>
+    </ng-template>
+  </lib-card>
 </div>

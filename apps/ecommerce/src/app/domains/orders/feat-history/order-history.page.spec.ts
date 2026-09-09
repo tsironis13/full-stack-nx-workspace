@@ -3,10 +3,10 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { By } from '@angular/platform-browser';
 
+import { ecommerceTranslocoTestingModule } from '../../../core/public-api';
 import type { OrderHistoryOrder } from '../application/public-api';
 import { OrderHistoryStore } from '../application/public-api';
 import { OrderHistoryPageComponent } from './order-history.page';
-import { ecommerceTranslocoTestingModule } from '../../../core/public-api';
 
 describe('OrderHistoryPageComponent', () => {
   let loadingSig: WritableSignal<boolean>;
@@ -23,8 +23,9 @@ describe('OrderHistoryPageComponent', () => {
     loadMock = jest.fn();
 
     TestBed.configureTestingModule({
-      imports: [OrderHistoryPageComponent, ecommerceTranslocoTestingModule()],
+      imports: [OrderHistoryPageComponent],
       providers: [
+        ecommerceTranslocoTestingModule(),
         {
           provide: OrderHistoryStore,
           useValue: {
@@ -90,7 +91,9 @@ describe('OrderHistoryPageComponent', () => {
     ordersSig.set([buildOrder()]);
 
     const fixture = createFixture();
-    const cta = fixture.debugElement.query(By.css('.order-history__review-cta'));
+    const cta = fixture.debugElement.query(
+      By.css('.order-history__review-cta'),
+    );
 
     expect(cta).toBeTruthy();
     expect(cta.nativeElement.textContent).toContain('Γράψε κριτική');
@@ -117,7 +120,9 @@ describe('OrderHistoryPageComponent', () => {
     ]);
 
     const fixture = createFixture();
-    const cta = fixture.debugElement.query(By.css('.order-history__review-cta'));
+    const cta = fixture.debugElement.query(
+      By.css('.order-history__review-cta'),
+    );
 
     expect(cta.nativeElement.textContent).toContain('Επεξεργασία κριτικής');
   });

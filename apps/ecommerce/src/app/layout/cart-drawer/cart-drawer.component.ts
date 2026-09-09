@@ -1,18 +1,13 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  model,
-} from '@angular/core';
+import { Component, computed, inject, model } from '@angular/core';
 import { Router } from '@angular/router';
-
-import { ButtonModule } from 'primeng/button';
-import { DrawerModule } from 'primeng/drawer';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { injectDispatch } from '@ngrx/signals/events';
 import { TranslocoPipe } from '@jsverse/transloco';
 
+import {
+  ButtonDirective,
+  DrawerComponent,
+  SpinnerComponent,
+} from '@full-stack-nx-workspace/shared';
 import {
   CartAclReadAdapter,
   cartUiEvents,
@@ -34,11 +29,10 @@ function formatEur(amount: number): string {
   selector: 'app-cart-drawer',
   templateUrl: './cart-drawer.component.html',
   styleUrl: './cart-drawer.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    DrawerModule,
-    ButtonModule,
-    ProgressSpinnerModule,
+    DrawerComponent,
+    ButtonDirective,
+    SpinnerComponent,
     CartQuantityControlComponent,
     CartUnavailableLineAlertComponent,
     CartPriceChangedLineComponent,

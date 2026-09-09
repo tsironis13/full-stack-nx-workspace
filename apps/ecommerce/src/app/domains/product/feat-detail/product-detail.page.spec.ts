@@ -10,8 +10,8 @@ import {
   ProductDetailStore,
   ReviewSubmissionStore,
 } from '../application/public-api';
-import { ProductDetailPageComponent } from './product-detail.page';
 import { ecommerceTranslocoTestingModule } from '../../../core/public-api';
+import { ProductDetailPageComponent } from './product-detail.page';
 
 describe('ProductDetailPageComponent', () => {
   let loadingSig: WritableSignal<boolean>;
@@ -50,8 +50,9 @@ describe('ProductDetailPageComponent', () => {
     loadMineMock = jest.fn();
 
     TestBed.configureTestingModule({
-      imports: [ProductDetailPageComponent, ecommerceTranslocoTestingModule()],
+      imports: [ProductDetailPageComponent],
       providers: [
+        ecommerceTranslocoTestingModule(),
         {
           provide: ProductDetailStore,
           useValue: {
@@ -112,7 +113,9 @@ describe('ProductDetailPageComponent', () => {
     hasReviewsSig.set(false);
 
     const fixture = createFixture();
-    const emptyEl = fixture.debugElement.query(By.css('.product-detail__empty'));
+    const emptyEl = fixture.debugElement.query(
+      By.css('.product-detail__empty'),
+    );
     expect(emptyEl).toBeTruthy();
     expect(emptyEl.nativeElement.textContent).toContain(
       'Δεν υπάρχουν κριτικές ακόμα',
@@ -149,7 +152,9 @@ describe('ProductDetailPageComponent', () => {
     displayedAverageSig.set('4.5');
 
     const fixture = createFixture();
-    const reviews = fixture.debugElement.queryAll(By.css('.product-detail__review'));
+    const reviews = fixture.debugElement.queryAll(
+      By.css('.product-detail__review'),
+    );
     expect(reviews).toHaveLength(2);
     expect(fixture.nativeElement.textContent).toContain('Kate R.');
     expect(fixture.nativeElement.textContent).toContain('Verified buyer');
@@ -160,9 +165,9 @@ describe('ProductDetailPageComponent', () => {
       starOnlyReview.query(By.css('.product-detail__review-body')),
     ).toBeNull();
     expect(
-      starOnlyReview
-        .query(By.css('.product-detail__review-stars'))
-        ?.attributes['aria-label'],
+      starOnlyReview.query(By.css('.product-detail__review-stars'))?.attributes[
+        'aria-label'
+      ],
     ).toBe('4 από 5 αστέρια');
   });
 

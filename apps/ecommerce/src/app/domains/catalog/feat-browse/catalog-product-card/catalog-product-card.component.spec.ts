@@ -4,6 +4,7 @@ import { provideRouter } from '@angular/router';
 import { By } from '@angular/platform-browser';
 import { provideDispatcher } from '@ngrx/signals/events';
 
+import { ecommerceTranslocoTestingModule } from '../../../../core/public-api';
 import { CartAclReadAdapter } from '../../application/public-api';
 import type { CatalogListItem } from '../../application/public-api';
 import { CatalogProductCardComponent } from './catalog-product-card.component';
@@ -17,6 +18,7 @@ describe('CatalogProductCardComponent', () => {
     TestBed.configureTestingModule({
       imports: [CatalogProductCardComponent],
       providers: [
+        ecommerceTranslocoTestingModule(),
         ...provideDispatcher(),
         {
           provide: CartAclReadAdapter,

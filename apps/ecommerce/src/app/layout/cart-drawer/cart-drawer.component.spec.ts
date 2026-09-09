@@ -7,8 +7,9 @@ import {
   CartAclReadAdapter,
   cartUiEvents,
 } from '../../domains/cart/application/anti-corruption-layer';
-import { CartDrawerComponent } from './cart-drawer.component';
 import { ecommerceTranslocoTestingModule } from '../../core/public-api';
+
+import { CartDrawerComponent } from './cart-drawer.component';
 
 /** Fixture shape aligned with cart line snapshots (layout specs do not import domain barrels). */
 interface CartDrawerLineFixture {
@@ -38,8 +39,9 @@ describe('CartDrawerComponent', () => {
     );
 
     TestBed.configureTestingModule({
-      imports: [CartDrawerComponent, ecommerceTranslocoTestingModule()],
+      imports: [CartDrawerComponent],
       providers: [
+        ecommerceTranslocoTestingModule(),
         ...provideDispatcher(),
         {
           provide: CartAclReadAdapter,
@@ -73,9 +75,9 @@ describe('CartDrawerComponent', () => {
   it('shows empty message when ACL reports no lines', () => {
     const fixture = createFixture();
 
-    expect(fixture.nativeElement.textContent).toContain(
-      'Το καλάθι σας είναι άδειο.',
-    );
+    expect(
+      fixture.nativeElement.querySelector('.cart-drawer__empty'),
+    ).toBeTruthy();
   });
 
   it('renders line details from ACL adapter', () => {

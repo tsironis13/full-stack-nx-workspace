@@ -1,27 +1,36 @@
 @if (quantity() > 0) {
-<div class="flex items-center justify-center gap-2">
-  <p-button
-    icon="pi pi-minus"
-    aria-label="Remove from cart"
-    [rounded]="rounded()"
-    [text]="text()"
-    (onClick)="removeItemFromCart.emit()"
-  />
-  <div>{{ quantity() }}</div>
-  <p-button
-    icon="pi pi-plus"
-    aria-label="Add to cart"
-    [rounded]="rounded()"
-    [text]="text()"
-    (onClick)="addItemToCart.emit()"
-  />
-</div>
+  <div class="flex items-center justify-center gap-2">
+    <button
+      libButton
+      type="button"
+      variant="ghost"
+      size="icon"
+      [attr.aria-label]="'cart.decreaseQty' | transloco"
+      (click)="removeItemFromCart.emit()"
+    >
+      <i class="pi pi-minus" aria-hidden="true"></i>
+    </button>
+    <div>{{ quantity() }}</div>
+    <button
+      libButton
+      type="button"
+      variant="ghost"
+      size="icon"
+      [attr.aria-label]="'cart.increaseQty' | transloco"
+      (click)="addItemToCart.emit()"
+    >
+      <i class="pi pi-plus" aria-hidden="true"></i>
+    </button>
+  </div>
 } @else {
-<p-button
-  icon="pi pi-shopping-cart"
-  aria-label="Add to cart"
-  [rounded]="rounded()"
-  [text]="text()"
-  (onClick)="addItemToCart.emit()"
-/>
+  <button
+    libButton
+    type="button"
+    variant="ghost"
+    size="icon"
+    [attr.aria-label]="'cart.increaseQty' | transloco"
+    (click)="addItemToCart.emit()"
+  >
+    <i class="pi pi-shopping-cart" aria-hidden="true"></i>
+  </button>
 }

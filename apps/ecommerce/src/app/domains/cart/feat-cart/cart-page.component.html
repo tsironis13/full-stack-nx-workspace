@@ -4,96 +4,108 @@
   @if (store.items().length === 0) {
     <div class="cart-page__empty">
       <p class="cart-page__empty-text">{{ 'cart.empty' | transloco }}</p>
-      <p-button
-        [label]="'cart.continue' | transloco"
-        icon="pi pi-arrow-left"
-        [routerLink]="['/catalog']"
-        severity="secondary"
-      />
+      <a libButton variant="secondary" [routerLink]="['/catalog']">
+        <i class="pi pi-arrow-left" aria-hidden="true"></i>
+        {{ 'cart.continue' | transloco }}
+      </a>
     </div>
   } @else {
     <div class="cart-page__with-items">
-    <ul class="cart-page__items" [attr.aria-label]="'cart.items' | transloco">
-      @for (line of store.items(); track line.mainProductItemId) {
-        <li class="cart-item" [class.cart-item--unavailable]="line.available === false">
-          @if (store.pendingMainProductItemId() === line.mainProductItemId) {
-            <div
-              class="cart-item__pending"
-              role="status"
-              aria-live="polite"
-              aria-busy="true"
-              [attr.aria-label]="'cart.updatingLine' | transloco"
-            >
-              <p-progress-spinner  strokeWidth="4" styleClass="cart-page__spinner" />
-            </div>
-          }
-          @if (line.available === false) {
-            <app-cart-unavailable-line-alert
-              (remove)="onRemove(line.mainProductItemId)"
-            />
-          }
-          @if (line.primaryImageUrl) {
-            <img
-              class="cart-item__image"
-              [src]="line.primaryImageUrl"
-              [alt]="line.name ?? ('cart.productFallback' | transloco)"
-              width="80"
-              height="80"
-            />
-          }
-          <div class="cart-item__details">
-            <p class="cart-item__name">{{ line.name }}</p>
-            <p class="cart-item__price">{{ formatPrice(line.salePrice ?? line.originalPrice) }}</p>
-            @if (line.priceChanged) {
-              <app-cart-price-changed-line
-                [formattedPrice]="formatPrice(line.originalPrice)"
+      <ul class="cart-page__items" [attr.aria-label]="'cart.items' | transloco">
+        @for (line of store.items(); track line.mainProductItemId) {
+          <li
+            class="cart-item"
+            [class.cart-item--unavailable]="line.available === false"
+          >
+            @if (store.pendingMainProductItemId() === line.mainProductItemId) {
+              <div
+                class="cart-item__pending"
+                role="status"
+                aria-live="polite"
+                aria-busy="true"
+                [attr.aria-label]="'cart.updatingLine' | transloco"
+              >
+                <lib-spinner [ariaLabel]="'cart.updatingLine' | transloco" />
+              </div>
+            }
+            @if (line.available === false) {
+              <app-cart-unavailable-line-alert
+                (remove)="onRemove(line.mainProductItemId)"
               />
             }
-          </div>
-          @if (line.available !== false) {
-            <div class="cart-item__controls">
-              <app-cart-quantity-control
-                [quantity]="line.quantity"
-                (addItemToCart)="onIncrement(line.mainProductItemId)"
-                (removeItemFromCart)="onDecrement(line.mainProductItemId)"
+            @if (line.primaryImageUrl) {
+              <img
+                class="cart-item__image"
+                [src]="line.primaryImageUrl"
+                [alt]="line.name ?? ('cart.productFallback' | transloco)"
+                width="80"
+                height="80"
               />
-              <p-button
-                icon="pi pi-trash"
-                [text]="true"
-                severity="danger"
-                size="small"
-                [aria-label]="'cart.remove' | transloco"
-                (onClick)="onRemove(line.mainProductItemId)"
-              />
+            }
+            <div class="cart-item__details">
+              <p class="cart-item__name">{{ line.name }}</p>
+              <p class="cart-item__price">
+                {{ formatPrice(line.salePrice ?? line.originalPrice) }}
+              </p>
+              @if (line.priceChanged) {
+                <app-cart-price-changed-line
+                  [formattedPrice]="formatPrice(line.originalPrice)"
+                />
+              }
             </div>
-            <p class="cart-item__subtotal">
-              {{ lineSubtotal(line.salePrice, line.originalPrice, line.quantity) }}
-            </p>
-          }
-        </li>
-      }
-    </ul>
+            @if (line.available !== false) {
+              <div class="cart-item__controls">
+                <app-cart-quantity-control
+                  [quantity]="line.quantity"
+                  (addItemToCart)="onIncrement(line.mainProductItemId)"
+                  (removeItemFromCart)="onDecrement(line.mainProductItemId)"
+                />
+                <button
+                  libButton
+                  type="button"
+                  variant="danger"
+                  size="icon"
+                  [attr.aria-label]="'cart.remove' | transloco"
+                  (click)="onRemove(line.mainProductItemId)"
+                >
+                  <i class="pi pi-trash" aria-hidden="true"></i>
+                </button>
+              </div>
+              <p class="cart-item__subtotal">
+                {{
+                  lineSubtotal(
+                    line.salePrice,
+                    line.originalPrice,
+                    line.quantity
+                  )
+                }}
+              </p>
+            }
+          </li>
+        }
+      </ul>
 
-    <div class="cart-page__summary">
-      <p class="cart-page__total">
-        {{ 'cart.total' | transloco }}: <strong>{{ formattedSubtotal() }}</strong>
-      </p>
-      <div class="cart-page__actions">
-        <p-button
-          [label]="'cart.continue' | transloco"
-          icon="pi pi-arrow-left"
-          [routerLink]="['/catalog']"
-          severity="secondary"
-        />
-        <p-button
-          [label]="'cart.checkout' | transloco"
-          icon="pi pi-arrow-right"
-          iconPos="right"
-          [routerLink]="['/checkout']"
-          [disabled]="store.items().length === 0 || store.pendingMainProductItemId() !== null || hasUnavailableItems()"
-        />
+      <div class="cart-page__summary">
+        <p class="cart-page__total">
+          {{ 'cart.total' | transloco }}:
+          <strong>{{ formattedSubtotal() }}</strong>
+        </p>
+        <div class="cart-page__actions">
+          <a libButton variant="secondary" [routerLink]="['/catalog']">
+            <i class="pi pi-arrow-left" aria-hidden="true"></i>
+            {{ 'cart.continue' | transloco }}
+          </a>
+          <button
+            libButton
+            type="button"
+            [disabled]="checkoutBlocked()"
+            (click)="goToCheckout()"
+          >
+            {{ 'cart.checkout' | transloco }}
+            <i class="pi pi-arrow-right" aria-hidden="true"></i>
+          </button>
+        </div>
       </div>
-    </div>
     </div>
   }
 </div>

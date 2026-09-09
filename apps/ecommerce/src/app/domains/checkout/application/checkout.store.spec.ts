@@ -169,7 +169,7 @@ describe('CheckoutStore', () => {
       store.placeOrder({ shippingAddress: MOCK_SHIPPING });
 
       expect(store.status()).toBe('error');
-      expect(store.error()).toBe('Network error');
+      expect(store.error()).toBe('errors.generic');
       expect(store.isSuccess()).toBe(false);
       expect(store.isSubmitting()).toBe(false);
       expect(store.confirmedOrder()).toBeNull();

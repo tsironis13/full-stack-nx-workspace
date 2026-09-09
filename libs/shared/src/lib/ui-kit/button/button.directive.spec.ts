@@ -26,6 +26,7 @@ describe('ButtonDirective', () => {
 
     expect(button.type).toBe('submit');
     expect(button.disabled).toBe(true);
+    expect(button.classList.contains('cursor-pointer')).toBe(true);
     expect(button.textContent).toContain('Save');
   });
 

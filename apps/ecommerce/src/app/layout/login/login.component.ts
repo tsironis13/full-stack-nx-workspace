@@ -1,45 +1,41 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  effect,
-  inject,
-  WritableSignal,
-} from '@angular/core';
-import { ButtonModule } from 'primeng/button';
+import { Component, effect, inject, WritableSignal } from '@angular/core';
 import { form, FormField, required, email } from '@angular/forms/signals';
-import { InputTextModule } from 'primeng/inputtext';
-import { CardModule } from 'primeng/card';
-import { FloatLabel } from 'primeng/floatlabel';
 import { Router } from '@angular/router';
-import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { TranslocoPipe } from '@jsverse/transloco';
 
+import {
+  ButtonDirective,
+  CardBodyTemplateDirective,
+  CardComponent,
+  FieldComponent,
+  InputDirective,
+} from '@full-stack-nx-workspace/shared';
 import { AuthStore } from '@full-stack-nx-workspace/auth-web';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    ButtonModule,
-    InputTextModule,
+    ButtonDirective,
+    CardBodyTemplateDirective,
+    CardComponent,
+    FieldComponent,
     FormField,
-    CardModule,
-    FloatLabel,
+    InputDirective,
     TranslocoPipe,
   ],
 })
 export class LoginComponent {
   protected readonly authStore = inject(AuthStore);
-  private readonly router = inject(Router);
-  private readonly transloco = inject(TranslocoService);
+  private readonly _router = inject(Router);
 
   protected readonly onSuccessUserLoginEffect = effect(() => {
-    const authUser = this.authStore.authUser();    
+    const authUser = this.authStore.authUser();
 
     // email: 'tsiro1@hotmail.com',
     //   password: 'sxtvttio',
     if (authUser) {
-      this.router.navigate(['/catalog']);
+      this._router.navigate(['/catalog']);
     }
   });
 
@@ -50,16 +46,32 @@ export class LoginComponent {
     }>,
     (schemaPath) => {
       required(schemaPath.email, {
-        message: this.transloco.translate('login.emailRequired'),
+        message: 'login.emailRequired',
       });
       email(schemaPath.email, {
-        message: this.transloco.translate('login.emailInvalid'),
+        message: 'login.emailInvalid',
       });
       required(schemaPath.password, {
-        message: this.transloco.translate('login.passwordRequired'),
+        message: 'login.passwordRequired',
       });
     },
   );
+
+  protected emailError(): string | undefined {
+    const field = this.loginForm.email();
+    if (!field.touched()) {
+      return undefined;
+    }
+    return field.errors()[0]?.message;
+  }
+
+  protected passwordError(): string | undefined {
+    const field = this.loginForm.password();
+    if (!field.touched()) {
+      return undefined;
+    }
+    return field.errors()[0]?.message;
+  }
 
   protected login(): void {
     const loginForm = this.authStore.loginForm();

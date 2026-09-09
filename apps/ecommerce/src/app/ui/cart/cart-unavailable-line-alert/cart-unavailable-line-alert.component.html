@@ -1,12 +1,14 @@
 <div class="cart-unavailable-line-alert__panel" role="alert">
   <span class="pi pi-exclamation-triangle" aria-hidden="true"></span>
   <span>{{ 'cart.unavailable' | transloco }}</span>
-  <p-button
-    icon="pi pi-trash"
-    [text]="true"
-    severity="danger"
-    size="small"
-    [aria-label]="'cart.removeUnavailable' | transloco"
-    (onClick)="remove.emit()"
-  />
+  <button
+    libButton
+    type="button"
+    variant="danger"
+    size="icon"
+    [attr.aria-label]="'cart.removeUnavailable' | transloco"
+    (click)="remove.emit()"
+  >
+    <i class="pi pi-trash" aria-hidden="true"></i>
+  </button>
 </div>
