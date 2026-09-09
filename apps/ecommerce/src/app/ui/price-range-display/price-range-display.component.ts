@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 
-import { CurrencyPlusPipe } from '../currency/currency-plus.pipe';
+import { CurrencyPlusPipe } from '../currency/currency-plus';
 
 export type PriceRangeDisplayContext = {
   $implicit: { minRange: number; maxRange: number; maxValue: number };
