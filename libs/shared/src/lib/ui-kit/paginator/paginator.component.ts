@@ -1,35 +1,65 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   input,
-  linkedSignal,
   output,
-  signal,
 } from '@angular/core';
-import { PaginatorModule, PaginatorState } from 'primeng/paginator';
+
+import { ButtonDirective } from '../button/button.directive';
+import { SelectDirective } from '../select/select.directive';
+
+export type PaginatorPageChange = {
+  page: number;
+  pageSize: number;
+};
 
 @Component({
-  selector: 'app-paginator',
+  selector: 'lib-paginator',
   templateUrl: './paginator.component.html',
-  imports: [PaginatorModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [ButtonDirective, SelectDirective],
+  host: {
+    class: 'flex items-center justify-center gap-3',
+  },
 })
 export class PaginatorComponent {
-  public readonly totalRecords = input.required<number>();
-  public readonly rowsPerPageOptions = input.required<number[]>();
+  public readonly page = input.required<number>();
+  public readonly pageSize = input.required<number>();
+  public readonly total = input.required<number>();
+  public readonly pageSizeOptions = input.required<number[]>();
+  public readonly previousLabel = input.required<string>();
+  public readonly nextLabel = input.required<string>();
+  public readonly pageSizeLabel = input.required<string>();
 
-  public readonly changePage = output<{ page: number; limit: number }>();
+  public readonly pageChange = output<PaginatorPageChange>();
 
-  protected readonly first = signal<number>(0);
-  protected readonly rows = linkedSignal(() => this.rowsPerPageOptions()[0]);
+  protected readonly lastPage = computed(() => {
+    const size = this.pageSize();
+    if (size <= 0) {
+      return 1;
+    }
+    return Math.max(1, Math.ceil(this.total() / size));
+  });
 
-  public onPageChange(event: PaginatorState): void {
-    this.first.set(event.first ?? 0);
-    this.rows.set(event.rows ?? this.rowsPerPageOptions()[0]);
+  protected readonly isFirstPage = computed(() => this.page() <= 1);
+  protected readonly isLastPage = computed(
+    () => this.page() >= this.lastPage(),
+  );
 
-    this.changePage.emit({
-      page: event.page ? event.page + 1 : 1,
-      limit: event.rows ?? this.rowsPerPageOptions()[0],
-    });
+  protected goTo(page: number): void {
+    const nextPage = Math.min(this.lastPage(), Math.max(1, page));
+    if (nextPage === this.page()) {
+      return;
+    }
+    this.pageChange.emit({ page: nextPage, pageSize: this.pageSize() });
+  }
+
+  protected onPageSizeChange(event: Event): void {
+    const value = Number((event.target as HTMLSelectElement).value);
+    if (!Number.isFinite(value) || value === this.pageSize()) {
+      return;
+    }
+    this.pageChange.emit({ page: 1, pageSize: value });
   }
 }

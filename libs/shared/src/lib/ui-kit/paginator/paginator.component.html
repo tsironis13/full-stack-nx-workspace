@@ -1,9 +1,32 @@
-<div class="card flex justify-center">
-  <p-paginator
-    (onPageChange)="onPageChange($event)"
-    [first]="first()"
-    [rows]="rows()"
-    [totalRecords]="totalRecords()"
-    [rowsPerPageOptions]="rowsPerPageOptions()"
-  />
-</div>
+<button
+  libButton
+  type="button"
+  variant="ghost"
+  size="icon"
+  [attr.aria-label]="previousLabel()"
+  [disabled]="isFirstPage()"
+  (click)="goTo(page() - 1)"
+>
+  <i class="pi pi-chevron-left" aria-hidden="true"></i>
+</button>
+<select
+  libSelect
+  [attr.aria-label]="pageSizeLabel()"
+  [value]="pageSize()"
+  (change)="onPageSizeChange($event)"
+>
+  @for (size of pageSizeOptions(); track size) {
+    <option [value]="size" [selected]="size === pageSize()">{{ size }}</option>
+  }
+</select>
+<button
+  libButton
+  type="button"
+  variant="ghost"
+  size="icon"
+  [attr.aria-label]="nextLabel()"
+  [disabled]="isLastPage()"
+  (click)="goTo(page() + 1)"
+>
+  <i class="pi pi-chevron-right" aria-hidden="true"></i>
+</button>
