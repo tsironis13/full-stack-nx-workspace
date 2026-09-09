@@ -7,7 +7,7 @@ import {
   linkedSignal,
 } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
-import { CurrencyPlusPipe } from '../../pipes/currency-plus.pipe';
+import { CurrencyPlusPipe } from '../currency/currency-plus.pipe';
 
 export type PriceRangeDisplayContext = {
   $implicit: { minRange: number; maxRange: number; maxValue: number };
@@ -20,7 +20,7 @@ export type PriceRangeDisplayContext = {
 export class PriceRangeDisplayTemplateDirective {
   static ngTemplateContextGuard(
     _: PriceRangeDisplayTemplateDirective,
-    ctx: unknown
+    ctx: unknown,
   ): ctx is PriceRangeDisplayContext {
     return true;
   }
@@ -49,14 +49,14 @@ export class PriceRangeDisplayComponent {
           this.maxRange(),
           CURRENCY_CODE,
           CURRENCY_DIGITS_INFO,
-          CURRENCY_LOCALE
+          CURRENCY_LOCALE,
         )
       : this.#currencyPipe.transform(
           this.maxRange(),
           CURRENCY_CODE,
           'symbol',
           CURRENCY_DIGITS_INFO,
-          CURRENCY_LOCALE
+          CURRENCY_LOCALE,
         );
   });
 
