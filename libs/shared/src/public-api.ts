@@ -16,7 +16,16 @@ export {
   CardBodyTitleTemplateDirective,
   CardBodyDescriptionTemplateDirective,
 } from './lib/ui-kit/card/body/card-body/card-body.component';
-export { PaginatorComponent } from './lib/ui-kit/paginator/paginator.component';
+export {
+  PaginatorComponent,
+  type PaginatorPageChange,
+} from './lib/ui-kit/paginator/paginator.component';
+export { DrawerComponent } from './lib/ui-kit/drawer/drawer.component';
+export { SpinnerComponent } from './lib/ui-kit/spinner/spinner.component';
+export {
+  InlineMessageComponent,
+  type InlineMessageVariant,
+} from './lib/ui-kit/inline-message/inline-message.component';
 export {
   ButtonDirective,
   type ButtonSize,

@@ -1,0 +1,15 @@
+<dialog
+  #panel
+  role="dialog"
+  tabindex="-1"
+  class="m-0 ml-auto h-full max-h-screen w-full max-w-md border-0 bg-surface p-4 text-foreground shadow-lg open:flex open:flex-col"
+  [attr.aria-modal]="open() ? 'true' : null"
+  (close)="onDialogClose()"
+  (cancel)="onEscape($event)"
+  (keydown.escape)="onEscape($event)"
+  (click)="onBackdropClick($event)"
+>
+  <div class="flex min-h-0 flex-1 flex-col" (click)="$event.stopPropagation()">
+    <ng-content />
+  </div>
+</dialog>

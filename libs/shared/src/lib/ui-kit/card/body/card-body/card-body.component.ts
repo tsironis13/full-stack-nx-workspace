@@ -8,17 +8,17 @@ import {
 import { NgTemplateOutlet } from '@angular/common';
 
 @Directive({
-  selector: 'ng-template[cardBodyTitle]',
+  selector: 'ng-template[libCardBodyTitle]',
 })
 export class CardBodyTitleTemplateDirective {}
 
 @Directive({
-  selector: 'ng-template[cardBodyDescription]',
+  selector: 'ng-template[libCardBodyDescription]',
 })
 export class CardBodyDescriptionTemplateDirective {}
 
 @Component({
-  selector: 'app-card-body',
+  selector: 'lib-card-body',
   templateUrl: './card-body.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NgTemplateOutlet],
@@ -28,12 +28,12 @@ export class CardBodyComponent {
     CardBodyTitleTemplateDirective,
     {
       read: TemplateRef,
-    }
+    },
   );
   protected readonly cardDescription = contentChild.required(
     CardBodyDescriptionTemplateDirective,
     {
       read: TemplateRef,
-    }
+    },
   );
 }

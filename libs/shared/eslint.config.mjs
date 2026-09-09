@@ -27,13 +27,7 @@ export default [
   },
   {
     // Pre-existing app- selectors stay until later kit/assistant tickets.
-    files: [
-      '**/ui-kit/card/**/*.ts',
-      '**/ui-kit/image/**/*.ts',
-      '**/ui-kit/paginator/**/*.ts',
-      '**/ui-assistant/**/*.ts',
-      '**/util-copilotkit/**/*.ts',
-    ],
+    files: ['**/ui-assistant/**/*.ts', '**/util-copilotkit/**/*.ts'],
     rules: {
       '@angular-eslint/directive-selector': 'off',
       '@angular-eslint/component-selector': 'off',
