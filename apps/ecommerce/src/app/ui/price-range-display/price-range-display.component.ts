@@ -7,6 +7,7 @@ import {
   linkedSignal,
 } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
+
 import { CurrencyPlusPipe } from '../currency/currency-plus.pipe';
 
 export type PriceRangeDisplayContext = {
@@ -14,7 +15,7 @@ export type PriceRangeDisplayContext = {
 };
 
 @Directive({
-  selector: 'ng-template[priceRangeDisplay]',
+  selector: 'ng-template[appPriceRangeDisplay]',
   standalone: true,
 })
 export class PriceRangeDisplayTemplateDirective {

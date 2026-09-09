@@ -7,13 +7,13 @@ import {
   signal,
 } from '@angular/core';
 import { ChangeContext, Options } from '@angular-slider/ngx-slider';
+import { TranslocoPipe } from '@jsverse/transloco';
 
 import {
   PriceRangeDisplayComponent,
   PriceRangeDisplayTemplateDirective,
   PriceRangeSliderComponent,
-} from '@full-stack-nx-workspace/shared';
-import { TranslocoPipe } from '@jsverse/transloco';
+} from '../../../../ui/public-api';
 
 const FLOOR = 0;
 const CEIL = 10_000;

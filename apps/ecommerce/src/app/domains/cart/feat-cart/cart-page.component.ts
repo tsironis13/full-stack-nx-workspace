@@ -8,11 +8,13 @@ import { RouterLink } from '@angular/router';
 
 import { ButtonModule } from 'primeng/button';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { CartQuantityControlComponent } from '@full-stack-nx-workspace/shared';
 import { TranslocoPipe } from '@jsverse/transloco';
 
-import { CartPriceChangedLineComponent } from '../../../ui/cart/cart-price-changed-line/cart-price-changed-line.component';
-import { CartUnavailableLineAlertComponent } from '../../../ui/cart/cart-unavailable-line-alert/cart-unavailable-line-alert.component';
+import {
+  CartUnavailableLineAlertComponent,
+  CartPriceChangedLineComponent,
+  CartQuantityControlComponent,
+} from '../../../ui/public-api';
 import { CartStore } from '../application/public-api';
 
 function formatEur(amount: number): string {
