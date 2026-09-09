@@ -1,0 +1,17 @@
+<label
+  class="text-sm font-medium text-foreground"
+  [attr.for]="resolvedId()"
+>
+  {{ label() }}
+</label>
+<ng-content />
+@if (error(); as errorText) {
+  <p class="text-sm text-red-700" role="alert" [id]="errorId()">
+    {{ errorText }}
+  </p>
+}
+@if (hint(); as hintText) {
+  <p class="text-sm text-surface-500" [id]="hintId()">
+    {{ hintText }}
+  </p>
+}

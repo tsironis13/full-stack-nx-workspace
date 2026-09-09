@@ -17,6 +17,16 @@ export {
   CardBodyDescriptionTemplateDirective,
 } from './lib/ui-kit/card/body/card-body/card-body.component';
 export { PaginatorComponent } from './lib/ui-kit/paginator/paginator.component';
+export {
+  ButtonDirective,
+  type ButtonSize,
+  type ButtonVariant,
+} from './lib/ui-kit/button/button.directive';
+export { InputDirective } from './lib/ui-kit/input/input.directive';
+export { SelectDirective } from './lib/ui-kit/select/select.directive';
+export { CheckboxDirective } from './lib/ui-kit/checkbox/checkbox.directive';
+export { FieldComponent } from './lib/ui-kit/field/field.component';
+export { FieldControlDirective } from './lib/ui-kit/field/field-control.directive';
 export { AppHttpAgent } from './lib/util-copilotkit/app-http-agent';
 export {
   initAgentStore,
