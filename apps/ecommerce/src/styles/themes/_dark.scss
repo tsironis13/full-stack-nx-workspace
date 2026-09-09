@@ -36,3 +36,24 @@
   --designer-focus-outline-color: #ffffff;
   --designer-divider-color: #3f3f46;
 }
+
+.ecommerce-app-dark {
+  // Semantic kit tokens — slate-ish dark, same names as @theme light defaults.
+  --color-primary: var(--color-indigo-50);
+  --color-primary-foreground: var(--color-indigo-950);
+  --color-surface: var(--color-slate-900);
+  --color-surface-50: var(--color-slate-50);
+  --color-surface-100: var(--color-slate-100);
+  --color-surface-200: var(--color-slate-200);
+  --color-surface-300: var(--color-slate-300);
+  --color-surface-400: var(--color-slate-400);
+  --color-surface-500: var(--color-slate-500);
+  --color-surface-600: var(--color-slate-600);
+  --color-surface-700: var(--color-slate-700);
+  --color-surface-800: var(--color-slate-800);
+  --color-surface-900: var(--color-slate-900);
+  --color-surface-950: var(--color-slate-950);
+  --color-foreground: var(--color-slate-50);
+  --color-border: var(--color-slate-700);
+  --color-ring: var(--color-indigo-50);
+}

@@ -276,7 +276,7 @@ Libraries are the primary mechanism for **sharing behavior across multiple apps*
 - Entry point: **`libs/<library>/src/public-api.ts`** (classified as **`lib-api`** from the app’s perspective).
 - Implementation folders fall under **`lib`**; **`lib-api`** may depend only on **`lib`** for the **same** captured library name.
 
-Examples in this workspace include **`shared`** (UI/widgets/pipes), **`auth`** / **`auth-web`**, **`api`**, **`store`**—each with its own `project.json` and Nx **`tags`**.
+Examples in this workspace include **`shared`** (UI/widgets/pipes, including the in-house presentational kit — see [ADR 0003](./adr/0003-in-house-presentational-kit.md)), **`auth`** / **`auth-web`**, **`api`**, **`store`**—each with its own `project.json` and Nx **`tags`**.
 
 When logic is **specific to one product domain** (for example “products catalog”), it usually stays under **`apps/<app>/src/app/domains/...`**. When it is **generic across apps**, promote it to **`libs/<name>`** and depend on **`lib-api`** only.
 

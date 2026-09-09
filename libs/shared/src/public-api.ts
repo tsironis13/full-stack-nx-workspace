@@ -16,12 +16,6 @@ export {
   CardBodyTitleTemplateDirective,
   CardBodyDescriptionTemplateDirective,
 } from './lib/ui-kit/card/body/card-body/card-body.component';
-export { CartQuantityControlComponent } from './lib/cart-quantity-control/cart-quantity-control.component';
-export { PriceRangeSliderComponent } from './lib/price-range-slider/price-range-slider.component';
-export {
-  PriceRangeDisplayTemplateDirective,
-  PriceRangeDisplayComponent,
-} from './lib/price-range-display/price-range-display.component';
 export { PaginatorComponent } from './lib/ui-kit/paginator/paginator.component';
 export { AppHttpAgent } from './lib/util-copilotkit/app-http-agent';
 export {

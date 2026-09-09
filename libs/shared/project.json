@@ -23,6 +23,12 @@
     },
     "lint": {
       "executor": "@nx/eslint:lint"
+    },
+    "vitest": {
+      "executor": "@nx/vitest:test",
+      "options": {
+        "testMatch": "libs/shared/src/**/*.spec.ts"
+      }
     }
   }
 }
