@@ -26,14 +26,10 @@
   <div
     class="catalog-browse__price-actions catalog-browse__price-actions--below-slider"
   >
-    <button type="button" class="catalog-browse__btn" (click)="onApply()">
+    <button type="button" libButton (click)="onApply()">
       {{ 'catalog.price.apply' | transloco }}
     </button>
-    <button
-      type="button"
-      class="catalog-browse__btn catalog-browse__btn--secondary"
-      (click)="onClear()"
-    >
+    <button type="button" libButton variant="secondary" (click)="onClear()">
       {{ 'catalog.price.clear' | transloco }}
     </button>
   </div>

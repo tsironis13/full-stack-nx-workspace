@@ -40,5 +40,8 @@ describe('CatalogAttributeFacetsComponent', () => {
     fixture.detectChanges();
 
     expect(emitted).toEqual([{ attributeId: 7, valueId: 3 }]);
+    expect(fixture.nativeElement.textContent).toContain('Color');
+    expect(fixture.nativeElement.textContent).toContain('Red');
+    expect(fixture.nativeElement.innerHTML).not.toMatch(/\bgray-/);
   });
 });

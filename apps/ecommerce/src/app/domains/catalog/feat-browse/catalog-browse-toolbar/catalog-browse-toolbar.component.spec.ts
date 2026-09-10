@@ -30,5 +30,13 @@ describe('CatalogBrowseToolbarComponent', () => {
     expect(search.hasAttribute('libInput')).toBe(true);
     expect(sort).toBeTruthy();
     expect(sort.hasAttribute('libSelect')).toBe(true);
+
+    const apply = fixture.nativeElement.querySelector(
+      '.catalog-browse__search-row button',
+    ) as HTMLButtonElement;
+    expect(apply.hasAttribute('libButton')).toBe(true);
+    expect(
+      `${search.className} ${sort.className} ${apply.className}`,
+    ).not.toMatch(/\bgray-/);
   });
 });

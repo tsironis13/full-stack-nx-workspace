@@ -111,6 +111,20 @@ describe('CatalogBrowsePageComponent', () => {
     );
   });
 
+  it('retries catalog load with a kit button', () => {
+    errorSig.set('failed');
+
+    const fixture = createFixture();
+    const retry = fixture.nativeElement.querySelector(
+      '.catalog-browse__state--error button',
+    ) as HTMLButtonElement;
+
+    expect(retry).toBeTruthy();
+    expect(retry.hasAttribute('libButton')).toBe(true);
+    retry.click();
+    expect(loadMock).toHaveBeenCalled();
+  });
+
   it('pages the catalog from store page and pageSize, not PrimeNG PaginatorState', () => {
     dataSig.set({
       items: [

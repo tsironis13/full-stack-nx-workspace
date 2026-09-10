@@ -9,6 +9,8 @@ import {
 import { ChangeContext, Options } from '@angular-slider/ngx-slider';
 import { TranslocoPipe } from '@jsverse/transloco';
 
+import { ButtonDirective } from '@full-stack-nx-workspace/shared';
+
 import {
   PriceRangeDisplayComponent,
   PriceRangeDisplayTemplateDirective,
@@ -29,6 +31,7 @@ export interface PriceRange {
   styleUrl: './catalog-price-band.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    ButtonDirective,
     PriceRangeDisplayComponent,
     PriceRangeDisplayTemplateDirective,
     PriceRangeSliderComponent,

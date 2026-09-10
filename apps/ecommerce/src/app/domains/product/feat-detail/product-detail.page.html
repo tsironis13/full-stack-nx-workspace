@@ -135,7 +135,8 @@
       <div class="product-detail__my-review-actions">
         <button
           type="button"
-          class="product-detail__btn"
+          libButton
+          variant="secondary"
           [disabled]="submission.saving()"
           (click)="startEdit()"
         >
@@ -143,7 +144,8 @@
         </button>
         <button
           type="button"
-          class="product-detail__btn product-detail__btn--danger"
+          libButton
+          variant="danger"
           [disabled]="submission.saving()"
           (click)="deleteReview()"
         >
@@ -192,26 +194,28 @@
 
       <label class="product-detail__form-field">
         <span>{{ 'product.titleLabel' | transloco }}</span>
-        <input type="text" formControlName="title" maxlength="120" />
+        <input libInput type="text" formControlName="title" maxlength="120" />
       </label>
 
       <label class="product-detail__form-field">
         <span>{{ 'product.bodyLabel' | transloco }}</span>
-        <textarea formControlName="body" rows="4" maxlength="2000"></textarea>
+        <textarea
+          class="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+          formControlName="body"
+          rows="4"
+          maxlength="2000"
+        ></textarea>
       </label>
 
       <div class="product-detail__form-actions">
-        <button
-          type="submit"
-          class="product-detail__btn product-detail__btn--primary"
-          [disabled]="submission.saving()"
-        >
+        <button type="submit" libButton [disabled]="submission.saving()">
           {{ (editing() ? 'product.save' : 'product.submit') | transloco }}
         </button>
         @if (editing()) {
         <button
           type="button"
-          class="product-detail__btn"
+          libButton
+          variant="secondary"
           [disabled]="submission.saving()"
           (click)="cancelEdit()"
         >

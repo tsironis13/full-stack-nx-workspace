@@ -31,6 +31,7 @@
 .product-detail__state--error {
   flex-direction: column;
   align-items: flex-start;
+  color: var(--color-red-700);
 }
 
 .product-detail__aggregate {
@@ -45,12 +46,12 @@
 }
 
 .product-detail__aggregate-count {
-  color: #4b5563;
+  color: color-mix(in srgb, var(--color-foreground) 68%, transparent);
 }
 
 .product-detail__empty {
   margin: 0;
-  color: #4b5563;
+  color: color-mix(in srgb, var(--color-foreground) 68%, transparent);
 }
 
 .product-detail__review-list {
@@ -66,8 +67,9 @@
   display: grid;
   gap: 0.35rem;
   padding: 1rem;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
 }
 
 .product-detail__review-stars {
@@ -76,11 +78,11 @@
 }
 
 .product-detail__star {
-  color: #d1d5db;
+  color: color-mix(in srgb, var(--color-foreground) 28%, transparent);
 }
 
 .product-detail__star--filled {
-  color: #f59e0b;
+  color: var(--color-amber-500);
 }
 
 .product-detail__review-author {
@@ -89,7 +91,7 @@
 }
 
 .product-detail__review-date {
-  color: #6b7280;
+  color: color-mix(in srgb, var(--color-foreground) 68%, transparent);
   font-size: 0.875rem;
 }
 
@@ -108,12 +110,12 @@
   flex-direction: column;
   gap: 1rem;
   padding-top: 1.5rem;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--color-border);
 }
 
 .product-detail__gate {
   margin: 0;
-  color: #4b5563;
+  color: color-mix(in srgb, var(--color-foreground) 68%, transparent);
 }
 
 .product-detail__gate a {
@@ -125,8 +127,9 @@
   display: grid;
   gap: 0.5rem;
   padding: 1rem;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
 }
 
 .product-detail__my-review-actions,
@@ -162,12 +165,17 @@
   cursor: pointer;
   font-size: 1.75rem;
   line-height: 1;
-  color: #d1d5db;
+  color: color-mix(in srgb, var(--color-foreground) 28%, transparent);
   padding: 0;
+
+  &:focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+  }
 }
 
 .product-detail__rating-star--filled {
-  color: #f59e0b;
+  color: var(--color-amber-500);
 }
 
 .product-detail__form-field {
@@ -176,41 +184,9 @@
   gap: 0.25rem;
 }
 
-.product-detail__form-field input,
-.product-detail__form-field textarea {
-  padding: 0.5rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.375rem;
-  font: inherit;
-}
-
 .product-detail__field-error,
 .product-detail__write-error {
   margin: 0;
-  color: #b91c1c;
+  color: var(--color-red-700);
   font-size: 0.875rem;
-}
-
-.product-detail__btn {
-  cursor: pointer;
-  padding: 0.5rem 1rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.375rem;
-  background: #fff;
-}
-
-.product-detail__btn--primary {
-  background: #2563eb;
-  border-color: #2563eb;
-  color: #fff;
-}
-
-.product-detail__btn--danger {
-  border-color: #b91c1c;
-  color: #b91c1c;
-}
-
-.product-detail__btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
 }

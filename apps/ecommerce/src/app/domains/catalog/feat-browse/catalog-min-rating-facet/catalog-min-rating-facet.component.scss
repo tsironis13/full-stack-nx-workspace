@@ -19,21 +19,36 @@
   min-height: 2rem;
   padding: 0.25rem 0.75rem;
   border-radius: 999px;
-  border: 1px solid var(--p-content-border-color, #e5e7eb);
-  background: var(--p-content-background, #fff);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
   color: inherit;
   cursor: pointer;
   font-size: 0.875rem;
+
+  &:hover {
+    border-color: var(--color-primary);
+    background: var(--color-surface-hover);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+  }
 }
 
 .catalog-browse__chip--active {
-  border-color: var(--p-primary-color, #2563eb);
-  background: var(--p-primary-color, #2563eb);
-  color: var(--p-primary-contrast-color, #fff);
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: var(--color-primary-foreground);
+
+  &:hover {
+    background: var(--color-primary-hover);
+    border-color: var(--color-primary-hover);
+  }
 }
 
 .catalog-browse__facet-help {
   margin: 0.5rem 0 0;
   font-size: 0.8rem;
-  color: var(--p-text-muted-color, #6b7280);
+  color: color-mix(in srgb, var(--color-foreground) 68%, transparent);
 }
