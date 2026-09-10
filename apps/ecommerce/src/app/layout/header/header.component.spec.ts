@@ -123,6 +123,20 @@ describe('HeaderComponent UI Theme', () => {
     );
   });
 
+  it('keeps header auth links readable on the dark header', () => {
+    const fixture = TestBed.createComponent(HeaderComponent);
+    fixture.detectChanges();
+
+    const signIn = fixture.nativeElement.querySelector(
+      'a[href="/login"]',
+    ) as HTMLAnchorElement;
+
+    expect(signIn.classList.contains('text-primary')).toBe(true);
+    expect(signIn.classList.contains('dark:text-primary-foreground')).toBe(
+      true,
+    );
+  });
+
   it('keeps the UI Language switcher as a segmented control on semantic tokens', () => {
     const fixture = TestBed.createComponent(HeaderComponent);
     fixture.detectChanges();

@@ -5,6 +5,7 @@
   --color-primary: var(--color-indigo-950);
   --color-primary-foreground: #ffffff;
   --color-primary-hover: color-mix(in srgb, var(--color-indigo-950) 88%, black);
+  --color-primary-outline: var(--color-primary-foreground);
 
   // Invert ground only: dark zinc surfaces, light foreground. Numbered surface
   // steps stay light-absolute zinc (not remapped to slate).
@@ -13,4 +14,5 @@
   --color-border: var(--color-zinc-700);
   --color-ring: var(--color-indigo-950);
   --color-surface-hover: var(--color-zinc-800);
+  --color-secondary: var(--color-zinc-800);
 }

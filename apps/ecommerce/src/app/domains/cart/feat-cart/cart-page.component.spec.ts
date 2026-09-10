@@ -17,6 +17,8 @@ interface CartPageLineFixture {
   salePrice: number | null;
   originalPrice: number | null;
   primaryImageUrl: string | null;
+  available?: boolean;
+  priceChanged?: boolean;
 }
 
 describe('CartPageComponent', () => {
@@ -197,5 +199,67 @@ describe('CartPageComponent', () => {
     const fixture = createFixture();
     const totalEl = fixture.debugElement.query(By.css('.cart-page__total'));
     expect(totalEl.nativeElement.textContent).toContain('13');
+  });
+
+  it('keeps stored Product names, kit CTAs, and a danger remove without leftover chrome', () => {
+    itemsSig.set([
+      {
+        productId: 1,
+        mainProductItemId: 10,
+        name: 'Stored Cart Shirt',
+        salePrice: 12,
+        originalPrice: 12,
+        primaryImageUrl: 'https://cdn.example/shirt.jpg',
+        quantity: 1,
+      },
+    ]);
+
+    const fixture = createFixture();
+    const img = fixture.nativeElement.querySelector(
+      'img',
+    ) as HTMLImageElement;
+    const checkout = fixture.nativeElement.querySelector(
+      '.cart-page__actions button',
+    ) as HTMLButtonElement;
+    const remove = fixture.nativeElement.querySelector(
+      '.cart-item__controls button[variant="danger"]',
+    ) as HTMLButtonElement;
+
+    expect(fixture.nativeElement.textContent).toContain('Stored Cart Shirt');
+    expect(img.src).toContain('https://cdn.example/shirt.jpg');
+    expect(checkout.hasAttribute('libButton')).toBe(true);
+    expect(checkout.getAttribute('variant')).not.toBe('danger');
+    expect(remove).toBeTruthy();
+    expect(remove.hasAttribute('libButton')).toBe(true);
+    expect(remove.classList.contains('bg-red-700')).toBe(true);
+    expect(remove.classList.contains('hover:bg-red-800')).toBe(true);
+    expect(remove.classList.contains('hover:bg-primary-hover')).toBe(false);
+    expect(fixture.nativeElement.innerHTML).not.toMatch(/\bgray-/);
+    expect(fixture.nativeElement.innerHTML).not.toMatch(/--p-/);
+  });
+
+  it('keeps unavailable-line remove as a danger kit CTA', () => {
+    itemsSig.set([
+      {
+        productId: 1,
+        mainProductItemId: 10,
+        name: 'Gone Shirt',
+        salePrice: 12,
+        originalPrice: 12,
+        primaryImageUrl: null,
+        quantity: 1,
+        available: false,
+      },
+    ]);
+
+    const fixture = createFixture();
+    const remove = fixture.nativeElement.querySelector(
+      'app-cart-unavailable-line-alert button',
+    ) as HTMLButtonElement;
+
+    expect(remove.hasAttribute('libButton')).toBe(true);
+    expect(remove.getAttribute('variant')).toBe('danger');
+    expect(remove.classList.contains('hover:bg-primary-hover')).toBe(false);
+    expect(fixture.nativeElement.innerHTML).not.toMatch(/--p-/);
   });
 });

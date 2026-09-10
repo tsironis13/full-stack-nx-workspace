@@ -151,6 +151,8 @@ describe('ButtonDirective', () => {
     expect(primary.classList.contains('hover:bg-primary-hover')).toBe(true);
     expect(primary.classList.contains('hover:bg-primary-800')).toBe(false);
 
+    expect(secondary.classList.contains('bg-secondary')).toBe(true);
+    expect(secondary.classList.contains('bg-surface-100')).toBe(false);
     expect(secondary.classList.contains('hover:bg-surface-hover')).toBe(true);
     expect(secondary.classList.contains('hover:bg-surface-100')).toBe(false);
     expect(secondary.classList.contains('hover:bg-surface-200')).toBe(false);

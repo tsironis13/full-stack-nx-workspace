@@ -128,4 +128,20 @@ describe('CheckoutPageComponent', () => {
       'Παρουσιάστηκε σφάλμα',
     );
   });
+
+  it('uses kit fields and a primary place-order CTA without leftover chrome', () => {
+    const fixture = createFixture();
+    const email = fixture.nativeElement.querySelector(
+      '#guestEmail',
+    ) as HTMLInputElement;
+    const submit = fixture.nativeElement.querySelector(
+      'button[type="submit"]',
+    ) as HTMLButtonElement;
+
+    expect(email.hasAttribute('libInput')).toBe(true);
+    expect(submit.hasAttribute('libButton')).toBe(true);
+    expect(submit.getAttribute('variant')).not.toBe('danger');
+    expect(fixture.nativeElement.innerHTML).not.toMatch(/\bgray-/);
+    expect(fixture.nativeElement.innerHTML).not.toMatch(/--p-/);
+  });
 });

@@ -28,6 +28,8 @@ describe('SpinnerComponent', () => {
 
     expect(status).not.toBeNull();
     expect(status.getAttribute('aria-label')).toBe('Loading catalog');
+    expect(status.classList.contains('text-primary-outline')).toBe(true);
+    expect(status.classList.contains('text-primary')).toBe(false);
     expect(fixture.nativeElement.querySelector('dialog')).toBeNull();
     expect(status.textContent?.trim()).toBe('');
   });

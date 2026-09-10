@@ -118,6 +118,9 @@ describe('OrderHistoryPageComponent', () => {
     expect(cta).toBeTruthy();
     expect(cta.nativeElement.textContent).toContain('Γράψε κριτική');
     expect(cta.attributes['href']).toContain('/products/5');
+    expect(cta.nativeElement.hasAttribute('libButton')).toBe(true);
+    expect(fixture.nativeElement.innerHTML).not.toMatch(/\bgray-/);
+    expect(fixture.nativeElement.innerHTML).not.toMatch(/--p-/);
   });
 
   it('shows an "Edit review" CTA when a review already exists', () => {
@@ -171,5 +174,24 @@ describe('OrderHistoryPageComponent', () => {
     expect(
       fixture.debugElement.query(By.css('.order-history__review-cta')),
     ).toBeNull();
+  });
+
+  it('retries with a kit CTA and keeps stored Product names without leftover chrome', () => {
+    errorSig.set('boom');
+    ordersSig.set([buildOrder()]);
+
+    const errorFixture = createFixture();
+    const retry = errorFixture.nativeElement.querySelector(
+      '.order-history__state--error button',
+    ) as HTMLButtonElement;
+
+    expect(retry.hasAttribute('libButton')).toBe(true);
+    expect(errorFixture.nativeElement.innerHTML).not.toMatch(/--p-/);
+
+    errorSig.set(null);
+    const listFixture = createFixture();
+    expect(listFixture.nativeElement.textContent).toContain('Widget A');
+    expect(listFixture.nativeElement.innerHTML).not.toMatch(/\bgray-/);
+    expect(listFixture.nativeElement.innerHTML).not.toMatch(/--p-/);
   });
 });

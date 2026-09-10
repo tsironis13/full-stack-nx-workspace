@@ -19,7 +19,7 @@ export type ButtonSize = 'sm' | 'md' | 'icon';
     '[class.bg-primary]': 'variant() === "primary"',
     '[class.text-primary-foreground]': 'variant() === "primary"',
     '[class.hover:bg-primary-hover]': 'variant() === "primary"',
-    '[class.bg-surface-100]': 'variant() === "secondary"',
+    '[class.bg-secondary]': 'variant() === "secondary"',
     '[class.text-foreground]':
       'variant() === "secondary" || variant() === "ghost"',
     '[class.border]': 'variant() === "secondary"',

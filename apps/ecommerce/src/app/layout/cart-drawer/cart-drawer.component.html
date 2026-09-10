@@ -15,7 +15,10 @@
     </div>
   } @else {
     <div class="cart-drawer__main">
-      <ul class="cart-drawer__items" [attr.aria-label]="'cart.items' | transloco">
+      <ul
+        class="cart-drawer__items"
+        [attr.aria-label]="'cart.items' | transloco"
+      >
         @for (line of cartRead.items(); track line.mainProductItemId) {
           <li
             class="cart-drawer__item"
@@ -97,7 +100,8 @@
 
       <div class="cart-drawer__footer">
         <p class="cart-drawer__total">
-          {{ 'cart.total' | transloco }}: <strong>{{ formattedSubtotal() }}</strong>
+          {{ 'cart.total' | transloco }}:
+          <strong>{{ formattedSubtotal() }}</strong>
         </p>
         <button libButton type="button" class="w-full" (click)="goToCart()">
           <i class="pi pi-shopping-cart" aria-hidden="true"></i>
