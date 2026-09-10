@@ -130,4 +130,38 @@ describe('ButtonDirective', () => {
     await fixture.whenStable();
     expect(clicked).not.toHaveBeenCalled();
   });
+
+  it('binds variant hover to semantic tokens, not primary-800 or light-absolute surface steps', async () => {
+    @Component({
+      template: `
+        <button libButton type="button">Primary</button>
+        <button libButton type="button" variant="secondary">Secondary</button>
+        <button libButton type="button" variant="ghost">Ghost</button>
+        <button libButton type="button" variant="danger">Danger</button>
+      `,
+      imports: [ButtonDirective],
+    })
+    class Host {}
+
+    const fixture = await render(Host);
+    const [primary, secondary, ghost, danger] = Array.from(
+      fixture.nativeElement.querySelectorAll('button') as NodeListOf<HTMLButtonElement>
+    );
+
+    expect(primary.classList.contains('hover:bg-primary-hover')).toBe(true);
+    expect(primary.classList.contains('hover:bg-primary-800')).toBe(false);
+
+    expect(secondary.classList.contains('hover:bg-surface-hover')).toBe(true);
+    expect(secondary.classList.contains('hover:bg-surface-100')).toBe(false);
+    expect(secondary.classList.contains('hover:bg-surface-200')).toBe(false);
+
+    expect(ghost.classList.contains('hover:bg-surface-hover')).toBe(true);
+    expect(ghost.classList.contains('hover:bg-surface-100')).toBe(false);
+    expect(ghost.classList.contains('hover:bg-surface-200')).toBe(false);
+
+    expect(danger.classList.contains('bg-red-700')).toBe(true);
+    expect(danger.classList.contains('hover:bg-red-800')).toBe(true);
+    expect(danger.classList.contains('hover:bg-primary-hover')).toBe(false);
+    expect(danger.classList.contains('hover:bg-surface-hover')).toBe(false);
+  });
 });
