@@ -10,3 +10,9 @@ export {
   localizeA2uiValue,
   type UiLanguage,
 } from './i18n/public-api';
+export {
+  UiThemeService,
+  DEFAULT_UI_THEME,
+  UI_THEME_STORAGE_KEY,
+  type UiTheme,
+} from './theme/public-api';

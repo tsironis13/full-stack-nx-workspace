@@ -1,6 +1,7 @@
 // Higher specificity than @theme `:root` so kit `bg-primary` / `bg-surface`
 // follow the storefront dark class instead of staying on light defaults.
 :root.ecommerce-app-dark {
+  color-scheme: dark;
   // Primary chip stays dark indigo with a light label in both appearances.
   --color-primary: var(--color-indigo-950);
   --color-primary-foreground: #ffffff;

@@ -5,15 +5,14 @@
 
   <div class="flex flex-wrap items-center gap-2 md:gap-3 justify-end ms-auto">
     <div
-      class="inline-flex overflow-hidden rounded-md border border-gray-200 dark:border-gray-700"
+      class="inline-flex overflow-hidden rounded-md border border-border"
       role="group"
       [attr.aria-label]="'uiLanguage.label' | transloco"
     >
       <button
         type="button"
-        class="px-2.5 py-1 text-xs font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
-        [class.bg-gray-100]="uiLanguage.language() === 'el'"
-        [class.dark:bg-gray-800]="uiLanguage.language() === 'el'"
+        class="px-2.5 py-1 text-xs font-medium text-foreground hover:bg-surface-hover"
+        [class.bg-surface-hover]="uiLanguage.language() === 'el'"
         [class.font-semibold]="uiLanguage.language() === 'el'"
         [attr.aria-pressed]="uiLanguage.language() === 'el'"
         (click)="setLanguage('el')"
@@ -22,9 +21,8 @@
       </button>
       <button
         type="button"
-        class="px-2.5 py-1 text-xs font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
-        [class.bg-gray-100]="uiLanguage.language() === 'en'"
-        [class.dark:bg-gray-800]="uiLanguage.language() === 'en'"
+        class="px-2.5 py-1 text-xs font-medium text-foreground hover:bg-surface-hover"
+        [class.bg-surface-hover]="uiLanguage.language() === 'en'"
         [class.font-semibold]="uiLanguage.language() === 'en'"
         [attr.aria-pressed]="uiLanguage.language() === 'en'"
         (click)="setLanguage('en')"
@@ -39,7 +37,7 @@
       variant="ghost"
       size="icon"
       [attr.aria-label]="
-        theme() === 'light'
+        uiTheme.theme() === 'light'
           ? ('header.themeLight' | transloco)
           : ('header.themeDark' | transloco)
       "
@@ -47,8 +45,8 @@
     >
       <i
         class="pi"
-        [class.pi-moon]="theme() === 'light'"
-        [class.pi-sun]="theme() !== 'light'"
+        [class.pi-moon]="uiTheme.theme() === 'light'"
+        [class.pi-sun]="uiTheme.theme() !== 'light'"
         aria-hidden="true"
       ></i>
     </button>

@@ -7,6 +7,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <link rel="preconnect" href="https://smrapzkhjrhqwrserfao.supabase.co" />
+    <script>
+      (function () {
+        var theme = 'light';
+        try {
+          var raw = localStorage.getItem('ecommerce.uiTheme');
+          if (raw != null) {
+            var parsed = JSON.parse(raw);
+            if (parsed === 'dark' || parsed === 'light') {
+              theme = parsed;
+            }
+          }
+        } catch (e) {}
+        var root = document.documentElement;
+        root.classList.toggle('ecommerce-app-dark', theme === 'dark');
+        root.style.colorScheme = theme;
+      })();
+    </script>
   </head>
   <body class="px-30">
     <app-root></app-root>
