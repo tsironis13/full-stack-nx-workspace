@@ -48,6 +48,9 @@
 
           @if (item.canReview) {
           <a
+            libButton
+            variant="secondary"
+            size="sm"
             class="order-history__review-cta"
             [routerLink]="['/products', item.productId]"
           >

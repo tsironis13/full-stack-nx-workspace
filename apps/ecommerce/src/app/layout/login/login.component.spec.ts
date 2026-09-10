@@ -53,4 +53,22 @@ describe('LoginComponent', () => {
     ) as HTMLElement;
     expect(alert.textContent?.trim()).toBe('Το email είναι υποχρεωτικό.');
   });
+
+  it('uses kit fields and a primary sign-in CTA without leftover chrome', () => {
+    const fixture = TestBed.createComponent(LoginComponent);
+    fixture.detectChanges();
+
+    const email = fixture.nativeElement.querySelector(
+      '#login-email',
+    ) as HTMLInputElement;
+    const submit = fixture.nativeElement.querySelector(
+      'button[type="submit"]',
+    ) as HTMLButtonElement;
+
+    expect(email.hasAttribute('libInput')).toBe(true);
+    expect(submit.hasAttribute('libButton')).toBe(true);
+    expect(submit.getAttribute('variant')).not.toBe('danger');
+    expect(fixture.nativeElement.innerHTML).not.toMatch(/\bgray-/);
+    expect(fixture.nativeElement.innerHTML).not.toMatch(/--p-/);
+  });
 });

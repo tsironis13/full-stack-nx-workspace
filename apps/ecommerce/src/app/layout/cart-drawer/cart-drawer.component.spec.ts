@@ -20,6 +20,7 @@ interface CartDrawerLineFixture {
   salePrice: number | null;
   originalPrice: number | null;
   primaryImageUrl: string | null;
+  available?: boolean;
 }
 
 describe('CartDrawerComponent', () => {
@@ -160,5 +161,40 @@ describe('CartDrawerComponent', () => {
       cartUiEvents.removeItem({ mainProductItemId: 7 }),
       { scope: 'self' },
     );
+  });
+
+  it('keeps stored Product names, a kit view-cart CTA, and a danger remove without leftover chrome', () => {
+    itemsSig.set([
+      {
+        quantity: 1,
+        productId: 1,
+        mainProductItemId: 20,
+        name: 'Stored Drawer Shirt',
+        salePrice: 15,
+        originalPrice: null,
+        primaryImageUrl: 'https://cdn.example/drawer.jpg',
+      },
+    ]);
+
+    const fixture = createFixture();
+    const img = fixture.nativeElement.querySelector(
+      'img',
+    ) as HTMLImageElement;
+    const viewCart = fixture.nativeElement.querySelector(
+      '.cart-drawer__footer button',
+    ) as HTMLButtonElement;
+    const remove = fixture.nativeElement.querySelector(
+      '.cart-drawer__item-controls button[variant="danger"]',
+    ) as HTMLButtonElement;
+
+    expect(fixture.nativeElement.textContent).toContain('Stored Drawer Shirt');
+    expect(img.src).toContain('https://cdn.example/drawer.jpg');
+    expect(viewCart.hasAttribute('libButton')).toBe(true);
+    expect(remove.hasAttribute('libButton')).toBe(true);
+    expect(remove.getAttribute('variant')).toBe('danger');
+    expect(remove.classList.contains('hover:bg-red-800')).toBe(true);
+    expect(remove.classList.contains('hover:bg-primary-hover')).toBe(false);
+    expect(fixture.nativeElement.innerHTML).not.toMatch(/\bgray-/);
+    expect(fixture.nativeElement.innerHTML).not.toMatch(/--p-/);
   });
 });

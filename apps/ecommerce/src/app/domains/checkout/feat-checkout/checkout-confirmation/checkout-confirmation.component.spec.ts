@@ -180,6 +180,9 @@ describe('CheckoutConfirmationComponent', () => {
       ) as HTMLAnchorElement;
       expect(link).toBeTruthy();
       expect(link.textContent).toContain('Συνέχεια αγορών');
+      expect(link.hasAttribute('libButton')).toBe(true);
+      expect(harness.routeNativeElement?.innerHTML).not.toMatch(/\bgray-/);
+      expect(harness.routeNativeElement?.innerHTML).not.toMatch(/--p-/);
     });
 
     it('does not show guest email section when confirmedGuestEmail is null', async () => {

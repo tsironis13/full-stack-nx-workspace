@@ -36,8 +36,8 @@
 // -------------------------------------------------------
 
 .checkout-section {
-  background: var(--p-content-background, #fff);
-  border: 1px solid var(--p-content-border-color, #e5e7eb);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 0.5rem;
   padding: 1.25rem 1.5rem;
   display: flex;
@@ -53,7 +53,7 @@
 
 .checkout-section__note {
   font-size: 0.875rem;
-  color: var(--p-text-muted-color, #6b7280);
+  color: color-mix(in srgb, var(--color-foreground) 68%, transparent);
   margin: 0;
 }
 
@@ -81,8 +81,8 @@
 // -------------------------------------------------------
 
 .checkout-summary {
-  background: var(--p-content-background, #fff);
-  border: 1px solid var(--p-content-border-color, #e5e7eb);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 0.5rem;
   padding: 1.25rem 1.5rem;
   display: flex;
@@ -98,7 +98,7 @@
 
 .checkout-summary__empty {
   font-size: 0.9375rem;
-  color: var(--p-text-muted-color, #6b7280);
+  color: color-mix(in srgb, var(--color-foreground) 68%, transparent);
 }
 
 .checkout-summary__items {
@@ -127,7 +127,7 @@
 }
 
 .checkout-summary__item-qty {
-  color: var(--p-text-muted-color, #6b7280);
+  color: color-mix(in srgb, var(--color-foreground) 68%, transparent);
   margin-left: 0.25rem;
 }
 
@@ -140,7 +140,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-top: 2px solid var(--p-content-border-color, #e5e7eb);
+  border-top: 2px solid var(--color-border);
   padding-top: 0.75rem;
   font-size: 1rem;
 
