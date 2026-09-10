@@ -12,6 +12,7 @@ export {
 } from './i18n/public-api';
 export {
   UiThemeService,
+  provideUiTheme,
   DEFAULT_UI_THEME,
   UI_THEME_STORAGE_KEY,
   type UiTheme,

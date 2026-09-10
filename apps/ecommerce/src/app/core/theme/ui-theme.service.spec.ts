@@ -14,6 +14,7 @@ import {
   ECOMMERCE_APP_DARK_CLASS,
   UI_THEME_STORAGE_KEY,
 } from './ui-theme';
+import { provideUiTheme } from './provide-ui-theme';
 import { UiThemeService } from './ui-theme.service';
 
 describe('UiThemeService', () => {
@@ -159,5 +160,30 @@ describe('UiThemeService', () => {
     TestBed.inject(AuthStore).logout();
 
     expect(storage.getJson(UI_THEME_STORAGE_KEY)).toBe('dark');
+  });
+
+  it('applies stored dark UI Theme after logout without constructing Header', () => {
+    const storage = TestBed.inject(LocalStorageFacade);
+    storage.setJson(UI_THEME_STORAGE_KEY, 'dark');
+    TestBed.inject(AuthStore).logout();
+
+    TestBed.resetTestingModule();
+    document.documentElement.classList.remove(ECOMMERCE_APP_DARK_CLASS);
+    document.documentElement.style.colorScheme = '';
+
+    TestBed.configureTestingModule({
+      providers: [
+        LocalStorageFacade,
+        { provide: PLATFORM_ID, useValue: 'browser' },
+        provideUiTheme(),
+      ],
+    });
+
+    TestBed.inject(LocalStorageFacade);
+
+    expect(
+      document.documentElement.classList.contains(ECOMMERCE_APP_DARK_CLASS),
+    ).toBe(true);
+    expect(document.documentElement.style.colorScheme).toBe('dark');
   });
 });

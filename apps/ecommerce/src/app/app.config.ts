@@ -10,7 +10,11 @@ import { provideCopilotKit } from '@copilotkit/angular';
 import { provideMarkdownRenderer } from '@a2ui/angular/v0_9';
 import { marked } from 'marked';
 
-import { authInterceptor, provideEcommerceI18n } from './core/public-api';
+import {
+  authInterceptor,
+  provideEcommerceI18n,
+  provideUiTheme,
+} from './core/public-api';
 import { appRoutes } from './app.routes';
 import {
   AUTH_API_URL_TOKEN,
@@ -38,6 +42,7 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     provideEnvConfig(),
     provideEcommerceI18n(),
+    provideUiTheme(),
     provideAuthServices(),
     provideCopilotKit({
       defaultToolRendering: true,
