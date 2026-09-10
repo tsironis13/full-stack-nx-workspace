@@ -1,8 +1,8 @@
 import { Component, effect, inject, output, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { ButtonModule } from 'primeng/button';
 import { TranslocoPipe } from '@jsverse/transloco';
 
+import { ButtonDirective } from '@full-stack-nx-workspace/shared';
 import { AuthIfDirective, AuthStore } from '@full-stack-nx-workspace/auth-web';
 import { CartAclReadAdapter } from '../../domains/cart/application/anti-corruption-layer';
 import { UiLanguageService, type UiLanguage } from '../../core/public-api';
@@ -11,7 +11,7 @@ import { UiLanguageService, type UiLanguage } from '../../core/public-api';
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
-  imports: [AuthIfDirective, ButtonModule, RouterLink, TranslocoPipe],
+  imports: [AuthIfDirective, ButtonDirective, RouterLink, TranslocoPipe],
   host: {
     class:
       'flex bg-white dark:bg-gray-900 min-h-20 fixed top-0 left-0 z-50 w-full items-center border-b border-gray-200 dark:border-gray-700',

@@ -11,9 +11,9 @@ import {
   CartItemWorkflowApiService,
   ProductItemConversionApiService,
 } from '../infrastructure/public-api';
+import { ecommerceTranslocoTestingModule } from '../../../core/public-api';
 import { CartItemConfirmHandler } from './cart-item-confirm.handler';
 import { ShoppingStore } from './shopping.store';
-import { ecommerceTranslocoTestingModule } from '../../../core/public-api';
 
 function envelopeFor(surfaceId: string) {
   return {
@@ -44,8 +44,8 @@ describe('ShoppingStore in-flight Cart Item workflow', () => {
     confirmHandler = { apply: jest.fn() };
 
     TestBed.configureTestingModule({
-      imports: [ecommerceTranslocoTestingModule()],
       providers: [
+        ecommerceTranslocoTestingModule(),
         ShoppingStore,
         { provide: CartItemWorkflowApiService, useValue: workflowApi },
         {

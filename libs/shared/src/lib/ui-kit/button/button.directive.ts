@@ -15,7 +15,7 @@ export type ButtonSize = 'sm' | 'md' | 'icon';
   selector: 'button[libButton], a[libButton]',
   host: {
     class:
-      'inline-flex items-center justify-center gap-2 font-medium rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+      'inline-flex cursor-pointer items-center justify-center gap-2 font-medium rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
     '[class.bg-primary]': 'variant() === "primary"',
     '[class.text-primary-foreground]': 'variant() === "primary"',
     '[class.hover:bg-primary-800]': 'variant() === "primary"',

@@ -2,10 +2,11 @@ import { signal, type WritableSignal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { By } from '@angular/platform-browser';
+import { Dispatcher, provideDispatcher } from '@ngrx/signals/events';
 
-import { CartStore } from '../application/public-api';
-import { CartPageComponent } from './cart-page.component';
 import { ecommerceTranslocoTestingModule } from '../../../core/public-api';
+import { CartStore, cartUiEvents } from '../application/public-api';
+import { CartPageComponent } from './cart-page.component';
 
 /** Snapshot fields the cart page template reads (keeps specs free of domain barrels). */
 interface CartPageLineFixture {
@@ -21,28 +22,21 @@ interface CartPageLineFixture {
 describe('CartPageComponent', () => {
   let itemsSig: WritableSignal<CartPageLineFixture[]>;
   let pendingSig: WritableSignal<number | null>;
-  let incrementLine: jest.Mock;
-  let decrementLine: jest.Mock;
-  let removeLine: jest.Mock;
 
   beforeEach(() => {
     itemsSig = signal([]);
     pendingSig = signal(null);
-    incrementLine = jest.fn();
-    decrementLine = jest.fn();
-    removeLine = jest.fn();
 
     TestBed.configureTestingModule({
-      imports: [CartPageComponent, ecommerceTranslocoTestingModule()],
+      imports: [CartPageComponent],
       providers: [
+        ecommerceTranslocoTestingModule(),
+        ...provideDispatcher(),
         {
           provide: CartStore,
           useValue: {
             items: itemsSig.asReadonly(),
             pendingMainProductItemId: pendingSig.asReadonly(),
-            incrementLine,
-            decrementLine,
-            removeLine,
           },
         },
         provideRouter([]),
@@ -124,7 +118,7 @@ describe('CartPageComponent', () => {
     expect(subtotalEl.nativeElement.textContent).toContain('30');
   });
 
-  it('calls store.incrementLine when addItemToCart fires', () => {
+  it('dispatches incrementItem when addItemToCart fires', () => {
     itemsSig.set([
       {
         productId: 1,
@@ -138,15 +132,20 @@ describe('CartPageComponent', () => {
     ]);
 
     const fixture = createFixture();
+    const dispatcher = TestBed.inject(Dispatcher);
+    jest.spyOn(dispatcher, 'dispatch');
     const control = fixture.debugElement.query(
       By.css('app-cart-quantity-control'),
     );
     control.triggerEventHandler('addItemToCart', null);
 
-    expect(incrementLine).toHaveBeenCalledWith(7);
+    expect(dispatcher.dispatch).toHaveBeenCalledWith(
+      cartUiEvents.incrementItem({ mainProductItemId: 7 }),
+      { scope: 'self' },
+    );
   });
 
-  it('calls store.decrementLine when removeItemFromCart fires', () => {
+  it('dispatches decrementOrRemoveItem when removeItemFromCart fires', () => {
     itemsSig.set([
       {
         productId: 1,
@@ -160,12 +159,17 @@ describe('CartPageComponent', () => {
     ]);
 
     const fixture = createFixture();
+    const dispatcher = TestBed.inject(Dispatcher);
+    jest.spyOn(dispatcher, 'dispatch');
     const control = fixture.debugElement.query(
       By.css('app-cart-quantity-control'),
     );
     control.triggerEventHandler('removeItemFromCart', null);
 
-    expect(decrementLine).toHaveBeenCalledWith(7);
+    expect(dispatcher.dispatch).toHaveBeenCalledWith(
+      cartUiEvents.decrementOrRemoveItem({ mainProductItemId: 7 }),
+      { scope: 'self' },
+    );
   });
 
   it('shows cart subtotal', () => {

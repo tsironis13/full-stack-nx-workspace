@@ -1,18 +1,17 @@
-<p-drawer
-  [(visible)]="visible"
-  [header]="'cart.title' | transloco"
-  position="right"
-  styleClass="cart-drawer"
->
+<lib-drawer [(open)]="visible">
+  <h2 class="m-0 pb-4 text-lg font-semibold">{{ 'cart.title' | transloco }}</h2>
   @if (cartRead.items().length === 0) {
     <div class="cart-drawer__empty">
       <p class="cart-drawer__empty-text">{{ 'cart.empty' | transloco }}</p>
-      <p-button
-        [label]="'cart.continue' | transloco"
-        icon="pi pi-arrow-left"
-        severity="secondary"
-        (onClick)="visible.set(false)"
-      />
+      <button
+        libButton
+        type="button"
+        variant="secondary"
+        (click)="visible.set(false)"
+      >
+        <i class="pi pi-arrow-left" aria-hidden="true"></i>
+        {{ 'cart.continue' | transloco }}
+      </button>
     </div>
   } @else {
     <div class="cart-drawer__main">
@@ -32,10 +31,7 @@
                 aria-busy="true"
                 [attr.aria-label]="'cart.updatingLine' | transloco"
               >
-                <p-progress-spinner 
-                  strokeWidth="4"
-                  styleClass="cart-drawer__spinner"
-                />
+                <lib-spinner [ariaLabel]="'cart.updatingLine' | transloco" />
               </div>
             }
             @if (line.available === false) {
@@ -71,14 +67,16 @@
                     (addItemToCart)="onIncrement(line.mainProductItemId)"
                     (removeItemFromCart)="onDecrement(line.mainProductItemId)"
                   />
-                  <p-button
-                    icon="pi pi-trash"
-                    [text]="true"
-                    severity="danger"
-                    size="small"
-                    [aria-label]="'cart.remove' | transloco"
-                    (onClick)="onRemove(line.mainProductItemId)"
-                  />
+                  <button
+                    libButton
+                    type="button"
+                    variant="danger"
+                    size="icon"
+                    [attr.aria-label]="'cart.remove' | transloco"
+                    (click)="onRemove(line.mainProductItemId)"
+                  >
+                    <i class="pi pi-trash" aria-hidden="true"></i>
+                  </button>
                 </div>
               }
             </div>
@@ -101,13 +99,11 @@
         <p class="cart-drawer__total">
           {{ 'cart.total' | transloco }}: <strong>{{ formattedSubtotal() }}</strong>
         </p>
-        <p-button
-          [label]="'cart.viewCart' | transloco"
-          icon="pi pi-shopping-cart"
-          styleClass="w-full"
-          (onClick)="goToCart()"
-        />
+        <button libButton type="button" class="w-full" (click)="goToCart()">
+          <i class="pi pi-shopping-cart" aria-hidden="true"></i>
+          {{ 'cart.viewCart' | transloco }}
+        </button>
       </div>
     </div>
   }
-</p-drawer>
+</lib-drawer>

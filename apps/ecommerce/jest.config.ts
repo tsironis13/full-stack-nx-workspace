@@ -13,7 +13,9 @@ export default {
       },
     ],
   },
-  transformIgnorePatterns: ['node_modules/(?!.*\\.mjs$)'],
+  transformIgnorePatterns: [
+    'node_modules/(?!.*\\.mjs$|@jsverse/)',
+  ],
   moduleNameMapper: {
     '^@copilotkit/a2ui-renderer(/.*)?$':
       '<rootDir>/src/test-mocks/copilotkit-a2ui-renderer.js',

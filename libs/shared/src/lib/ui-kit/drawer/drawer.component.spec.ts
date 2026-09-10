@@ -42,8 +42,14 @@ describe('DrawerComponent', () => {
       'dialog',
     ) as HTMLDialogElement;
     expect(dialog.open).toBe(true);
+    expect(dialog.classList.contains('lib-drawer__panel')).toBe(true);
     expect(dialog.getAttribute('role')).toBe('dialog');
     expect(dialog.contains(document.activeElement)).toBe(true);
+
+    fixture.componentInstance.open.set(false);
+    await fixture.whenStable();
+
+    expect(dialog.open).toBe(false);
   });
 
   it('closes on Escape and writes open back to false', async () => {

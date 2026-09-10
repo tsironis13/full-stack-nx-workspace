@@ -1,21 +1,18 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-} from '@angular/core';
-import { RouterLink } from '@angular/router';
-
-import { ButtonModule } from 'primeng/button';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { Component, computed, inject } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
+import { injectDispatch } from '@ngrx/signals/events';
 import { TranslocoPipe } from '@jsverse/transloco';
 
+import {
+  ButtonDirective,
+  SpinnerComponent,
+} from '@full-stack-nx-workspace/shared';
 import {
   CartUnavailableLineAlertComponent,
   CartPriceChangedLineComponent,
   CartQuantityControlComponent,
 } from '../../../ui/public-api';
-import { CartStore } from '../application/public-api';
+import { CartStore, cartUiEvents } from '../application/public-api';
 
 function formatEur(amount: number): string {
   return new Intl.NumberFormat('el-GR', {
@@ -28,11 +25,10 @@ function formatEur(amount: number): string {
   selector: 'app-cart-page',
   templateUrl: './cart-page.component.html',
   styleUrl: './cart-page.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     RouterLink,
-    ButtonModule,
-    ProgressSpinnerModule,
+    ButtonDirective,
+    SpinnerComponent,
     CartQuantityControlComponent,
     CartUnavailableLineAlertComponent,
     CartPriceChangedLineComponent,
@@ -41,6 +37,8 @@ function formatEur(amount: number): string {
 })
 export class CartPageComponent {
   protected readonly store = inject(CartStore);
+  private readonly _dispatch = injectDispatch(cartUiEvents);
+  private readonly _router = inject(Router);
 
   protected readonly cartSubtotal = computed(() =>
     this.store
@@ -53,6 +51,13 @@ export class CartPageComponent {
 
   protected readonly hasUnavailableItems = computed(() =>
     this.store.items().some((item) => item.available === false),
+  );
+
+  protected readonly checkoutBlocked = computed(
+    () =>
+      this.store.items().length === 0 ||
+      this.store.pendingMainProductItemId() !== null ||
+      this.hasUnavailableItems(),
   );
 
   protected lineSubtotal(
@@ -70,14 +75,21 @@ export class CartPageComponent {
   protected formattedSubtotal = computed(() => formatEur(this.cartSubtotal()));
 
   protected onIncrement(mainProductItemId: number): void {
-    this.store.incrementLine(mainProductItemId);
+    this._dispatch.incrementItem({ mainProductItemId });
   }
 
   protected onDecrement(mainProductItemId: number): void {
-    this.store.decrementLine(mainProductItemId);
+    this._dispatch.decrementOrRemoveItem({ mainProductItemId });
   }
 
   protected onRemove(mainProductItemId: number): void {
-    this.store.removeLine(mainProductItemId);
+    this._dispatch.removeItem({ mainProductItemId });
+  }
+
+  protected goToCheckout(): void {
+    if (this.checkoutBlocked()) {
+      return;
+    }
+    void this._router.navigate(['/checkout']);
   }
 }

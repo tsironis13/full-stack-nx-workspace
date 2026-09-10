@@ -33,24 +33,37 @@
       </button>
     </div>
 
-    <p-button
-      [icon]="theme() === 'light' ? 'pi pi-moon' : 'pi pi-sun'"
-      [aria-label]="
+    <button
+      libButton
+      type="button"
+      variant="ghost"
+      size="icon"
+      [attr.aria-label]="
         theme() === 'light'
           ? ('header.themeLight' | transloco)
           : ('header.themeDark' | transloco)
       "
-      [text]="true"
-      (onClick)="toggleTheme()"
-    />
+      (click)="toggleTheme()"
+    >
+      <i
+        class="pi"
+        [class.pi-moon]="theme() === 'light'"
+        [class.pi-sun]="theme() !== 'light'"
+        aria-hidden="true"
+      ></i>
+    </button>
 
     <span class="header__cart-wrapper">
-      <p-button
-        icon="pi pi-shopping-cart"
-        [aria-label]="'header.openCart' | transloco"
-        [text]="true"
-        (onClick)="openCartDrawer()"
-      />
+      <button
+        libButton
+        type="button"
+        variant="ghost"
+        size="icon"
+        [attr.aria-label]="'header.openCart' | transloco"
+        (click)="openCartDrawer()"
+      >
+        <i class="pi pi-shopping-cart" aria-hidden="true"></i>
+      </button>
       @if (cartRead.totalUnitCount() > 0) {
         <span
           class="header__cart-badge"
@@ -67,7 +80,7 @@
       <div class="flex flex-wrap items-center gap-2">
         <a
           routerLink="/orders"
-          class="text-sm hover:underline whitespace-nowrap px-1 text-[color:var(--p-primary-color)]"
+          class="text-sm hover:underline whitespace-nowrap px-1 text-primary"
         >
           {{ 'header.orders' | transloco }}
         </a>
@@ -77,16 +90,17 @@
         >
           {{ authStore.authUser()?.name }}
         </span>
-        <p-button
-          icon="pi pi-sign-out"
-          [label]="'header.logout' | transloco"
-          severity="secondary"
-          size="small"
-          [text]="true"
-          [aria-label]="'header.logout' | transloco"
+        <button
+          libButton
           type="button"
-          (onClick)="logout()"
-        />
+          variant="ghost"
+          size="sm"
+          [attr.aria-label]="'header.logout' | transloco"
+          (click)="logout()"
+        >
+          <i class="pi pi-sign-out" aria-hidden="true"></i>
+          {{ 'header.logout' | transloco }}
+        </button>
       </div>
     </div>
 
@@ -99,7 +113,7 @@
     <ng-template #notConnectedTemplate>
       <a
         routerLink="/login"
-        class="text-sm hover:underline whitespace-nowrap px-1 text-[color:var(--p-primary-color)]"
+        class="text-sm hover:underline whitespace-nowrap px-1 text-primary"
       >
         {{ 'header.signIn' | transloco }}
       </a>

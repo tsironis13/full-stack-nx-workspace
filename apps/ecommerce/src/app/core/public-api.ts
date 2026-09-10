@@ -3,6 +3,7 @@ export { authInterceptor } from './auth/auth.interceptor';
 export { REQUIRES_AUTH } from './auth/requires-auth.context';
 export {
   provideEcommerceI18n,
+  ecommerceTranslocoTestingModule,
   UiLanguageService,
   mapHttpErrorToTranslocoKey,
   encodeMachineText,

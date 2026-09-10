@@ -9,6 +9,8 @@
     "items": "Products in the cart",
     "newPrice": "New price: {{price}}",
     "productFallback": "Product",
+    "decreaseQty": "Decrease quantity",
+    "increaseQty": "Increase quantity",
     "quantity": {
       "min": "Quantity must be at least 1"
     },

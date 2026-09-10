@@ -1,3 +1,54 @@
-dialog::backdrop {
+$lib-drawer-duration: 280ms;
+$lib-drawer-easing: cubic-bezier(0.32, 0.72, 0, 1);
+
+.lib-drawer__panel {
+  transform: translateX(100%);
+  opacity: 0;
+  transition:
+    transform $lib-drawer-duration $lib-drawer-easing,
+    opacity $lib-drawer-duration ease,
+    overlay $lib-drawer-duration allow-discrete,
+    display $lib-drawer-duration allow-discrete;
+}
+
+.lib-drawer__panel[open] {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+@starting-style {
+  .lib-drawer__panel[open] {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+.lib-drawer__panel::backdrop {
   background: rgb(0 0 0 / 0.4);
+  opacity: 0;
+  transition:
+    opacity $lib-drawer-duration ease,
+    overlay $lib-drawer-duration allow-discrete,
+    display $lib-drawer-duration allow-discrete;
+}
+
+.lib-drawer__panel[open]::backdrop {
+  opacity: 1;
+}
+
+@starting-style {
+  .lib-drawer__panel[open]::backdrop {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lib-drawer__panel,
+  .lib-drawer__panel::backdrop {
+    transition: none;
+  }
+
+  .lib-drawer__panel {
+    transform: none;
+  }
 }
