@@ -1,7 +1,7 @@
 <div class="confirmation-page">
   @if (confirmedOrder()) {
     <div class="confirmation-page__content">
-      <div class="confirmation-page__icon" aria-hidden="true">
+      <div class="confirmation-page__icon text-green-600" aria-hidden="true">
         <i class="pi pi-check-circle"></i>
       </div>
 
@@ -17,7 +17,7 @@
         </div>
         <div class="confirmation-detail">
           <span class="confirmation-detail__label">{{ 'checkout.status' | transloco }}</span>
-          <strong class="confirmation-detail__value confirmation-detail__value--confirmed">
+          <strong class="confirmation-detail__value confirmation-detail__value--confirmed text-green-600">
             {{ 'checkout.confirmed' | transloco }}
           </strong>
         </div>
