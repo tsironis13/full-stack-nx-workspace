@@ -1,7 +1,12 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { PaginatorModule, PaginatorState } from 'primeng/paginator';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TranslocoPipe } from '@jsverse/transloco';
+
+import {
+  ButtonDirective,
+  PaginatorComponent,
+  SpinnerComponent,
+  type PaginatorPageChange,
+} from '@full-stack-nx-workspace/shared';
 
 import {
   CatalogBrowseStore,
@@ -19,19 +24,21 @@ import { CatalogProductCardComponent } from './catalog-product-card/catalog-prod
   templateUrl: './catalog-browse.page.html',
   styleUrl: './catalog-browse.page.scss',
   imports: [
+    ButtonDirective,
     CatalogAttributeFacetsComponent,
     CatalogBrowseToolbarComponent,
     CatalogCategoryFacetComponent,
     CatalogMinRatingFacetComponent,
     CatalogPriceBandComponent,
     CatalogProductCardComponent,
-    PaginatorModule,
-    ProgressSpinnerModule,
+    PaginatorComponent,
+    SpinnerComponent,
     TranslocoPipe,
   ],
 })
 export class CatalogBrowsePageComponent implements OnInit {
   protected readonly store = inject(CatalogBrowseStore);
+  protected readonly pageSizeOptions = [12, 24, 48];
 
   protected readonly sortOptions: { value: CatalogSort; labelKey: string }[] = [
     { value: 'newest', labelKey: 'catalog.sort.newest' },
@@ -57,11 +64,9 @@ export class CatalogBrowsePageComponent implements OnInit {
     this.store.load();
   }
 
-  protected onPageChange(state: PaginatorState): void {
-    const nextPage = (state.page ?? 0) + 1;
-    const rows = state.rows ?? this.store.pageSize();
-    this.store.setPage(nextPage);
-    this.store.setPageSize(rows);
+  protected onPageChange({ page, pageSize }: PaginatorPageChange): void {
+    this.store.setPage(page);
+    this.store.setPageSize(pageSize);
     this.store.load();
   }
 }

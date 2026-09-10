@@ -8,6 +8,12 @@ import {
 import { FormsModule } from '@angular/forms';
 import { TranslocoPipe } from '@jsverse/transloco';
 
+import {
+  ButtonDirective,
+  InputDirective,
+  SelectDirective,
+} from '@full-stack-nx-workspace/shared';
+
 import type { CatalogSort } from '../../application/public-api';
 
 @Component({
@@ -15,7 +21,13 @@ import type { CatalogSort } from '../../application/public-api';
   templateUrl: './catalog-browse-toolbar.component.html',
   styleUrl: './catalog-browse-toolbar.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, TranslocoPipe],
+  imports: [
+    ButtonDirective,
+    FormsModule,
+    InputDirective,
+    SelectDirective,
+    TranslocoPipe,
+  ],
 })
 export class CatalogBrowseToolbarComponent {
   readonly sort = input.required<CatalogSort>();

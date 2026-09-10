@@ -170,6 +170,18 @@ describe('CheckoutConfirmationComponent', () => {
       );
     });
 
+    it('offers a way back to Catalog', async () => {
+      const storeMock = createStoreMock({ isSuccess: true });
+      const { harness } = await setup(storeMock);
+      harness.detectChanges();
+
+      const link = harness.routeNativeElement?.querySelector(
+        'a[href="/catalog"]',
+      ) as HTMLAnchorElement;
+      expect(link).toBeTruthy();
+      expect(link.textContent).toContain('Συνέχεια αγορών');
+    });
+
     it('does not show guest email section when confirmedGuestEmail is null', async () => {
       const storeMock = createStoreMock({
         isSuccess: true,

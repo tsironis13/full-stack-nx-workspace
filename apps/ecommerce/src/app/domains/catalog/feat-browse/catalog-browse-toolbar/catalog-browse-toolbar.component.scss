@@ -27,33 +27,3 @@
   gap: 0.5rem;
   flex-wrap: wrap;
 }
-
-.catalog-browse__input {
-  flex: 1 1 12rem;
-  min-height: 2.5rem;
-  padding: 0 0.75rem;
-  border-radius: var(--p-border-radius-md, 6px);
-  border: 1px solid var(--p-content-border-color, #e5e7eb);
-  background: var(--p-content-background, #fff);
-  color: inherit;
-}
-
-.catalog-browse__select {
-  min-height: 2.5rem;
-  padding: 0 0.75rem;
-  border-radius: var(--p-border-radius-md, 6px);
-  border: 1px solid var(--p-content-border-color, #e5e7eb);
-  background: var(--p-content-background, #fff);
-  color: inherit;
-}
-
-.catalog-browse__btn {
-  min-height: 2.5rem;
-  padding: 0 1rem;
-  border-radius: var(--p-border-radius-md, 6px);
-  border: none;
-  cursor: pointer;
-  font-weight: 500;
-  background: var(--p-primary-color, #2563eb);
-  color: var(--p-primary-contrast-color, #fff);
-}

@@ -33,23 +33,6 @@
   color: var(--p-red-500, #b91c1c);
 }
 
-.catalog-browse__spinner {
-  width: 2.5rem;
-  height: 2.5rem;
-}
-
-/* Retry button rendered directly in the error state block */
-.catalog-browse__btn {
-  min-height: 2.5rem;
-  padding: 0 1rem;
-  border-radius: var(--p-border-radius-md, 6px);
-  border: none;
-  cursor: pointer;
-  font-weight: 500;
-  background: var(--p-primary-color, #2563eb);
-  color: var(--p-primary-contrast-color, #fff);
-}
-
 .catalog-browse__summary {
   margin: 0 0 1rem;
   font-size: 0.9rem;

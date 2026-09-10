@@ -5,8 +5,9 @@ import {
   OnInit,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { ButtonModule } from 'primeng/button';
 import { TranslocoPipe } from '@jsverse/transloco';
+
+import { ButtonDirective } from '@full-stack-nx-workspace/shared';
 
 import { CheckoutStore } from '../../application/public-api';
 
@@ -22,7 +23,7 @@ function formatEur(amount: number): string {
   templateUrl: './checkout-confirmation.component.html',
   styleUrl: './checkout-confirmation.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, ButtonModule, TranslocoPipe],
+  imports: [RouterLink, ButtonDirective, TranslocoPipe],
 })
 export class CheckoutConfirmationComponent implements OnInit {
   private readonly store = inject(CheckoutStore);

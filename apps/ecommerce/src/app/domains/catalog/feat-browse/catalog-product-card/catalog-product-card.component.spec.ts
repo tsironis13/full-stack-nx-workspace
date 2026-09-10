@@ -70,6 +70,16 @@ describe('CatalogProductCardComponent', () => {
     );
   });
 
+  it('shows a kit spinner with a UI Language name while the line is updating', () => {
+    pendingSig.set(10);
+
+    const fixture = createFixture(baseItem);
+    const spinner = fixture.nativeElement.querySelector('lib-spinner');
+
+    expect(spinner).toBeTruthy();
+    expect(spinner.getAttribute('aria-label')).toBe('Ενημέρωση ποσότητας');
+  });
+
   it('hides the star score when the product has no reviews', () => {
     const fixture = createFixture(baseItem);
 

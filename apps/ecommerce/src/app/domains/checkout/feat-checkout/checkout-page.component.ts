@@ -15,13 +15,14 @@ import {
 import { Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { EMPTY } from 'rxjs';
-
-import { ButtonModule } from 'primeng/button';
-import { InputTextModule } from 'primeng/inputtext';
-import { FluidModule } from 'primeng/fluid';
-import { MessageModule } from 'primeng/message';
 import { TranslocoPipe } from '@jsverse/transloco';
 
+import {
+  ButtonDirective,
+  FieldComponent,
+  InlineMessageComponent,
+  InputDirective,
+} from '@full-stack-nx-workspace/shared';
 import { AuthStore } from '@full-stack-nx-workspace/auth-web';
 
 import { CheckoutStore } from '../application/public-api';
@@ -33,6 +34,16 @@ function formatEur(amount: number): string {
   }).format(amount);
 }
 
+const REQUIRED_ERROR_KEYS: Record<string, string> = {
+  guestEmail: 'checkout.emailRequired',
+  'shippingAddress.fullName': 'checkout.fullNameRequired',
+  'shippingAddress.streetAddress': 'checkout.addressRequired',
+  'shippingAddress.city': 'checkout.cityRequired',
+  'shippingAddress.postalCode': 'checkout.postalCodeRequired',
+  'shippingAddress.country': 'checkout.countryRequired',
+  'shippingAddress.phone': 'checkout.phoneRequired',
+};
+
 @Component({
   selector: 'app-checkout-page',
   templateUrl: './checkout-page.component.html',
@@ -40,10 +51,10 @@ function formatEur(amount: number): string {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule,
-    ButtonModule,
-    InputTextModule,
-    FluidModule,
-    MessageModule,
+    ButtonDirective,
+    FieldComponent,
+    InlineMessageComponent,
+    InputDirective,
     TranslocoPipe,
   ],
 })
@@ -127,6 +138,20 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
     if (!this.store.isSuccess()) {
       this.store.resetStatus();
     }
+  }
+
+  protected fieldError(path: string): string | undefined {
+    const ctrl = this.form.get(path);
+    if (!ctrl?.touched || !ctrl.errors) {
+      return undefined;
+    }
+    if (ctrl.errors['required']) {
+      return REQUIRED_ERROR_KEYS[path];
+    }
+    if (ctrl.errors['email']) {
+      return 'checkout.emailInvalid';
+    }
+    return undefined;
   }
 
   protected formatEur(amount: number): string {

@@ -14,9 +14,14 @@ import {
 } from '@angular/forms';
 import { NgTemplateOutlet } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { PaginatorModule, PaginatorState } from 'primeng/paginator';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+
+import {
+  ButtonDirective,
+  PaginatorComponent,
+  SpinnerComponent,
+  type PaginatorPageChange,
+} from '@full-stack-nx-workspace/shared';
 
 import { UiLanguageService } from '../../../core/public-api';
 
@@ -38,13 +43,15 @@ import {
     RouterLink,
     ReactiveFormsModule,
     NgTemplateOutlet,
-    PaginatorModule,
-    ProgressSpinnerModule,
+    ButtonDirective,
+    PaginatorComponent,
+    SpinnerComponent,
     TranslocoPipe,
   ],
 })
 export class ProductDetailPageComponent implements OnInit {
   readonly id = input.required<string>();
+  protected readonly reviewPageSizeOptions = [5, 10, 20];
 
   protected readonly store = inject(ProductDetailStore);
   protected readonly submission = inject(ReviewSubmissionStore);
@@ -160,10 +167,8 @@ export class ProductDetailPageComponent implements OnInit {
     }).format(value);
   }
 
-  protected onPageChange(state: PaginatorState): void {
-    const nextPage = (state.page ?? 0) + 1;
-    const rows = state.rows ?? this.store.pageSize();
-    this.store.applyPagination(nextPage, rows);
+  protected onPageChange({ page, pageSize }: PaginatorPageChange): void {
+    this.store.applyPagination(page, pageSize);
   }
 
   protected stars(): readonly number[] {

@@ -5,8 +5,12 @@ import {
   OnInit,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TranslocoPipe } from '@jsverse/transloco';
+
+import {
+  ButtonDirective,
+  SpinnerComponent,
+} from '@full-stack-nx-workspace/shared';
 
 import { OrderHistoryStore } from '../application/public-api';
 
@@ -15,7 +19,7 @@ import { OrderHistoryStore } from '../application/public-api';
   templateUrl: './order-history.page.html',
   styleUrl: './order-history.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, ProgressSpinnerModule, TranslocoPipe],
+  imports: [RouterLink, ButtonDirective, SpinnerComponent, TranslocoPipe],
 })
 export class OrderHistoryPageComponent implements OnInit {
   protected readonly store = inject(OrderHistoryStore);

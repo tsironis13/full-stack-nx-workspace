@@ -2,6 +2,7 @@ import { signal, type WritableSignal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { By } from '@angular/platform-browser';
+import { TranslocoService } from '@jsverse/transloco';
 
 import { AuthStore } from '@full-stack-nx-workspace/auth-web';
 
@@ -20,6 +21,7 @@ describe('ProductDetailPageComponent', () => {
   let displayedAverageSig: WritableSignal<string | null>;
   let hasReviewsSig: WritableSignal<boolean>;
   let loadMock: jest.Mock;
+  let applyPaginationMock: jest.Mock;
 
   let isAuthenticatedSig: WritableSignal<boolean>;
   let myReviewSig: WritableSignal<MyReview | null>;
@@ -38,6 +40,7 @@ describe('ProductDetailPageComponent', () => {
     displayedAverageSig = signal<string | null>(null);
     hasReviewsSig = signal(false);
     loadMock = jest.fn();
+    applyPaginationMock = jest.fn();
 
     isAuthenticatedSig = signal(false);
     myReviewSig = signal<MyReview | null>(null);
@@ -62,7 +65,7 @@ describe('ProductDetailPageComponent', () => {
             displayedAverageRating: displayedAverageSig.asReadonly(),
             hasReviews: hasReviewsSig.asReadonly(),
             load: loadMock,
-            applyPagination: jest.fn(),
+            applyPagination: applyPaginationMock,
           },
         },
         {
@@ -99,6 +102,59 @@ describe('ProductDetailPageComponent', () => {
   it('loads reviews for the route product id on init', () => {
     createFixture('42');
     expect(loadMock).toHaveBeenCalledWith(42);
+  });
+
+  it('names the reviews spinner in the active UI Language', () => {
+    loadingSig.set(true);
+
+    const fixture = createFixture();
+    const transloco = TestBed.inject(TranslocoService);
+    const spinner = fixture.nativeElement.querySelector('lib-spinner');
+
+    expect(spinner).toBeTruthy();
+    expect(spinner.getAttribute('aria-label')).toBe(
+      transloco.translate('product.loadingReviews'),
+    );
+    expect(transloco.translate('product.loadingReviews', {}, 'el')).toBe(
+      'Φόρτωση κριτικών…',
+    );
+    expect(transloco.translate('product.loadingReviews', {}, 'en')).toBe(
+      'Loading reviews…',
+    );
+  });
+
+  it('pages reviews from the Product store page and pageSize', () => {
+    dataSig.set({
+      items: [
+        {
+          id: 1,
+          rating: 5,
+          title: null,
+          body: null,
+          authorDisplayName: 'Kate R.',
+          createdAt: new Date('2026-01-15T10:00:00.000Z'),
+        },
+      ],
+      total: 12,
+      page: 1,
+      pageSize: 5,
+      averageRating: 5,
+      reviewCount: 12,
+    });
+    hasReviewsSig.set(true);
+    displayedAverageSig.set('5.0');
+
+    const fixture = createFixture();
+    const paginator = fixture.debugElement.query(By.css('lib-paginator'));
+
+    expect(paginator).toBeTruthy();
+    expect(paginator.componentInstance.page()).toBe(1);
+    expect(paginator.componentInstance.pageSize()).toBe(5);
+
+    paginator.triggerEventHandler('pageChange', { page: 2, pageSize: 5 });
+    fixture.detectChanges();
+
+    expect(applyPaginationMock).toHaveBeenCalledWith(2, 5);
   });
 
   it('shows empty state when the product has no reviews', () => {
