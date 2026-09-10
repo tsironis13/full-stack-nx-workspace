@@ -1,7 +1,7 @@
 import { Service, inject, signal } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
-import { LocalStorageFacade } from '@full-stack-nx-workspace/shared';
 
+import { LocalStorageFacade } from '@full-stack-nx-workspace/shared';
 import {
   DEFAULT_UI_THEME,
   UI_THEME_STORAGE_KEY,

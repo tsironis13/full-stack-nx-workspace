@@ -1,7 +1,5 @@
 import {
   ApplicationConfig,
-  inject,
-  provideAppInitializer,
   provideBrowserGlobalErrorListeners,
   provideZonelessChangeDetection,
 } from '@angular/core';
@@ -12,11 +10,7 @@ import { provideCopilotKit } from '@copilotkit/angular';
 import { provideMarkdownRenderer } from '@a2ui/angular/v0_9';
 import { marked } from 'marked';
 
-import {
-  authInterceptor,
-  provideEcommerceI18n,
-  UiThemeService,
-} from './core/public-api';
+import { authInterceptor, provideEcommerceI18n } from './core/public-api';
 import { appRoutes } from './app.routes';
 import {
   AUTH_API_URL_TOKEN,
@@ -44,9 +38,6 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     provideEnvConfig(),
     provideEcommerceI18n(),
-    provideAppInitializer(() => {
-      inject(UiThemeService);
-    }),
     provideAuthServices(),
     provideCopilotKit({
       defaultToolRendering: true,

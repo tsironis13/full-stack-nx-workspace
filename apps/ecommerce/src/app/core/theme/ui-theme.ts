@@ -23,22 +23,3 @@ export function applyUiThemeToDocument(
   root.classList.toggle(ECOMMERCE_APP_DARK_CLASS, theme === 'dark');
   root.style.colorScheme = theme;
 }
-
-/** Reads JSON the same way as LocalStorageFacade; used for pre-Angular first paint. */
-export function applyStoredUiThemeToDocument(
-  getItem: (key: string) => string | null,
-  root: Pick<HTMLElement, 'classList' | 'style'>,
-): UiTheme {
-  let parsed: unknown = null;
-  try {
-    const raw = getItem(UI_THEME_STORAGE_KEY);
-    if (raw !== null) {
-      parsed = JSON.parse(raw);
-    }
-  } catch {
-    parsed = null;
-  }
-  const theme = parseUiTheme(parsed);
-  applyUiThemeToDocument(root, theme);
-  return theme;
-}
