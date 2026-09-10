@@ -79,10 +79,29 @@ copilot-render-tool-calls ::ng-deep copilot-default-tool-renderer {
 copilot-render-tool-calls ::ng-deep .tool-card {
   border: 0;
   background: inherit;
+  color: var(--color-foreground);
 }
 
 copilot-render-tool-calls ::ng-deep .tool-summary {
   padding: 0;
+  color: inherit;
+}
+
+copilot-render-tool-calls ::ng-deep .tool-summary:focus-visible {
+  outline-color: var(--color-ring);
+}
+
+copilot-render-tool-calls ::ng-deep .tool-name {
+  color: var(--color-foreground);
+}
+
+copilot-render-tool-calls ::ng-deep .tool-status {
+  color: color-mix(in srgb, var(--color-foreground) 72%, transparent);
+}
+
+copilot-render-tool-calls ::ng-deep .tool-details {
+  border-top-color: var(--color-border);
+  color: var(--color-foreground);
 }
 
 .ai-wait-indicator {

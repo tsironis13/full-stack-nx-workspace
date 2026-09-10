@@ -1,5 +1,5 @@
 :host {
-  --assistant-accent: var(--color-primary);
+  --assistant-accent: var(--color-primary-outline);
 }
 
 #ai-panel {
@@ -70,7 +70,7 @@
     var(--color-foreground) 68%,
     transparent
   );
-  --a2ui-text-a-color: var(--color-primary);
+  --a2ui-text-a-color: var(--color-primary-outline);
   --a2ui-icon-color: var(--color-foreground);
 
   --a2ui-button-background: transparent;

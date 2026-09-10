@@ -51,7 +51,7 @@
       <ng-container [ngTemplateOutlet]="assistantAvatar" />
       <div class="min-w-0 max-w-[92%]">
         <div
-          class="bubble overflow-hidden rounded-2xl rounded-bl-md border border-border bg-surface px-3 py-2.5 text-sm"
+          class="bubble overflow-hidden rounded-2xl rounded-bl-md border border-border bg-surface px-3 py-2.5 text-sm text-foreground"
         >
           <copilot-render-tool-calls
             [message]="call.message"
@@ -88,7 +88,7 @@
     <ng-container [ngTemplateOutlet]="assistantAvatar" />
     <div class="min-w-0 max-w-[85%]">
       <div
-        class="bubble flex flex-col gap-3 rounded-2xl rounded-bl-md border border-primary/20 bg-primary/5 px-3.5 py-3 text-sm"
+        class="bubble flex flex-col gap-3 rounded-2xl rounded-bl-md border border-primary-outline/20 bg-primary-outline/5 px-3.5 py-3 text-sm"
       >
         <p class="interrupt-message m-0 text-foreground">
           {{ interrupt.message }}
@@ -97,7 +97,7 @@
           @for (option of interrupt.options; track option.id) {
             <button
               type="button"
-              class="w-full rounded-xl border border-primary px-3 py-2 text-sm font-semibold text-primary transition hover:bg-primary/10"
+              class="w-full rounded-xl border border-primary-outline px-3 py-2 text-sm font-semibold text-primary-outline transition hover:bg-primary-outline/10"
               (click)="resolveInterrupt(interrupt.id, option.payload)"
             >
               {{ option.label }}
@@ -128,7 +128,7 @@
 
 <ng-template #assistantAvatar>
   <div
-    class="grid size-8 shrink-0 place-items-center rounded-full bg-primary/15 text-primary"
+    class="grid size-8 shrink-0 place-items-center rounded-full bg-primary-outline/15 text-primary-outline"
     aria-hidden="true"
   >
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none">

@@ -92,12 +92,19 @@ describe('AssistantChatComponent UI Theme', () => {
 
     expect(launcher).toBeTruthy();
     expect(launcher.hasAttribute('libButton')).toBe(false);
-    expect(launcher.className).toContain('text-primary');
+    expect(launcher.classList.contains('text-primary-outline')).toBe(true);
+    expect(launcher.classList.contains('text-primary')).toBe(false);
     expect(launcher.className).toContain('border-border');
     expect(launcher.className).toContain('bg-surface/90');
 
     expect(panel.className).toContain('bg-surface');
     expect(panel.className).toContain('border-border');
+
+    const headerIcon = panel.querySelector(
+      'header [aria-hidden="true"]',
+    ) as HTMLElement;
+    expect(headerIcon.classList.contains('text-primary-outline')).toBe(true);
+    expect(headerIcon.classList.contains('text-primary')).toBe(false);
 
     expect(send).toBeTruthy();
     expect(send.hasAttribute('libButton')).toBe(false);
