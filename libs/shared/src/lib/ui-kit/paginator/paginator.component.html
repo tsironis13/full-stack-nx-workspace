@@ -1,32 +1,47 @@
-<button
-  libButton
-  type="button"
-  variant="ghost"
-  size="icon"
-  [attr.aria-label]="previousLabel()"
-  [disabled]="isFirstPage()"
-  (click)="goTo(page() - 1)"
->
-  <i class="pi pi-chevron-left" aria-hidden="true"></i>
-</button>
-<select
-  libSelect
-  [attr.aria-label]="pageSizeLabel()"
-  [value]="pageSize()"
-  (change)="onPageSizeChange($event)"
->
-  @for (size of pageSizeOptions(); track size) {
-    <option [value]="size" [selected]="size === pageSize()">{{ size }}</option>
-  }
-</select>
-<button
-  libButton
-  type="button"
-  variant="ghost"
-  size="icon"
-  [attr.aria-label]="nextLabel()"
-  [disabled]="isLastPage()"
-  (click)="goTo(page() + 1)"
->
-  <i class="pi pi-chevron-right" aria-hidden="true"></i>
-</button>
+<div class="flex items-center gap-1">
+  <button
+    libButton
+    type="button"
+    variant="ghost"
+    size="icon"
+    [attr.aria-label]="previousLabel()"
+    [disabled]="isFirstPage()"
+    (click)="goTo(page() - 1)"
+  >
+    <i class="pi pi-chevron-left" aria-hidden="true"></i>
+  </button>
+  <span
+    class="min-w-16 px-2 text-center text-sm tabular-nums text-foreground"
+    aria-live="polite"
+  >
+    {{ page() }} / {{ lastPage() }}
+  </span>
+  <button
+    libButton
+    type="button"
+    variant="ghost"
+    size="icon"
+    [attr.aria-label]="nextLabel()"
+    [disabled]="isLastPage()"
+    (click)="goTo(page() + 1)"
+  >
+    <i class="pi pi-chevron-right" aria-hidden="true"></i>
+  </button>
+</div>
+<div class="flex items-center gap-2">
+  <span class="whitespace-nowrap text-sm text-foreground" aria-hidden="true">
+    {{ pageSizeLabel() }}
+  </span>
+  <div class="w-24 shrink-0">
+    <select
+      libSelect
+      [attr.aria-label]="pageSizeLabel()"
+      [value]="pageSize()"
+      (change)="onPageSizeChange($event)"
+    >
+      @for (size of pageSizeOptions(); track size) {
+        <option [value]="size" [selected]="size === pageSize()">{{ size }}</option>
+      }
+    </select>
+  </div>
+</div>

@@ -4,16 +4,18 @@
       'catalog.searchLabel' | transloco
     }}</label>
     <div class="catalog-browse__search-row">
-      <input
-        id="catalog-search"
-        type="search"
-        class="catalog-browse__input"
-        [ngModel]="searchDraft()"
-        (ngModelChange)="searchDraft.set($event)"
-        (keydown.enter)="onApply()"
-        [placeholder]="'catalog.searchPlaceholder' | transloco"
-      />
-      <button type="button" class="catalog-browse__btn" (click)="onApply()">
+      <div class="catalog-browse__search-input">
+        <input
+          libInput
+          id="catalog-search"
+          type="search"
+          [ngModel]="searchDraft()"
+          (ngModelChange)="searchDraft.set($event)"
+          (keydown.enter)="onApply()"
+          [placeholder]="'catalog.searchPlaceholder' | transloco"
+        />
+      </div>
+      <button type="button" libButton (click)="onApply()">
         {{ 'catalog.apply' | transloco }}
       </button>
     </div>
@@ -23,8 +25,8 @@
       'catalog.sortLabel' | transloco
     }}</label>
     <select
+      libSelect
       id="catalog-sort"
-      class="catalog-browse__select"
       [ngModel]="sort()"
       (ngModelChange)="sortChanged.emit($event)"
     >

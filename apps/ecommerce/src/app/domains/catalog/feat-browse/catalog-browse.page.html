@@ -39,16 +39,13 @@
   />
   } @if (store.loading()) {
   <div class="catalog-browse__state" role="status" aria-live="polite">
-    <p-progress-spinner
-      aria-hidden="true"
-      styleClass="catalog-browse__spinner"
-    />
+    <lib-spinner [ariaLabel]="'catalog.loading' | transloco" />
     <span>{{ 'catalog.loading' | transloco }}</span>
   </div>
   } @else if (store.error()) {
   <div class="catalog-browse__state catalog-browse__state--error" role="alert">
     <p>{{ 'catalog.loadError' | transloco }}</p>
-    <button type="button" class="catalog-browse__btn" (click)="store.load()">
+    <button type="button" libButton (click)="store.load()">
       {{ 'catalog.retry' | transloco }}
     </button>
   </div>
@@ -72,13 +69,16 @@
   </ul>
   }
 
-  <p-paginator
-    [first]="(catalog.page - 1) * catalog.pageSize"
-    [rows]="catalog.pageSize"
-    [totalRecords]="catalog.total"
-    [rowsPerPageOptions]="[12, 24, 48]"
-    (onPageChange)="onPageChange($event)"
-    styleClass="catalog-browse__paginator"
+  <lib-paginator
+    class="catalog-browse__paginator"
+    [page]="catalog.page"
+    [pageSize]="catalog.pageSize"
+    [total]="catalog.total"
+    [pageSizeOptions]="pageSizeOptions"
+    [previousLabel]="'paginator.previous' | transloco"
+    [nextLabel]="'paginator.next' | transloco"
+    [pageSizeLabel]="'paginator.pageSize' | transloco"
+    (pageChange)="onPageChange($event)"
   />
   }
 </div>

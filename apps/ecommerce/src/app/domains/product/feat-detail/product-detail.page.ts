@@ -1,5 +1,4 @@
 import {
-  ChangeDetectionStrategy,
   Component,
   computed,
   inject,
@@ -7,21 +6,18 @@ import {
   OnInit,
   signal,
 } from '@angular/core';
-import {
-  FormBuilder,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgTemplateOutlet } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { PaginatorModule, PaginatorState } from 'primeng/paginator';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
-import { UiLanguageService } from '../../../core/public-api';
-
+import {
+  ButtonDirective,
+  PaginatorComponent,
+  SpinnerComponent,
+  type PaginatorPageChange,
+} from '@full-stack-nx-workspace/shared';
 import { AuthStore } from '@full-stack-nx-workspace/auth-web';
-
 import type { ReviewDraft } from '../application/public-api';
 import {
   formatAverageRatingForDisplay,
@@ -33,45 +29,41 @@ import {
   selector: 'app-product-detail-page',
   templateUrl: './product-detail.page.html',
   styleUrl: './product-detail.page.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     RouterLink,
     ReactiveFormsModule,
     NgTemplateOutlet,
-    PaginatorModule,
-    ProgressSpinnerModule,
+    ButtonDirective,
+    PaginatorComponent,
+    SpinnerComponent,
     TranslocoPipe,
   ],
 })
 export class ProductDetailPageComponent implements OnInit {
   readonly id = input.required<string>();
+  protected readonly reviewPageSizeOptions = [5, 10, 20];
 
   protected readonly store = inject(ProductDetailStore);
   protected readonly submission = inject(ReviewSubmissionStore);
   protected readonly auth = inject(AuthStore);
-  private readonly transloco = inject(TranslocoService);
-  private readonly uiLanguage = inject(UiLanguageService);
+  private readonly _transloco = inject(TranslocoService);
 
   private readonly fb = inject(FormBuilder);
 
   protected readonly editing = signal(false);
 
   protected readonly reviewForm = this.fb.nonNullable.group({
-    rating: [
-      0,
-      [Validators.required, Validators.min(1), Validators.max(5)],
-    ],
+    rating: [0, [Validators.required, Validators.min(1), Validators.max(5)]],
     title: [''],
     body: [''],
   });
 
   protected readonly aggregateLabel = computed(() => {
-    this.uiLanguage.language();
     const data = this.store.data();
     if (!data?.averageRating || data.reviewCount === 0) {
       return null;
     }
-    return this.transloco.translate('product.aggregateAria', {
+    return this._transloco.translate('product.aggregateAria', {
       average: formatAverageRatingForDisplay(data.averageRating),
       count: data.reviewCount,
     });
@@ -148,8 +140,7 @@ export class ProductDetailPageComponent implements OnInit {
   }
 
   protected reviewRatingAriaLabel(rating: number): string {
-    this.uiLanguage.language();
-    return this.transloco.translate('product.reviewRatingAria', { rating });
+    return this._transloco.translate('product.reviewRatingAria', { rating });
   }
 
   protected formatReviewDate(value: Date): string {
@@ -160,10 +151,8 @@ export class ProductDetailPageComponent implements OnInit {
     }).format(value);
   }
 
-  protected onPageChange(state: PaginatorState): void {
-    const nextPage = (state.page ?? 0) + 1;
-    const rows = state.rows ?? this.store.pageSize();
-    this.store.applyPagination(nextPage, rows);
+  protected onPageChange({ page, pageSize }: PaginatorPageChange): void {
+    this.store.applyPagination(page, pageSize);
   }
 
   protected stars(): readonly number[] {

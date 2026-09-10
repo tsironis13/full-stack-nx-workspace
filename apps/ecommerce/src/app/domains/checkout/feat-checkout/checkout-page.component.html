@@ -2,42 +2,33 @@
   <h1 class="checkout-page__title">{{ 'checkout.title' | transloco }}</h1>
 
   <div class="checkout-page__layout">
-    <!-- Left column: forms -->
     <form
       class="checkout-page__form"
       [formGroup]="form"
       (ngSubmit)="onSubmit()"
       novalidate
     >
-      <!-- Guest email — visible only when not authenticated -->
       @if (!isAuthenticated()) {
         <section class="checkout-section" aria-labelledby="guest-email-heading">
           <h2 class="checkout-section__title" id="guest-email-heading">
             {{ 'checkout.contact' | transloco }}
           </h2>
-          <div class="form-field">
-            <label class="form-field__label" for="guestEmail">
-              {{ 'checkout.email' | transloco }} <span aria-hidden="true">*</span>
-            </label>
+          <lib-field
+            [label]="'checkout.email' | transloco"
+            controlId="guestEmail"
+            [error]="fieldError('guestEmail') | transloco"
+          >
             <input
-              pInputText
-              id="guestEmail"
+              libInput
               type="email"
               formControlName="guestEmail"
               autocomplete="email"
-              [class.ng-invalid]="form.get('guestEmail')?.invalid && form.get('guestEmail')?.touched"
               aria-required="true"
             />
-            @if (form.get('guestEmail')?.errors?.['required'] && form.get('guestEmail')?.touched) {
-              <span class="form-field__error" role="alert">{{ 'checkout.emailRequired' | transloco }}</span>
-            } @else if (form.get('guestEmail')?.errors?.['email'] && form.get('guestEmail')?.touched) {
-              <span class="form-field__error" role="alert">{{ 'checkout.emailInvalid' | transloco }}</span>
-            }
-          </div>
+          </lib-field>
         </section>
       }
 
-      <!-- Shipping address -->
       <section
         class="checkout-section"
         aria-labelledby="shipping-heading"
@@ -47,131 +38,105 @@
             {{ 'checkout.shipping' | transloco }}
         </h2>
 
-        <div class="form-field">
-          <label class="form-field__label" for="fullName">
-            {{ 'checkout.fullName' | transloco }} <span aria-hidden="true">*</span>
-          </label>
+        <lib-field
+          [label]="'checkout.fullName' | transloco"
+          controlId="fullName"
+          [error]="fieldError('shippingAddress.fullName') | transloco"
+        >
           <input
-            pInputText
-            id="fullName"
+            libInput
             type="text"
             formControlName="fullName"
             autocomplete="name"
-            [class.ng-invalid]="form.get('shippingAddress.fullName')?.invalid && form.get('shippingAddress.fullName')?.touched"
             aria-required="true"
           />
-          @if (form.get('shippingAddress.fullName')?.errors?.['required'] && form.get('shippingAddress.fullName')?.touched) {
-            <span class="form-field__error" role="alert">{{ 'checkout.fullNameRequired' | transloco }}</span>
-          }
-        </div>
+        </lib-field>
 
-        <div class="form-field">
-          <label class="form-field__label" for="streetAddress">
-            {{ 'checkout.address' | transloco }} <span aria-hidden="true">*</span>
-          </label>
+        <lib-field
+          [label]="'checkout.address' | transloco"
+          controlId="streetAddress"
+          [error]="fieldError('shippingAddress.streetAddress') | transloco"
+        >
           <input
-            pInputText
-            id="streetAddress"
+            libInput
             type="text"
             formControlName="streetAddress"
             autocomplete="address-line1"
-            [class.ng-invalid]="form.get('shippingAddress.streetAddress')?.invalid && form.get('shippingAddress.streetAddress')?.touched"
             aria-required="true"
           />
-          @if (form.get('shippingAddress.streetAddress')?.errors?.['required'] && form.get('shippingAddress.streetAddress')?.touched) {
-            <span class="form-field__error" role="alert">{{ 'checkout.addressRequired' | transloco }}</span>
-          }
-        </div>
+        </lib-field>
 
-        <div class="form-field">
-          <label class="form-field__label" for="addressLine2">
-            {{ 'checkout.addressLine2' | transloco }}
-          </label>
+        <lib-field
+          [label]="'checkout.addressLine2' | transloco"
+          controlId="addressLine2"
+        >
           <input
-            pInputText
-            id="addressLine2"
+            libInput
             type="text"
             formControlName="addressLine2"
             autocomplete="address-line2"
           />
-        </div>
+        </lib-field>
 
         <div class="form-row">
-          <div class="form-field">
-            <label class="form-field__label" for="city">
-              {{ 'checkout.city' | transloco }} <span aria-hidden="true">*</span>
-            </label>
+          <lib-field
+            [label]="'checkout.city' | transloco"
+            controlId="city"
+            [error]="fieldError('shippingAddress.city') | transloco"
+          >
             <input
-              pInputText
-              id="city"
+              libInput
               type="text"
               formControlName="city"
               autocomplete="address-level2"
-              [class.ng-invalid]="form.get('shippingAddress.city')?.invalid && form.get('shippingAddress.city')?.touched"
               aria-required="true"
             />
-            @if (form.get('shippingAddress.city')?.errors?.['required'] && form.get('shippingAddress.city')?.touched) {
-              <span class="form-field__error" role="alert">{{ 'checkout.cityRequired' | transloco }}</span>
-            }
-          </div>
+          </lib-field>
 
-          <div class="form-field">
-            <label class="form-field__label" for="postalCode">
-              {{ 'checkout.postalCode' | transloco }} <span aria-hidden="true">*</span>
-            </label>
+          <lib-field
+            [label]="'checkout.postalCode' | transloco"
+            controlId="postalCode"
+            [error]="fieldError('shippingAddress.postalCode') | transloco"
+          >
             <input
-              pInputText
-              id="postalCode"
+              libInput
               type="text"
               formControlName="postalCode"
               autocomplete="postal-code"
-              [class.ng-invalid]="form.get('shippingAddress.postalCode')?.invalid && form.get('shippingAddress.postalCode')?.touched"
               aria-required="true"
             />
-            @if (form.get('shippingAddress.postalCode')?.errors?.['required'] && form.get('shippingAddress.postalCode')?.touched) {
-              <span class="form-field__error" role="alert">{{ 'checkout.postalCodeRequired' | transloco }}</span>
-            }
-          </div>
+          </lib-field>
         </div>
 
-        <div class="form-field">
-          <label class="form-field__label" for="country">
-            {{ 'checkout.country' | transloco }} <span aria-hidden="true">*</span>
-          </label>
+        <lib-field
+          [label]="'checkout.country' | transloco"
+          controlId="country"
+          [error]="fieldError('shippingAddress.country') | transloco"
+        >
           <input
-            pInputText
-            id="country"
+            libInput
             type="text"
             formControlName="country"
             autocomplete="country-name"
-            [class.ng-invalid]="form.get('shippingAddress.country')?.invalid && form.get('shippingAddress.country')?.touched"
             aria-required="true"
           />
-          @if (form.get('shippingAddress.country')?.errors?.['required'] && form.get('shippingAddress.country')?.touched) {
-            <span class="form-field__error" role="alert">{{ 'checkout.countryRequired' | transloco }}</span>
-          }
-        </div>
+        </lib-field>
 
-        <div class="form-field">
-          <label class="form-field__label" for="phone">
-            {{ 'checkout.phone' | transloco }} <span aria-hidden="true">*</span>
-          </label>
+        <lib-field
+          [label]="'checkout.phone' | transloco"
+          controlId="phone"
+          [error]="fieldError('shippingAddress.phone') | transloco"
+        >
           <input
-            pInputText
-            id="phone"
+            libInput
             type="tel"
             formControlName="phone"
             autocomplete="tel"
-            [class.ng-invalid]="form.get('shippingAddress.phone')?.invalid && form.get('shippingAddress.phone')?.touched"
             aria-required="true"
           />
-          @if (form.get('shippingAddress.phone')?.errors?.['required'] && form.get('shippingAddress.phone')?.touched) {
-            <span class="form-field__error" role="alert">{{ 'checkout.phoneRequired' | transloco }}</span>
-          }
-        </div>
+        </lib-field>
       </section>
 
-      <!-- Mock payment -->
       <section
         class="checkout-section"
         aria-labelledby="payment-heading"
@@ -184,66 +149,63 @@
           {{ 'checkout.paymentNote' | transloco }}
         </p>
 
-        <div class="form-field">
-          <label class="form-field__label" for="cardNumber">{{ 'checkout.cardNumber' | transloco }}</label>
+        <lib-field
+          [label]="'checkout.cardNumber' | transloco"
+          controlId="cardNumber"
+        >
           <input
-            pInputText
-            id="cardNumber"
+            libInput
             type="text"
             formControlName="cardNumber"
             autocomplete="cc-number"
             placeholder="0000 0000 0000 0000"
           />
-        </div>
+        </lib-field>
 
         <div class="form-row">
-          <div class="form-field">
-            <label class="form-field__label" for="expiry">{{ 'checkout.expiry' | transloco }}</label>
+          <lib-field
+            [label]="'checkout.expiry' | transloco"
+            controlId="expiry"
+          >
             <input
-              pInputText
-              id="expiry"
+              libInput
               type="text"
               formControlName="expiry"
               autocomplete="cc-exp"
               [placeholder]="'checkout.expiryPlaceholder' | transloco"
             />
-          </div>
-          <div class="form-field">
-            <label class="form-field__label" for="cvv">{{ 'checkout.cvv' | transloco }}</label>
+          </lib-field>
+          <lib-field [label]="'checkout.cvv' | transloco" controlId="cvv">
             <input
-              pInputText
-              id="cvv"
+              libInput
               type="text"
               formControlName="cvv"
               autocomplete="cc-csc"
               placeholder="123"
             />
-          </div>
+          </lib-field>
         </div>
       </section>
 
-      <!-- Inline error message -->
       @if (status() === 'error') {
-        <p-message
-          severity="error"          
-        >{{ error() ? (error()! | transloco) : ('errors.generic' | transloco) }}</p-message>
+        <lib-inline-message variant="error">
+          {{ error() ? (error()! | transloco) : ('errors.generic' | transloco) }}
+        </lib-inline-message>
       }
 
-      <!-- Submit -->
       <div class="checkout-page__actions">
-        <p-button
+        <button
+          libButton
           type="submit"
-          [label]="'checkout.placeOrder' | transloco"
-          icon="pi pi-check"
-          iconPos="right"
           [loading]="isSubmitting()"
           [disabled]="isPlaceOrderDisabled()"
-          (onClick)="onSubmit()"
-        />
+        >
+          <i class="pi pi-check" aria-hidden="true"></i>
+          {{ 'checkout.placeOrder' | transloco }}
+        </button>
       </div>
     </form>
 
-    <!-- Right column: order summary -->
     <aside class="checkout-summary" [attr.aria-label]="'checkout.summaryAria' | transloco">
       <h2 class="checkout-section__title">{{ 'checkout.summary' | transloco }}</h2>
 

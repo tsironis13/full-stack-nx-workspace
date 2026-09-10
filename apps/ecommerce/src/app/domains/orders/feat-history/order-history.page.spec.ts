@@ -2,6 +2,7 @@ import { signal, type WritableSignal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { By } from '@angular/platform-browser';
+import { TranslocoService } from '@jsverse/transloco';
 
 import { ecommerceTranslocoTestingModule } from '../../../core/public-api';
 import type { OrderHistoryOrder } from '../application/public-api';
@@ -75,6 +76,25 @@ describe('OrderHistoryPageComponent', () => {
   it('loads order history on init', () => {
     createFixture();
     expect(loadMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('names the orders spinner in the active UI Language', () => {
+    loadingSig.set(true);
+
+    const fixture = createFixture();
+    const transloco = TestBed.inject(TranslocoService);
+    const spinner = fixture.nativeElement.querySelector('lib-spinner');
+
+    expect(spinner).toBeTruthy();
+    expect(spinner.getAttribute('aria-label')).toBe(
+      transloco.translate('orders.loading'),
+    );
+    expect(transloco.translate('orders.loading', {}, 'el')).toBe(
+      'Φόρτωση παραγγελιών…',
+    );
+    expect(transloco.translate('orders.loading', {}, 'en')).toBe(
+      'Loading orders…',
+    );
   });
 
   it('shows the empty state when there are no orders', () => {

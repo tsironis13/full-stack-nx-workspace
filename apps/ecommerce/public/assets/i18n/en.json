@@ -137,6 +137,7 @@
     "sortLabel": "Sort",
     "subtitle": "Browse products (root category, name search, sale price range, sort, pagination)",
     "title": "Catalog",
+    "updatingLine": "Updating quantity",
     "viewProduct": "View {{name}}"
   },
   "checkout": {
@@ -224,6 +225,11 @@
     "retry": "Retry",
     "title": "My orders",
     "writeReview": "Write a review"
+  },
+  "paginator": {
+    "next": "Next page",
+    "pageSize": "Items per page",
+    "previous": "Previous page"
   },
   "product": {
     "aggregateAria": "Average rating {{average}} out of 5, {{count}} reviews",

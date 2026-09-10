@@ -1,9 +1,10 @@
 import { CurrencyPipe } from '@angular/common';
 import { Component, computed, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { injectDispatch } from '@ngrx/signals/events';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+
+import { SpinnerComponent } from '@full-stack-nx-workspace/shared';
 
 import {
   CartAclReadAdapter,
@@ -22,7 +23,7 @@ const PLACEHOLDER_IMAGE =
   selector: 'app-catalog-product-card',
   templateUrl: './catalog-product-card.component.html',
   styleUrl: './catalog-product-card.component.scss',
-  imports: [CurrencyPipe, ProgressSpinnerModule, RouterLink, TranslocoPipe],
+  imports: [CurrencyPipe, RouterLink, SpinnerComponent, TranslocoPipe],
 })
 export class CatalogProductCardComponent {
   readonly item = input.required<CatalogListItem>();

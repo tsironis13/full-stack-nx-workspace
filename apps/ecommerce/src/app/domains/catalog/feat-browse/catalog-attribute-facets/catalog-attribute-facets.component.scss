@@ -6,29 +6,6 @@
   margin-bottom: 0.5rem;
 }
 
-.catalog-browse__btn {
-  min-height: 2.5rem;
-  padding: 0 1rem;
-  border-radius: var(--p-border-radius-md, 6px);
-  border: none;
-  cursor: pointer;
-  font-weight: 500;
-  background: var(--p-primary-color, #2563eb);
-  color: var(--p-primary-contrast-color, #fff);
-}
-
-.catalog-browse__btn--secondary {
-  background: var(--p-content-background, #fff);
-  color: inherit;
-  border: 1px solid var(--p-content-border-color, #e5e7eb);
-}
-
-.catalog-browse__btn--sm {
-  padding: 0.25rem 0.65rem;
-  font-size: 0.8rem;
-  min-height: 1.75rem;
-}
-
 .catalog-browse__facet {
   margin-bottom: var(--spacing-100, 1rem);
   padding: 0.75rem 0;
@@ -71,11 +48,4 @@
   &:hover {
     border-color: var(--p-primary-color, #3b82f6);
   }
-}
-
-.catalog-browse__facet-checkbox {
-  accent-color: var(--p-primary-color, #3b82f6);
-  width: 1rem;
-  height: 1rem;
-  cursor: pointer;
 }

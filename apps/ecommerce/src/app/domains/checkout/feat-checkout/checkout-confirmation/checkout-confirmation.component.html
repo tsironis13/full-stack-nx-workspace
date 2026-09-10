@@ -76,12 +76,10 @@
       }
 
       <div class="confirmation-page__actions">
-        <p-button
-          [label]="'cart.continue' | transloco"
-          icon="pi pi-arrow-left"
-          severity="secondary"
-          [routerLink]="['/catalog']"
-        />
+        <a libButton variant="secondary" [routerLink]="['/catalog']">
+          <i class="pi pi-arrow-left" aria-hidden="true"></i>
+          {{ 'cart.continue' | transloco }}
+        </a>
       </div>
     </div>
   }

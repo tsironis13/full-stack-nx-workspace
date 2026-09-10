@@ -5,9 +5,14 @@ import {
   input,
   output,
 } from '@angular/core';
+import { TranslocoPipe } from '@jsverse/transloco';
+
+import {
+  ButtonDirective,
+  CheckboxDirective,
+} from '@full-stack-nx-workspace/shared';
 
 import type { AttributeFacet } from '../../application/public-api';
-import { TranslocoPipe } from '@jsverse/transloco';
 
 export interface FacetValueChange {
   attributeId: number;
@@ -19,7 +24,7 @@ export interface FacetValueChange {
   templateUrl: './catalog-attribute-facets.component.html',
   styleUrl: './catalog-attribute-facets.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TranslocoPipe],
+  imports: [ButtonDirective, CheckboxDirective, TranslocoPipe],
 })
 export class CatalogAttributeFacetsComponent {
   readonly facets = input.required<AttributeFacet[]>();

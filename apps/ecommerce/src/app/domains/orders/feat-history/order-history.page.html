@@ -5,17 +5,13 @@
 
   @if (store.loading()) {
   <div class="order-history__state" role="status" aria-live="polite">
-    <p-progress-spinner  aria-hidden="true" styleClass="order-history__spinner" />
+    <lib-spinner [ariaLabel]="'orders.loading' | transloco" />
     <span>{{ 'orders.loading' | transloco }}</span>
   </div>
   } @else if (store.error()) {
   <div class="order-history__state order-history__state--error" role="alert">
     <p>{{ 'orders.loadError' | transloco }}</p>
-    <button
-      type="button"
-      class="order-history__btn"
-      (click)="store.load()"
-    >
+    <button type="button" libButton (click)="store.load()">
       {{ 'orders.retry' | transloco }}
     </button>
   </div>
