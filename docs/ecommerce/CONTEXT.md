@@ -300,6 +300,7 @@ May:
 - Browse products
 - Add items to cart
 - Select a **UI Language**
+- Select a **UI Theme**
 
 Cannot:
 
@@ -325,6 +326,7 @@ May:
 - Save addresses
 - Manage profile information
 - Select a **UI Language**
+- Select a **UI Theme**
 
 Avoid:
 
@@ -386,6 +388,27 @@ Avoid:
 - Site language
 - Preferred language (use **UI Language**)
 - Chat language (use **shopper's language**)
+
+---
+
+## UI Theme
+
+The storefront light or dark appearance the shopper has selected.
+
+v1 values: **light** (default) and **dark**.
+
+Applies to storefront chrome (header, catalog, checkout, cart, kit controls, **Shopping Assistant** chrome).
+
+Does not apply to **Product** imagery, **Product** names, **options**, or **Category** path. Does not follow the device/OS appearance. Independent of **UI Language**.
+
+Avoid:
+
+- Dark mode (as an entity)
+- Color scheme
+- Locale
+- Theme (unqualified — collides with the old PrimeNG/Aura kit)
+- Appearance
+- Preferred theme
 
 ---
 
@@ -783,7 +806,9 @@ Avoid:
 - A Shipment belongs to an Order
 - A Payment belongs to an Order
 - A **Guest User** or **Registered User** may have one selected **UI Language**
+- A **Guest User** or **Registered User** may have one selected **UI Theme**
 - **UI Language** and **shopper's language** are independent
+- **UI Language** and **UI Theme** are independent
 
 ---
 
@@ -811,6 +836,10 @@ Avoid:
 - Number and date formatting stay on the Greek locale in v1. **UI Language** does not change how **Sale Price** or dates are written
 - **UI Language** is remembered on this browser only in v1. It is not a **Customer Account** preference. Sign-in does not change it. A new browser starts at **Greek**
 - **UI Language** is a storefront concern. It does not apply to **Admin User** management workflows
+- Default **UI Theme** is **light**; **dark** is the other v1 value
+- **UI Theme** is remembered on this browser only in v1. It is not a **Customer Account** preference. Sign-in does not change it. A new browser starts at **light**
+- **UI Theme** does not follow the device/OS appearance in v1
+- **UI Theme** is a storefront concern. It does not apply to **Admin User** management workflows
 
 ---
 
@@ -1091,6 +1120,14 @@ Domain expert:
 
 ---
 
+Dev:
+"The shopper's laptop is in dark mode. Do we start the storefront dark? After they sign in, do we load a theme from the Customer Account?"
+
+Domain expert:
+"No. UI Theme defaults to light on a new browser. It is remembered on that browser only. Sign-in does not change it. It is not a Customer Account preference, and it does not follow the OS."
+
+---
+
 # Flagged ambiguities
 
 ## "Product" vs "Product Item"
@@ -1138,6 +1175,12 @@ The **Shopping Assistant** ranks **Products** for a **product need**. They are d
 
 **UI Language** is the selected storefront display language (Greek default, English). It drives chrome, **Product recommendation** / **Cart Item workflow** action labels, and API / ai-server machine messages.
 **Shopper's language** is the language of the current chat utterance. The **Shopping Assistant** accepts Greek or English input and replies in that language regardless of **UI Language**.
+
+---
+
+## "UI Theme" vs "UI Language"
+
+**UI Theme** is the selected storefront light or dark appearance (light default, dark). **UI Language** is the selected display language. They are independent chrome preferences. Neither is a **Customer Account** preference in v1. Unqualified "theme" is not a glossary term.
 
 ---
 

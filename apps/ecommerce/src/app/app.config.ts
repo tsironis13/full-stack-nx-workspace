@@ -41,6 +41,7 @@ export const appConfig: ApplicationConfig = {
     provideAuthServices(),
     provideCopilotKit({
       defaultToolRendering: true,
+      enableInspector: false,
       renderActivityMessages: [a2uiActivityRendererConfig],
     }),
     provideA2uiCatalog(),
