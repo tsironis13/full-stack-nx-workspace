@@ -5,7 +5,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
   templateUrl: './spinner.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'inline-flex items-center justify-center text-primary',
+    class: 'inline-flex items-center justify-center text-primary-outline',
     role: 'status',
     '[attr.aria-label]': 'ariaLabel()',
   },

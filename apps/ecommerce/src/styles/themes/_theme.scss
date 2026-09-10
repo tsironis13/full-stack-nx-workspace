@@ -11,6 +11,7 @@
   // win over these @theme light defaults.
   --color-primary: var(--color-indigo-950);
   --color-primary-foreground: #ffffff;
+  --color-primary-outline: var(--color-indigo-950);
   --color-primary-50: var(--color-indigo-50);
   --color-primary-100: var(--color-indigo-100);
   --color-primary-200: var(--color-indigo-200);
@@ -49,4 +50,8 @@
 @theme static {
   --color-primary-hover: color-mix(in srgb, var(--color-indigo-950) 88%, black);
   --color-surface-hover: var(--color-zinc-100);
+  // Secondary rest fill. Numbered surface-100 stays light-absolute; this token
+  // inverts in dark so labels stay on a contrasting ground.
+  --color-secondary: var(--color-zinc-100);
+  --color-primary-outline: var(--color-indigo-950);
 }
