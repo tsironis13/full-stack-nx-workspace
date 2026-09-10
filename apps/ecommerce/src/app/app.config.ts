@@ -11,9 +11,7 @@ import { provideMarkdownRenderer } from '@a2ui/angular/v0_9';
 import { marked } from 'marked';
 
 import { authInterceptor, provideEcommerceI18n } from './core/public-api';
-import { providePrimeNG } from 'primeng/config';
 import { appRoutes } from './app.routes';
-import { appTheme } from '../themes/app-theme';
 import {
   AUTH_API_URL_TOKEN,
   AuthStore,
@@ -40,16 +38,6 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     provideEnvConfig(),
     provideEcommerceI18n(),
-    providePrimeNG({
-      theme: {
-        preset: appTheme,
-        options: {
-          options: {
-            darkModeSelector: '.ecommerce-app-dark',
-          },
-        },
-      },
-    }),
     provideAuthServices(),
     provideCopilotKit({
       defaultToolRendering: true,
