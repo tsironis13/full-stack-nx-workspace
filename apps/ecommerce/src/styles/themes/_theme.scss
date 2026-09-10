@@ -6,8 +6,9 @@
   --breakpoint-xl: 1424px;
   --breakpoint-lg: 1200px;
 
-  // Semantic kit tokens — light defaults match today's indigo/zinc (Aura).
-  // Dark overrides live on `.ecommerce-app-dark` (see _dark.scss).
+  // Semantic kit tokens — light defaults stay indigo/zinc.
+  // Dark overrides live on `:root.ecommerce-app-dark` (see _dark.scss) so they
+  // win over these @theme light defaults.
   --color-primary: var(--color-indigo-950);
   --color-primary-foreground: #ffffff;
   --color-primary-50: var(--color-indigo-50);
@@ -42,4 +43,10 @@
   --radius-sm: 0.25rem;
   --radius-md: 6px;
   --radius-lg: 0.5rem;
+}
+
+// Emit even before kit hover classes consume them (slice 03).
+@theme static {
+  --color-primary-hover: color-mix(in srgb, var(--color-indigo-950) 88%, black);
+  --color-surface-hover: var(--color-zinc-100);
 }
