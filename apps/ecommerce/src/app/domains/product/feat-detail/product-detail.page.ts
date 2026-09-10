@@ -13,6 +13,7 @@ import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
 import {
   ButtonDirective,
+  InputDirective,
   PaginatorComponent,
   SpinnerComponent,
   type PaginatorPageChange,
@@ -34,6 +35,7 @@ import {
     ReactiveFormsModule,
     NgTemplateOutlet,
     ButtonDirective,
+    InputDirective,
     PaginatorComponent,
     SpinnerComponent,
     TranslocoPipe,

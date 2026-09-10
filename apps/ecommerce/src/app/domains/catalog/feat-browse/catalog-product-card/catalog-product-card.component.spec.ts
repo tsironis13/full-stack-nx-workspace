@@ -80,6 +80,24 @@ describe('CatalogProductCardComponent', () => {
     expect(spinner.getAttribute('aria-label')).toBe('Ενημέρωση ποσότητας');
   });
 
+  it('renders stored Product name and image URL without gray-* chrome classes', () => {
+    const fixture = createFixture({
+      ...baseItem,
+      name: 'Stored Shirt',
+      primaryImageUrl: 'https://cdn.example/shirt.jpg',
+    });
+
+    const img = fixture.nativeElement.querySelector(
+      'img',
+    ) as HTMLImageElement;
+
+    expect(fixture.nativeElement.textContent).toContain('Stored Shirt');
+    expect(img.src).toContain('https://cdn.example/shirt.jpg');
+    expect(img.getAttribute('alt')).toBe('Stored Shirt');
+    expect(fixture.nativeElement.innerHTML).not.toMatch(/\bgray-/);
+    expect(fixture.nativeElement.innerHTML).not.toMatch(/--p-/);
+  });
+
   it('hides the star score when the product has no reviews', () => {
     const fixture = createFixture(baseItem);
 

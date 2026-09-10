@@ -9,7 +9,7 @@
 .catalog-browse__facet {
   margin-bottom: var(--spacing-100, 1rem);
   padding: 0.75rem 0;
-  border-bottom: 1px solid var(--p-content-border-color, #e5e7eb);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .catalog-browse__facet-label {
@@ -39,13 +39,14 @@
   cursor: pointer;
   font-size: 0.875rem;
   padding: 0.2rem 0.5rem 0.2rem 0.35rem;
-  border-radius: var(--p-border-radius-sm, 4px);
-  border: 1px solid var(--p-content-border-color, #e5e7eb);
-  background: var(--p-content-background, #fff);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
   user-select: none;
   transition: border-color 0.15s, background 0.15s;
 
   &:hover {
-    border-color: var(--p-primary-color, #3b82f6);
+    border-color: var(--color-primary);
+    background: var(--color-surface-hover);
   }
 }

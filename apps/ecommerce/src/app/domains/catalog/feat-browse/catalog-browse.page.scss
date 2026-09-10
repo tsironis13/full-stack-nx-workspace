@@ -16,7 +16,7 @@
 
 .catalog-browse__subtitle {
   margin: 0.25rem 0 0;
-  color: var(--p-text-muted-color, #6b7280);
+  color: color-mix(in srgb, var(--color-foreground) 68%, transparent);
   font-size: 0.95rem;
 }
 
@@ -30,19 +30,19 @@
 }
 
 .catalog-browse__state--error {
-  color: var(--p-red-500, #b91c1c);
+  color: var(--color-red-700);
 }
 
 .catalog-browse__summary {
   margin: 0 0 1rem;
   font-size: 0.9rem;
-  color: var(--p-text-muted-color, #6b7280);
+  color: color-mix(in srgb, var(--color-foreground) 68%, transparent);
 }
 
 .catalog-browse__empty {
   margin: 2rem 0;
   text-align: center;
-  color: var(--p-text-muted-color, #6b7280);
+  color: color-mix(in srgb, var(--color-foreground) 68%, transparent);
 }
 
 .catalog-browse__grid {
@@ -58,10 +58,10 @@
 .catalog-card {
   display: flex;
   flex-direction: column;
-  border-radius: var(--p-border-radius-md, 6px);
-  border: 1px solid var(--p-content-border-color, #e5e7eb);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
   overflow: hidden;
-  background: var(--p-content-background, #fff);
+  background: var(--color-surface);
 }
 
 .catalog-browse__paginator {

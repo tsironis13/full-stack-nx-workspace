@@ -18,7 +18,6 @@
     <div class="catalog-browse__facet-chips">
       <button
         type="button"
-        libButton
         class="catalog-browse__chip"
         [class.catalog-browse__chip--active]="selectedId() === null"
         (click)="categorySelected.emit(null)"
@@ -28,7 +27,6 @@
       @for (root of roots(); track root.id) {
         <button
           type="button"
-          libButton
           class="catalog-browse__chip"
           [class.catalog-browse__chip--active]="selectedId() === root.id"
           (click)="categorySelected.emit(root.id)"

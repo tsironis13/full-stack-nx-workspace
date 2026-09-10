@@ -317,6 +317,33 @@ describe('ProductDetailPageComponent', () => {
       expect(
         fixture.debugElement.query(By.css('.product-detail__form')),
       ).toBeNull();
+
+      const buttons = Array.from(
+        actions.nativeElement.querySelectorAll('button'),
+      ) as HTMLButtonElement[];
+      expect(buttons).toHaveLength(2);
+      expect(buttons[0].hasAttribute('libButton')).toBe(true);
+      expect(buttons[1].hasAttribute('libButton')).toBe(true);
+      expect(buttons[1].getAttribute('variant')).toBe('danger');
+      expect(fixture.nativeElement.textContent).toContain('Καλό');
+      expect(fixture.nativeElement.innerHTML).not.toMatch(/\bgray-/);
+      expect(fixture.nativeElement.innerHTML).not.toMatch(/--p-/);
+    });
+
+    it('uses kit fields and a primary CTA on the review form', () => {
+      isAuthenticatedSig.set(true);
+
+      const fixture = createFixture();
+      const title = fixture.nativeElement.querySelector(
+        'input[formControlName="title"]',
+      ) as HTMLInputElement;
+      const submit = fixture.nativeElement.querySelector(
+        '.product-detail__form-actions button[type="submit"]',
+      ) as HTMLButtonElement;
+
+      expect(title.hasAttribute('libInput')).toBe(true);
+      expect(submit.hasAttribute('libButton')).toBe(true);
+      expect(fixture.nativeElement.innerHTML).not.toMatch(/\bgray-/);
     });
   });
 });
