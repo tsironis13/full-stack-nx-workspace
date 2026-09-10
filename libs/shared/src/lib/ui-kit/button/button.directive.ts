@@ -18,15 +18,15 @@ export type ButtonSize = 'sm' | 'md' | 'icon';
       'inline-flex cursor-pointer items-center justify-center gap-2 font-medium rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
     '[class.bg-primary]': 'variant() === "primary"',
     '[class.text-primary-foreground]': 'variant() === "primary"',
-    '[class.hover:bg-primary-800]': 'variant() === "primary"',
+    '[class.hover:bg-primary-hover]': 'variant() === "primary"',
     '[class.bg-surface-100]': 'variant() === "secondary"',
     '[class.text-foreground]':
       'variant() === "secondary" || variant() === "ghost"',
     '[class.border]': 'variant() === "secondary"',
     '[class.border-border]': 'variant() === "secondary"',
-    '[class.hover:bg-surface-200]': 'variant() === "secondary"',
+    '[class.hover:bg-surface-hover]':
+      'variant() === "secondary" || variant() === "ghost"',
     '[class.bg-transparent]': 'variant() === "ghost"',
-    '[class.hover:bg-surface-100]': 'variant() === "ghost"',
     '[class.bg-red-700]': 'variant() === "danger"',
     '[class.text-white]': 'variant() === "danger"',
     '[class.hover:bg-red-800]': 'variant() === "danger"',
