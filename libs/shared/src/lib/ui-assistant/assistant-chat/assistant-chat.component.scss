@@ -1,18 +1,77 @@
 :host {
-  --assistant-accent: var(--p-primary-color, #4f46e5);
+  --assistant-accent: var(--color-primary);
+}
+
+#ai-panel {
+  --cpk-color-white: var(--color-surface);
+  --cpk-color-black: var(--color-foreground);
+  --cpk-color-gray-50: var(--color-secondary);
+  --cpk-color-gray-200: var(--color-border);
+  --cpk-color-gray-600: color-mix(
+    in srgb,
+    var(--color-foreground) 68%,
+    transparent
+  );
+  --cpk-color-gray-700: var(--color-foreground);
+  --cpk-color-gray-800: var(--color-surface-hover);
+  --cpk-color-gray-900: var(--color-foreground);
+}
+
+:host ::ng-deep [data-copilotkit] {
+  --copilot-kit-primary-color: var(--color-primary);
+  --copilot-kit-contrast-color: var(--color-primary-foreground);
+  --copilot-kit-background-color: var(--color-surface);
+  --copilot-kit-input-background-color: var(--color-surface);
+  --copilot-kit-secondary-color: var(--color-secondary);
+  --copilot-kit-secondary-contrast-color: var(--color-foreground);
+  --copilot-kit-separator-color: var(--color-border);
+  --copilot-kit-muted-color: color-mix(
+    in srgb,
+    var(--color-foreground) 45%,
+    transparent
+  );
+  --background: var(--color-surface);
+  --foreground: var(--color-foreground);
+  --card: var(--color-surface);
+  --card-foreground: var(--color-foreground);
+  --popover: var(--color-surface);
+  --popover-foreground: var(--color-foreground);
+  --primary: var(--color-primary);
+  --primary-foreground: var(--color-primary-foreground);
+  --secondary: var(--color-secondary);
+  --secondary-foreground: var(--color-foreground);
+  --muted: var(--color-secondary);
+  --muted-foreground: color-mix(
+    in srgb,
+    var(--color-foreground) 68%,
+    transparent
+  );
+  --accent: var(--color-surface-hover);
+  --accent-foreground: var(--color-foreground);
+  --border: var(--color-border);
+  --input: var(--color-border);
+  --ring: var(--color-ring);
 }
 
 :host ::ng-deep .bubble--a2ui {
   width: 95%;
   font-family: inherit;
 
-  --a2ui-card-background: var(--card-background, #ffffff);
-  --a2ui-card-border: 1px solid var(--border-color, rgba(0, 0, 0, 0.08));
+  --a2ui-card-background: var(--color-surface);
+  --a2ui-card-border: 1px solid var(--color-border);
   --a2ui-card-border-radius: 12px;
   --a2ui-card-box-shadow: none;
   --a2ui-card-padding: 0.9rem 1rem;
   --a2ui-card-margin: 0;
   --a2ui-font-family-title: inherit;
+  --a2ui-text-color-text: var(--color-foreground);
+  --a2ui-text-caption-color: color-mix(
+    in srgb,
+    var(--color-foreground) 68%,
+    transparent
+  );
+  --a2ui-text-a-color: var(--color-primary);
+  --a2ui-icon-color: var(--color-foreground);
 
   --a2ui-button-background: transparent;
   --a2ui-button-border: 1px solid var(--assistant-accent);
@@ -22,6 +81,10 @@
   --a2ui-button-padding: 6px 16px;
   --a2ui-button-margin: 0;
   --a2ui-color-on-secondary: var(--assistant-accent);
+  --a2ui-color-input: var(--color-surface);
+  --a2ui-color-on-input: var(--color-foreground);
+  --a2ui-textfield-border: 1px solid var(--color-border);
+  --a2ui-textfield-color-border-focus: var(--color-ring);
 }
 
 :host ::ng-deep .bubble--a2ui .a2ui-button:hover {

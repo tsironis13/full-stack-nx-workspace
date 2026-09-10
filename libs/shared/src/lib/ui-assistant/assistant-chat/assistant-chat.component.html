@@ -3,7 +3,7 @@
     type="button"
     (click)="toggle()"
     id="ai-toggle"
-    class="fixed bottom-5 z-[1000] inline-flex items-center gap-2.5 rounded-full border border-gray-200/80 bg-white/90 px-4 py-3 text-sm font-semibold text-[var(--p-primary-color,#4f46e5)] shadow-[0_12px_40px_-12px_rgba(79,70,229,0.45)] backdrop-blur-md transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_16px_44px_-10px_rgba(79,70,229,0.55)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--p-primary-color,#4f46e5)] dark:border-gray-700 dark:bg-gray-900/90 dark:text-indigo-300 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+    class="fixed bottom-5 z-[1000] inline-flex items-center gap-2.5 rounded-full border border-border bg-surface/90 px-4 py-3 text-sm font-semibold text-primary shadow-[0_12px_40px_-12px_color-mix(in_srgb,var(--color-primary)_45%,transparent)] backdrop-blur-md transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_16px_44px_-10px_color-mix(in_srgb,var(--color-primary)_55%,transparent)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring motion-reduce:transition-none motion-reduce:hover:translate-y-0"
     [class.right-5]="!isLeft()"
     [class.left-5]="isLeft()"
     [class.pointer-events-none]="panelVisible()"
@@ -14,7 +14,7 @@
     [attr.aria-expanded]="panelVisible()"
   >
     <span
-      class="grid size-8 place-items-center rounded-full bg-[color-mix(in_srgb,var(--p-primary-color,#4f46e5)_16%,transparent)]"
+      class="grid size-8 place-items-center rounded-full bg-primary/15"
       aria-hidden="true"
     >
       <svg viewBox="0 0 24 24" fill="none" class="size-[18px]">
@@ -31,7 +31,7 @@
 
   <div
     id="ai-backdrop"
-    class="fixed inset-0 z-[999] bg-slate-950/35 backdrop-blur-[2px] transition-opacity duration-200 motion-reduce:transition-none"
+    class="fixed inset-0 z-[999] bg-zinc-950/35 backdrop-blur-[2px] transition-opacity duration-200 motion-reduce:transition-none"
     [class.opacity-0]="!panelVisible()"
     [class.pointer-events-none]="!panelVisible()"
     [class.opacity-100]="panelVisible()"
@@ -40,7 +40,7 @@
 
   <aside
     id="ai-panel"
-    class="fixed inset-y-0 z-[1001] flex w-[min(100vw,26rem)] flex-col overflow-hidden border-gray-200 bg-white shadow-2xl transition-transform duration-300 ease-out dark:border-gray-800 dark:bg-gray-950 motion-reduce:transition-none"
+    class="fixed inset-y-0 z-[1001] flex w-[min(100vw,26rem)] flex-col overflow-hidden border-border bg-surface shadow-2xl transition-transform duration-300 ease-out motion-reduce:transition-none"
     [class.right-0]="!isLeft()"
     [class.left-0]="isLeft()"
     [class.border-l]="!isLeft()"
@@ -57,11 +57,11 @@
     [attr.aria-hidden]="!panelVisible()"
   >
     <header
-      class="flex items-center justify-between gap-3 border-b border-gray-200/80 bg-gradient-to-br from-[color-mix(in_srgb,var(--p-primary-color,#4f46e5)_10%,white)] to-white px-4 py-3.5 dark:border-gray-800 dark:from-[color-mix(in_srgb,var(--p-primary-color,#4f46e5)_18%,#030712)] dark:to-gray-950"
+      class="flex items-center justify-between gap-3 border-b border-border bg-gradient-to-br from-[color-mix(in_srgb,var(--color-primary)_10%,var(--color-surface))] to-surface px-4 py-3.5"
     >
       <div class="flex min-w-0 items-center gap-3">
         <span
-          class="grid size-10 shrink-0 place-items-center rounded-2xl bg-[color-mix(in_srgb,var(--p-primary-color,#4f46e5)_16%,transparent)] text-[var(--p-primary-color,#4f46e5)]"
+          class="grid size-10 shrink-0 place-items-center rounded-2xl bg-primary/15 text-primary"
           aria-hidden="true"
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -76,11 +76,11 @@
         <div class="min-w-0">
           <div
             id="ai-title"
-            class="truncate text-sm font-semibold tracking-tight text-gray-900 dark:text-gray-100"
+            class="truncate text-sm font-semibold tracking-tight text-foreground"
           >
             Assistant
           </div>
-          <p class="truncate text-xs text-gray-500 dark:text-gray-400">
+          <p class="truncate text-xs text-foreground/70">
             Ask in your own words
           </p>
         </div>
@@ -89,10 +89,7 @@
       <div class="flex shrink-0 items-center gap-1.5">
         @if (showModeSelector()) {
           <select
-            class="h-9 cursor-pointer appearance-none rounded-xl border border-gray-200 bg-white/80 bg-[length:10px] bg-[position:right_10px_center] bg-no-repeat py-0 pr-8 pl-3 text-xs font-medium text-gray-700 transition hover:bg-gray-50 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--p-primary-color,#4f46e5)] dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800"
-            style="
-              background-image: url(&quot;data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6' fill='none'><path d='M1 1l4 4 4-4' stroke='%236b7280' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/></svg>&quot;);
-            "
+            class="h-9 cursor-pointer rounded-xl border border-border bg-surface py-0 pr-8 pl-3 text-xs font-medium text-foreground transition hover:bg-surface-hover focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring"
             aria-label="Agent mode"
             [value]="mode()"
             (change)="setMode($any($event.target).value)"
@@ -104,7 +101,7 @@
         <button
           type="button"
           (click)="close()"
-          class="grid size-9 place-items-center rounded-xl border border-gray-200 bg-white/70 text-gray-600 transition hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--p-primary-color,#4f46e5)] dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white"
+          class="grid size-9 place-items-center rounded-xl border border-border bg-surface text-foreground transition hover:bg-surface-hover focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring"
           id="ai-close"
           title="Close"
           aria-label="Close assistant"
@@ -139,17 +136,17 @@
 
     <form
       id="ai-composer"
-      class="border-t border-gray-200/80 bg-gray-50/80 p-3 dark:border-gray-800 dark:bg-gray-900/70"
+      class="border-t border-border bg-secondary/80 p-3"
       autocomplete="off"
       (ngSubmit)="submit()"
     >
       <div
-        class="flex items-end gap-2 rounded-2xl border border-gray-200 bg-white p-1.5 shadow-sm focus-within:border-[color-mix(in_srgb,var(--p-primary-color,#4f46e5)_45%,white)] focus-within:ring-2 focus-within:ring-[color-mix(in_srgb,var(--p-primary-color,#4f46e5)_20%,transparent)] dark:border-gray-700 dark:bg-gray-950"
+        class="flex items-end gap-2 rounded-2xl border border-border bg-surface p-1.5 shadow-sm focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20"
       >
         <input
           #composerInput
           [(ngModel)]="message"
-          class="min-h-10 min-w-0 flex-1 bg-transparent px-3 py-2 text-sm text-gray-900 outline-none placeholder:text-gray-400 dark:text-gray-100 dark:placeholder:text-gray-500"
+          class="min-h-10 min-w-0 flex-1 bg-transparent px-3 py-2 text-sm text-foreground outline-none placeholder:text-foreground/50"
           name="message"
           placeholder="Ask a question…"
           autocomplete="off"
@@ -157,7 +154,7 @@
         @if (isRunning()) {
           <button
             type="button"
-            class="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-3 text-xs font-semibold text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800"
+            class="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-xl border border-border bg-surface px-3 text-xs font-semibold text-foreground transition hover:bg-surface-hover"
             (click)="stopRun()"
             title="Stop generating"
             aria-label="Stop generating"
@@ -177,7 +174,7 @@
         } @else {
           <button
             type="submit"
-            class="grid size-10 shrink-0 place-items-center rounded-xl bg-[var(--p-primary-color,#4f46e5)] text-white shadow-sm transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
+            class="grid size-10 shrink-0 place-items-center rounded-xl bg-primary text-primary-foreground shadow-sm transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-40"
             [disabled]="!canSend()"
             title="Send"
             aria-label="Send message"
