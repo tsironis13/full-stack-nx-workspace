@@ -52,6 +52,7 @@ describe('PaginatorComponent', () => {
     expect(previous.tagName).toBe('BUTTON');
     expect(next.tagName).toBe('BUTTON');
     expect(pageSize.tagName).toBe('SELECT');
+    expect(fixture.nativeElement.textContent).toContain('2 / 4');
 
     previous.click();
     await fixture.whenStable();
@@ -100,11 +101,13 @@ describe('PaginatorComponent', () => {
 
     expect(previous().disabled).toBe(true);
     expect(next().disabled).toBe(false);
+    expect(fixture.nativeElement.textContent).toContain('1 / 2');
 
     fixture.componentInstance.page.set(2);
     await fixture.whenStable();
 
     expect(previous().disabled).toBe(false);
     expect(next().disabled).toBe(true);
+    expect(fixture.nativeElement.textContent).toContain('2 / 2');
   });
 });

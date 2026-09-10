@@ -97,11 +97,14 @@
     class="product-detail__write"
     aria-labelledby="product-review-write-heading"
   >
-    <h2 id="product-review-write-heading">{{ 'product.writeHeading' | transloco }}</h2>
+    <h2 id="product-review-write-heading">
+      {{ 'product.writeHeading' | transloco }}
+    </h2>
 
     @if (!auth.isAuthenticated()) {
     <p class="product-detail__gate" role="status">
-      <a routerLink="/auth/login">{{ 'product.signInToReview' | transloco }}</a>{{ 'product.signInToReviewRest' | transloco }}
+      <a routerLink="/auth/login">{{ 'product.signInToReview' | transloco }}</a
+      >{{ 'product.signInToReviewRest' | transloco }}
     </p>
     } @else if (submission.notEligible()) {
     <p class="product-detail__gate" role="status">
@@ -173,7 +176,6 @@
             type="button"
             class="product-detail__rating-star"
             [class.product-detail__rating-star--filled]="isStarFilled(star, reviewForm.controls.rating.value)"
-            [attr.aria-label]="reviewRatingAriaLabel(star)"
             [attr.aria-pressed]="reviewForm.controls.rating.value >= star"
             (click)="selectRating(star)"
           >

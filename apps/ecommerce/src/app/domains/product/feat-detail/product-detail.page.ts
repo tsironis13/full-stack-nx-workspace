@@ -1,5 +1,4 @@
 import {
-  ChangeDetectionStrategy,
   Component,
   computed,
   inject,
@@ -7,11 +6,7 @@ import {
   OnInit,
   signal,
 } from '@angular/core';
-import {
-  FormBuilder,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgTemplateOutlet } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
@@ -22,11 +17,7 @@ import {
   SpinnerComponent,
   type PaginatorPageChange,
 } from '@full-stack-nx-workspace/shared';
-
-import { UiLanguageService } from '../../../core/public-api';
-
 import { AuthStore } from '@full-stack-nx-workspace/auth-web';
-
 import type { ReviewDraft } from '../application/public-api';
 import {
   formatAverageRatingForDisplay,
@@ -38,7 +29,6 @@ import {
   selector: 'app-product-detail-page',
   templateUrl: './product-detail.page.html',
   styleUrl: './product-detail.page.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     RouterLink,
     ReactiveFormsModule,
@@ -56,29 +46,24 @@ export class ProductDetailPageComponent implements OnInit {
   protected readonly store = inject(ProductDetailStore);
   protected readonly submission = inject(ReviewSubmissionStore);
   protected readonly auth = inject(AuthStore);
-  private readonly transloco = inject(TranslocoService);
-  private readonly uiLanguage = inject(UiLanguageService);
+  private readonly _transloco = inject(TranslocoService);
 
   private readonly fb = inject(FormBuilder);
 
   protected readonly editing = signal(false);
 
   protected readonly reviewForm = this.fb.nonNullable.group({
-    rating: [
-      0,
-      [Validators.required, Validators.min(1), Validators.max(5)],
-    ],
+    rating: [0, [Validators.required, Validators.min(1), Validators.max(5)]],
     title: [''],
     body: [''],
   });
 
   protected readonly aggregateLabel = computed(() => {
-    this.uiLanguage.language();
     const data = this.store.data();
     if (!data?.averageRating || data.reviewCount === 0) {
       return null;
     }
-    return this.transloco.translate('product.aggregateAria', {
+    return this._transloco.translate('product.aggregateAria', {
       average: formatAverageRatingForDisplay(data.averageRating),
       count: data.reviewCount,
     });
@@ -155,8 +140,7 @@ export class ProductDetailPageComponent implements OnInit {
   }
 
   protected reviewRatingAriaLabel(rating: number): string {
-    this.uiLanguage.language();
-    return this.transloco.translate('product.reviewRatingAria', { rating });
+    return this._transloco.translate('product.reviewRatingAria', { rating });
   }
 
   protected formatReviewDate(value: Date): string {

@@ -20,7 +20,7 @@ export type PaginatorPageChange = {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ButtonDirective, SelectDirective],
   host: {
-    class: 'flex items-center justify-center gap-3',
+    class: 'flex flex-wrap items-center justify-center gap-x-6 gap-y-2',
   },
 })
 export class PaginatorComponent {
