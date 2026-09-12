@@ -30,6 +30,8 @@ describe('CheckboxDirective', () => {
 
     expect(checkbox.type).toBe('checkbox');
     expect(checkbox.disabled).toBe(true);
+    expect(checkbox.classList.contains('accent-primary')).toBe(true);
+    expect(checkbox.classList.contains('border-border')).toBe(true);
     expect(checkbox.getAttribute('aria-label')).toBe('Subscribe');
   });
 
