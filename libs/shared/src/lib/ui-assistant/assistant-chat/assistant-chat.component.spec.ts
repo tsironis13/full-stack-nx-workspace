@@ -1,3 +1,7 @@
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 import { Component, input, output, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CopilotKit } from '@copilotkit/angular';
@@ -73,7 +77,7 @@ describe('AssistantChatComponent UI Theme', () => {
   function expectOwnedChrome(html: string): void {
     expect(html).not.toMatch(/\bgray-/);
     expect(html).not.toMatch(/--p-/);
-    expect(html).not.toMatch(/#4f46e5|#2563eb|#111827|#e5e7eb|#030712/);
+    expect(html).not.toMatch(/#4f46e5|#2563eb|#17e|#111827|#e5e7eb|#030712/);
   }
 
   it('keeps launcher, panel, and send as custom markup on semantic tokens', async () => {
@@ -117,5 +121,27 @@ describe('AssistantChatComponent UI Theme', () => {
     expect(mode.hasAttribute('libSelect')).toBe(false);
 
     expectOwnedChrome(root.innerHTML);
+  });
+
+  it('maps A2UI buttons and checkboxes onto kit color tokens', () => {
+    const scss = readFileSync(
+      join(
+        dirname(fileURLToPath(import.meta.url)),
+        'assistant-chat.component.scss',
+      ),
+      'utf8',
+    );
+
+    expect(scss).toContain('--a2ui-color-primary: var(--color-primary)');
+    expect(scss).toContain(
+      '--a2ui-color-on-primary: var(--color-primary-foreground)',
+    );
+    expect(scss).toContain('--a2ui-color-on-secondary: var(--color-foreground)');
+    expect(scss).toContain('--a2ui-button-background: var(--color-secondary)');
+    expect(scss).toContain(
+      '--a2ui-button-border: 1px solid var(--color-border)',
+    );
+    expect(scss).toContain('accent-color: var(--color-primary)');
+    expect(scss).not.toContain('#17e');
   });
 });
