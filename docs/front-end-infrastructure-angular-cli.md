@@ -1,6 +1,6 @@
 # Front-end infrastructure (Angular CLI multi-project workspace)
 
-This document describes how front-end applications are structured in an **Angular CLI multi-project workspace**, with emphasis on **domain-driven design (DDD)** layering and **enforceable module boundaries**. The canonical reference for those rules is each app’s ESLint configuration (`projects/<app>/eslint.config.js`), which extends the workspace base config and adds [`eslint-plugin-boundaries`](https://github.com/javierbrea/eslint-plugin-boundaries) in **strict** mode.
+This document describes how front-end applications are structured in an **Angular CLI multi-project workspace**, with emphasis on **domain-driven design (DDD)** layering and **enforceable module boundaries**. The canonical reference for those rules is the workspace root ESLint configuration (`eslint.config.mjs`), which adds [`eslint-plugin-boundaries`](https://github.com/javierbrea/eslint-plugin-boundaries) in **strict** mode. Each app’s config (`projects/<app>/eslint.config.mjs`) extends that root file and inherits the boundary rules.
 
 Throughout this document, **`<app>`** is a placeholder for any application under `projects/*/` (for example `projects/<app>/src/app`), and **`<lib>`** is a placeholder for any library under `libs/*/`.
 
@@ -11,7 +11,7 @@ Throughout this document, **`<app>`** is a placeholder for any application under
 - The **Angular CLI** manages all projects and libraries from a single root **`angular.json`**. Each app/library is a **project** entry with its own `root`, `sourceRoot`, and architect targets (`ng serve <app>`, `ng build <app>`, `ng test <app>`, `ng lint <app>`).
 - Projects are created with the CLI against a workspace created without a default app (see [Creating projects](#creating-projects)).
 - **Cross-app reuse** belongs in **`libs/`** libraries (built with **ng-packagr**), not by copying folders between projects. Libraries expose a single entry surface via `libs/<lib>/src/public-api.ts` (see [Shared libraries](#shared-libraries-libs)).
-- **Workspace-wide** dependency rules (app → library, library → library) live in the root `eslint.config.js`. The Angular CLI has no project graph or tag constraints, so these rules are expressed with **`eslint-plugin-boundaries`** element types over `projects/*` and `libs/*` (see [Root: `eslint.config.js`](#root-eslintconfigjs)). App-specific architectural rules are additional and more granular.
+- **Module boundaries** (app → library, library → library, and in-app DDD layers) live in the root `eslint.config.mjs`. The Angular CLI has no project graph or tag constraints, so these rules are expressed with **`eslint-plugin-boundaries`** over `projects/*` and `libs/*`: folder **`boundaries/elements`**, file **`boundaries/files`**, and **`boundaries/dependencies`** policies (see [Root: `eslint.config.mjs`](#root-eslintconfigmjs)). Each app’s `projects/<app>/eslint.config.mjs` extends the root config and inherits those rules.
 
 ### Creating projects
 
@@ -29,34 +29,57 @@ Setting `"newProjectRoot": "projects"` in `angular.json` makes `projects/` the d
 
 Linting is added with **`ng add angular-eslint`**, which registers the `@angular-eslint/builder:lint` builder as each project’s `lint` target and generates flat configs.
 
-### Root: `eslint.config.js`
+### Root: `eslint.config.mjs`
 
-The root config applies the **`angular-eslint`** and **`typescript-eslint`** flat presets (`angular.configs.tsRecommended`, `angular.configs.templateRecommended`) to all matching files, and enforces **workspace-level boundaries**:
+The root config applies the **`angular-eslint`** and **`typescript-eslint`** flat presets (`angular.configs.tsRecommended`, `angular.configs.templateRecommended`) to all matching files. It is also the **only** place that defines module boundaries, in three sections:
 
-- **`app`** (`projects/*`) may import libraries **only** through **`lib-api`** (`libs/*/src/public-api.ts`).
-- **`lib-api`** may depend only on **`lib`** internals of the **same** captured library.
-- **`lib`** may depend on its own internals and on other libraries’ **`lib-api`** only (never on `projects/*`).
+1. **`boundaries/elements`** — folder selectors. Each entry has a **`type`**, a path **`pattern`**, and optional **`capture`** groups (`project`, `domain`, `feature`, `lib`). Slice patterns start at `src/app` so they stay **inside** the parent **`project`** element (`projects/*`) instead of replacing it.
+2. **`boundaries/files`** — file selectors for entry files and barrels (`main.ts`, `app.ts`, `public-api.ts`, `*.routes.ts`, `anti-corruption-layer.ts`). Each entry has a **`category`**, a path **`pattern`**, and optional **`capture`** groups. A public barrel is a file category that sits inside a folder element; a policy that means “the barrel only” names **both**.
+3. **`boundaries/dependencies`** — the allow/deny graph. **`default: 'disallow'`**. Each policy has a **`from`** selector and an **`allow.to`** list (or a **`disallow`** pair). Selectors use `element.type`, `file.categories`, and captured values (`{{ from.element.captured.domain }}`, `{{ from.file.captured.domain }}`). Two trailing **`disallow`** policies (last match wins) reject imports whose captured **`project`** differs from the importer’s, including slices that only have `project` on their parent element.
+
+**`boundaries.configs.strict`** is merged into the rules. **`boundaries/dependency-nodes`** is `import` and `dynamic-import`, so lazy-loaded routes are checked. **`boundaries/root-path`** is the workspace root so the patterns above resolve from there.
 
 Because libraries are imported through TypeScript path aliases (for example `@<scope>/<lib>`), the boundaries plugin needs **`eslint-import-resolver-typescript`** in `settings['import/resolver']` so aliases resolve to their source `public-api.ts` files and get classified correctly.
 
 There are no Nx-style `tags`; if you need categories of libraries (for example `ui`, `data-access`, `util`), encode them in the **folder name** (`libs/ui-<name>`, `libs/data-access-<name>`) and capture them in the boundaries element pattern.
 
-### App: `projects/<app>/eslint.config.js`
+### App: `projects/<app>/eslint.config.mjs`
 
-This file:
+Each app config extends the root with `defineConfig` and does not redeclare boundary rules. It only sets Angular selector prefixes (match the project’s `prefix` in `angular.json`) and an empty HTML rules block:
 
-1. **Extends** the root config (which already includes the Angular TypeScript and template presets).
-2. Enables **`eslint-plugin-boundaries`** with **`boundaries.configs.strict`** merged into rules.
-3. Registers **`boundaries/element-types`**: a rule graph that defines **which folder/file “element types” may import which others**.
-4. Maps filesystem paths to **named element types** under `settings.boundaries.elements` (with **`capture`** groups such as `domain`, `feature`, `lib` for parameterized rules).
-5. Sets **`boundaries/dependency-nodes`** to `import` and `dynamic-import` so lazy-loaded routes are checked too.
+```js
+import { defineConfig } from 'eslint/config';
+import rootConfig from '../../eslint.config.mjs';
 
-**Angular hygiene** (same app config):
-
-- Directives: attribute selector, prefix `app`, `camelCase`.
-- Components: element selector, prefix `app`, `kebab-case`.
-
-The selector prefix should match the project’s `prefix` in `angular.json`. projects may use **only** the root rules unless they adopt the same `boundaries` setup.
+export default defineConfig([
+  ...rootConfig,
+  {
+    files: ['**/*.ts'],
+    rules: {
+      '@angular-eslint/directive-selector': [
+        'error',
+        {
+          type: 'attribute',
+          prefix: 'app',
+          style: 'camelCase',
+        },
+      ],
+      '@angular-eslint/component-selector': [
+        'error',
+        {
+          type: 'element',
+          prefix: 'app',
+          style: 'kebab-case',
+        },
+      ],
+    },
+  },
+  {
+    files: ['**/*.html'],
+    rules: {},
+  },
+]);
+```
 
 ---
 
@@ -87,7 +110,7 @@ Boundary enforcement distinguishes **route definitions** (`domains/*/api/*.route
 
 **Why not only `app/`?** **`app/`** stays thin: bootstrap, root providers, and top-level **`Route[]`**. Concrete shell components and **nested route trees** under the main frame live under **`layout/`** so composition stays navigable and ESLint can treat **`layout`** as its own **boundary element** with tailored allowed imports.
 
-**Dependency direction:** **`layout`** may wire **`domain-routes`** and consume **`domain-application-anti-corruption-layer-api`** (for example a header badge that reads curated projections without injecting another domain’s store—see [Anti-corruption layer](#anti-corruption-layer-anti-corruption-layerts)). Bounded domains generally **must not** depend on **`layout`**; dependencies flow **shell → domains**, not the reverse. Details align with **`boundaries/element-types`** in **`projects/<app>/eslint.config.js`**.
+**Dependency direction:** **`layout`** may wire **`domain-routes`** and consume **`domain-application-anti-corruption-layer-api`** (for example a header badge that reads curated projections without injecting another domain’s store—see [Anti-corruption layer](#anti-corruption-layer-anti-corruption-layerts)). Bounded domains generally **must not** depend on **`layout`**; dependencies flow **shell → domains**, not the reverse. Details align with **`boundaries/dependencies`** in the root **`eslint.config.mjs`**.
 
 See also [Routing composition](#routing-composition).
 
@@ -111,7 +134,7 @@ See also [Routing composition](#routing-composition).
 - **`pattern/`** — **Behaviour-rich reuse**: combines **`ui-api`** / **`core-api`** primitives into something meaningful across contexts.
 - **`libs/`** — Same conceptual reuse **across projects in the workspace**; **`pattern/`** is typically **within one Angular app** (still exported via `pattern/**/public-api.ts` for imports).
 
-**Boundaries:** In **`projects/<app>/eslint.config.js`**, **`pattern`** may use **`lib-api`**, **`env`**, **`core-api`**, and **`ui-api`**. **`domain-feature`**, **`domain-shared`**, **`domain-routes`**, and **`layout`** may depend on **`pattern-api`**—so domains compose patterns instead of patterns importing domain internals.
+**Boundaries:** In the root **`eslint.config.mjs`**, **`pattern`** may use **`lib-api`**, **`env`**, **`core-api`**, and **`ui-api`**. **`domain-feature`**, **`domain-shared`**, **`domain-routes`**, and **`layout`** may depend on **`pattern-api`**—so domains compose patterns instead of patterns importing domain internals.
 
 **Illustrative examples:**
 
@@ -185,7 +208,7 @@ core/<domain>/
 
 Surface **`core-api`** through `core/**/public-api.ts` (often **`core/<domain>/application/public-api.ts`** or a dedicated barrel) so consumers stay consistent with the ESLint **`core-api`** pattern.
 
-**ESLint note:** `domain-application-anti-corruption-layer-api` is wired only to **`domains/*/application/anti-corruption-layer.ts`**. Code under **`core/<domain>/`** is classified as plain **`core`**; prefer **`public-api.ts`** barrels under **`core/`** for stable imports until boundary rules are extended for core-local ACL files.
+**ESLint note:** `domain-application-anti-corruption-layer-api` is a **`boundaries/files`** category for **`domains/*/application/anti-corruption-layer.ts`**. Code under **`core/<domain>/`** is the **`core`** element; prefer **`public-api.ts`** barrels under **`core/`** (file category **`core-api`**) for stable imports until boundary rules are extended for core-local ACL files.
 
 ---
 
@@ -226,45 +249,59 @@ The second case avoids pretending a globally shared store is still “private”
 
 ---
 
-## Boundary element types (path → type)
+## `boundaries/elements` (folders)
 
-These definitions come from `settings.boundaries.elements` in `projects/<app>/eslint.config.js`:
+Folder classification in the root `eslint.config.mjs`. Patterns are relative to **`boundaries/root-path`** (the workspace root). Slice patterns start at `src/app` so the **`project`** element (`projects/*`) stays their parent.
 
-| Element type                                   | Detection                                        | Notes                                                                  |
-| ---------------------------------------------- | ------------------------------------------------ | ---------------------------------------------------------------------- |
-| `main`                                         | File `main.ts`                                   | Entry only.                                                            |
-| `app`                                          | `app.ts`, `app.config.ts`, `app.routes.ts`, etc. | Application shell.                                                     |
-| `env`                                          | Path `environments`                              | Config.                                                                |
-| `themes`                                       | Path `themes`                                    | Theming.                                                               |
-| `core-api`                                     | `core/**/public-api.ts`                          | Allowed dependency surface for `core`.                                 |
-| `core`                                         | Path `core`                                      | Implementation of core.                                                |
-| `ui-api`                                       | `ui/**/public-api.ts`                            | Public UI kit surface.                                                 |
-| `ui`                                           | Path `ui`                                        | UI implementation.                                                     |
-| `layout`                                       | Path `layout`                                    | Layout shell.                                                          |
-| `pattern-api`                                  | `pattern/**/public-api.ts`                       | Pattern public API.                                                    |
-| `pattern`                                      | Path `pattern`                                   | Pattern implementation.                                                |
-| `domain-routes`                                | `domains/*/api/*.routes.ts`                      | **(+ `domain`)** Route tables.                                         |
-| `domain-feature`                               | `domains/*/feat-(*)`                             | **(+ `domain`, `feature`)** Routed features.                           |
-| `domain-shared`                                | `domains/*/feat-shared`                          | **(+ `domain`)** Intra-domain shared UI.                               |
-| `domain-application-api`                       | `domains/*/application/public-api.ts`            | Application façade/store surface.                                      |
-| `domain-application-anti-corruption-layer-api` | `domains/*/application/anti-corruption-layer.ts` | ACL exports.                                                           |
-| `domain-application`                           | `domains/*/application`                          | Application layer implementation.                                      |
-| `domain-business-api`                          | `domains/*/domain/public-api.ts`                 | Domain model surface.                                                  |
-| `domain-business`                              | `domains/*/domain`                               | Pure domain.                                                           |
-| `domain-infrastructure-api`                    | `domains/*/infrastructure/public-api.ts`         | Infrastructure surface.                                                |
-| `domain-infrastructure`                        | `domains/*/infrastructure`                       | HTTP clients and **local wire/DTO types only** (no `domain/` imports). |
-| `domain-presentation-api`                      | `domains/*/presentation/public-api.ts`           | Reserved public slice (optional).                                      |
-| `domain-presentation`                          | `domains/*/presentation`                         | Reserved slice (optional).                                             |
-| `lib-api`                                      | `libs/*/src/public-api.ts`                       | **(+ `lib`)** Library entry.                                           |
-| `lib`                                          | `libs/*`                                         | Library internals.                                                     |
+| Element type            | Pattern                                | Capture             |
+| ----------------------- | -------------------------------------- | ------------------- |
+| `env`                   | `projects/*/src/environments`          | `project`           |
+| `themes`                | `src/app/themes`                       |                     |
+| `core`                  | `src/app/core`                         |                     |
+| `ui`                    | `src/app/ui`                           |                     |
+| `layout`                | `src/app/layout`                       |                     |
+| `pattern`               | `src/app/pattern`                      |                     |
+| `domain-shared`         | `src/app/domains/*/feat-shared`        | `domain`            |
+| `domain-feature`        | `src/app/domains/*/feat-(*)`           | `domain`, `feature` |
+| `domain-presentation`   | `src/app/domains/*/presentation`       | `domain`            |
+| `domain-infrastructure` | `src/app/domains/*/infrastructure`     | `domain`            |
+| `domain-application`    | `src/app/domains/*/application`        | `domain`            |
+| `domain-business`       | `src/app/domains/*/domain`             | `domain`            |
+| `project`               | `projects/*`                           | `project`           |
+| `lib`                   | `libs/*`                               | `lib`               |
 
-Imports that do not match an allowed **`from` → `to`** pair are rejected (**`default: 'disallow'`** on unknown relations).
+`domain-infrastructure` holds HTTP clients and **local wire/DTO types only** (no `domain/` imports). `domain-presentation` is reserved for an optional presentation slice.
+
+---
+
+## `boundaries/files` (file categories)
+
+File classification for entry points and barrels. A policy that allows only a barrel pairs the folder **`type`** with the file **`category`**.
+
+| Category                                       | Pattern                                                            | Capture              |
+| ---------------------------------------------- | ------------------------------------------------------------------ | -------------------- |
+| `main`                                         | `projects/*/src/main.ts`                                           | `project`            |
+| `app`                                          | `projects/*/src/app/app.ts`, `app[-.].*.ts`, `app.*.ts`            | `project`            |
+| `core-api`                                     | `projects/*/src/app/core/**/public-api.ts`                         | `project`            |
+| `ui-api`                                       | `projects/*/src/app/ui/**/public-api.ts`                           | `project`            |
+| `pattern-api`                                  | `projects/*/src/app/pattern/**/public-api.ts`                      | `project`            |
+| `domain-routes`                                | `projects/*/src/app/domains/*/api/*.routes.ts`                     | `project`, `domain`  |
+| `domain-presentation-api`                      | `projects/*/src/app/domains/*/presentation/public-api.ts`          | `project`, `domain`  |
+| `domain-infrastructure-api`                    | `projects/*/src/app/domains/*/infrastructure/public-api.ts`        | `project`, `domain`  |
+| `domain-application-anti-corruption-layer-api` | `projects/*/src/app/domains/*/application/anti-corruption-layer.ts` | `project`, `domain` |
+| `domain-application-api`                       | `projects/*/src/app/domains/*/application/public-api.ts`           | `project`, `domain`  |
+| `domain-business-api`                          | `projects/*/src/app/domains/*/domain/public-api.ts`                | `project`, `domain`  |
+| `lib-api`                                      | `libs/*/src/public-api.ts`                                         | `lib`                |
+
+Route and ACL files capture **`domain` on the file**, so same-domain checks in those policies read `from.file.captured.domain`. Folder rules read `from.element.captured.domain` (and `feature` for `domain-feature`).
 
 ---
 
 ## Allowed dependency directions (summary)
 
-The following is a concise reading of **`boundaries/element-types`** rules (not every nuance of captured variables).
+The following is a concise reading of **`boundaries/dependencies`** policies (not every nuance of captured variables). Anything not listed is rejected (`default: 'disallow'`).
+
+Two final **`disallow`** policies, message **“Projects must not import from other projects”**, reject a dependency when the captured **`project`** differs. One compares an element’s own `project` capture; the other compares the parent **`project`** element (`from.element.parents.[0].captured.project`) for slices under `src/app`. Last match wins, so these override an earlier allow across apps. Same-domain infrastructure stays allowed when both sides share that parent project.
 
 - **`main`** → `app`, `env`.
 - **`core`** → `env`, self, **`lib-api`** (libraries only through their public API).
@@ -276,7 +313,7 @@ The following is a concise reading of **`boundaries/element-types`** rules (not 
 - **`domain-infrastructure`** → `env`, **`core-api`**, same-domain **`domain-infrastructure`** only (no **`domain/`**, no cross-domain infra).
 - **`domain-business`** → same-domain **`domain-business`** only (pure domain isolation).
 - **`domain-feature`** → `env`, **`core-api`**, **`pattern-api`**, **`ui-api`**, `lib-api`, same **feature** only for other **`domain-feature`**, **`domain-application-api`**, **`domain-shared`** (same domain).
-- **`domain-application`** → `env`, **`core-api`**, `lib-api`, **`domain-application-anti-corruption-layer-api`**, same-domain **`domain-infrastructure-api`** (store injects API façade only through the infrastructure barrel), same **feature** for **`domain-application`**, **`domain-business-api`** (same domain).
+- **`domain-application`** → `env`, **`core-api`**, `lib-api`, **`domain-application-anti-corruption-layer-api`**, same-domain **`domain-infrastructure-api`** (store injects API façade only through the infrastructure barrel), same-domain **`domain-application`**, **`domain-business-api`** (same domain).
 - **`domain-application-anti-corruption-layer-api`** → **`domain-application-api`** or self (ACL stays next to application).
 - **`domain-shared`** → `env`, **`core-api`**, **`pattern-api`**, **`ui-api`**.
 - **`lib-api`** → **`lib`** with matching **`lib`** capture (library internals stay inside the library).
@@ -288,7 +325,7 @@ This yields the intended **hexagonal / clean architecture** flow inside each dom
 
 ## Public API convention
 
-Within the app and in libs, consumers should import from **`public-api.ts`** barrels where those element types exist (`core-api`, `ui-api`, `domain-*-api`, `lib-api`). That keeps refactor-safe surfaces and satisfies boundary classification (files under `public-api.ts` paths are typed differently from their sibling implementation folders).
+Within the app and in libs, consumers should import from **`public-api.ts`** barrels. Those barrels are **`boundaries/files`** categories (`core-api`, `ui-api`, `domain-*-api`, `lib-api`) inside the matching **`boundaries/elements`** folder. A policy that means “the barrel only” names both the element type and the file category. That keeps refactor-safe surfaces and satisfies boundary classification.
 
 ---
 
@@ -329,13 +366,13 @@ Top-level routes (`app.routes.ts`) typically lazy-load **layout** routes; layout
 4. Prefer **`domain-shared`** only for UI reused **inside** the same domain.
 5. If **one piece of UI and business logic** is shared across contexts but **does not belong to a single domain**, add **`pattern/<name>/`** and expose `pattern/**/public-api.ts` (**`pattern-api`**); see [Pattern folder](#pattern-folder).
 6. Extract to **`libs/`** when two or more projects need the same capability: run **`ng generate library <lib> --project-root libs/<lib>`**, expose **`src/public-api.ts`**, and add the path alias to the root `tsconfig.json`.
-7. Run **`ng lint <app>`**; **`boundaries/element-types`** should flag illegal imports early.
+7. Run **`ng lint <app>`**; **`boundaries/dependencies`** should flag illegal imports early.
 
 ---
 
 ## Reference files
 
 - Workspace configuration: `angular.json`, root `tsconfig.json`
-- Workspace ESLint base: `eslint.config.js`
-- Per-app DDD + Angular boundaries: `projects/<app>/eslint.config.js`
+- Workspace ESLint (presets + DDD and library boundaries): `eslint.config.mjs`
+- Per-app config (extends the root; selector prefix only): `projects/<app>/eslint.config.mjs`
 - Per-library packaging: `libs/<lib>/ng-package.json`, `libs/<lib>/src/public-api.ts`
