@@ -1,3 +1,4 @@
+import { resolve } from 'node:path';
 import boundaries from 'eslint-plugin-boundaries';
 import angular from 'angular-eslint';
 
@@ -5,7 +6,11 @@ import angular from 'angular-eslint';
  * Angular CLI app boundaries for eslint-plugin-boundaries v7.
  * Compose this after the workspace root config from `ng add angular-eslint`.
  *
+ * File barrels that used to be `mode: 'file'` elements are `boundaries/files`
+ * categories. Folder elements stay in `boundaries/elements`.
+ *
  * @see https://www.jsboundaries.dev/docs/rules/dependencies/
+ * @see https://www.jsboundaries.dev/docs/classification/files/
  */
 const sameDomain = {
   domain: '{{ from.element.captured.domain }}',
@@ -16,11 +21,67 @@ const sameFeature = {
   feature: '{{ from.element.captured.feature }}',
 };
 
-const otherDomain = {
-  domain: '!{{ from.element.captured.domain }}',
+const sameFileDomain = {
+  domain: '{{ from.file.captured.domain }}',
+};
+
+const otherFileDomain = {
+  domain: '!{{ from.file.captured.domain }}',
 };
 
 const project = ['project'];
+
+const coreApi = {
+  element: { type: 'core' },
+  file: { categories: 'core-api' },
+};
+
+const uiApi = {
+  element: { type: 'ui' },
+  file: { categories: 'ui-api' },
+};
+
+const patternApi = {
+  element: { type: 'pattern' },
+  file: { categories: 'pattern-api' },
+};
+
+const libApi = {
+  element: { type: 'lib' },
+  file: { categories: 'lib-api' },
+};
+
+const appFile = { file: { categories: 'app' } };
+
+const domainRoutesFile = { file: { categories: 'domain-routes' } };
+
+const aclFile = {
+  file: { categories: 'domain-application-anti-corruption-layer-api' },
+};
+
+const sameDomainInfrastructureApi = {
+  element: {
+    type: 'domain-infrastructure',
+    captured: sameDomain,
+  },
+  file: { categories: 'domain-infrastructure-api' },
+};
+
+const sameDomainApplicationApi = {
+  element: {
+    type: 'domain-application',
+    captured: sameDomain,
+  },
+  file: { categories: 'domain-application-api' },
+};
+
+const sameDomainBusinessApi = {
+  element: {
+    type: 'domain-business',
+    captured: sameDomain,
+  },
+  file: { categories: 'domain-business-api' },
+};
 
 export default [
   {
@@ -38,103 +99,106 @@ export default [
           default: 'disallow',
           policies: [
             {
-              from: { element: { type: 'main' } },
-              allow: { to: { element: { type: ['app', 'env'] } } },
+              from: { file: { categories: 'main' } },
+              allow: {
+                to: [appFile, { element: { type: 'env' } }],
+              },
             },
             {
               from: { element: { type: 'core' } },
               allow: {
-                to: { element: { type: ['env', 'core', 'lib-api'] } },
+                to: [{ element: { type: ['env', 'core'] } }, libApi],
               },
             },
             {
               from: { element: { type: 'ui' } },
-              allow: { to: { element: { type: ['lib-api', 'ui'] } } },
+              allow: {
+                to: [libApi, { element: { type: 'ui' } }],
+              },
             },
             {
               from: { element: { type: 'layout' } },
               allow: {
-                to: {
-                  element: {
-                    type: [
-                      'lib-api',
-                      'env',
-                      'core-api',
-                      'ui-api',
-                      'pattern-api',
-                      'layout',
-                      'domain-routes',
-                      'domain-application-anti-corruption-layer-api',
-                    ],
-                  },
-                },
+                to: [
+                  { element: { type: ['env', 'layout'] } },
+                  libApi,
+                  coreApi,
+                  uiApi,
+                  patternApi,
+                  domainRoutesFile,
+                  aclFile,
+                ],
               },
             },
             {
-              from: { element: { type: 'app' } },
+              from: appFile,
               allow: {
-                to: {
-                  element: {
-                    type: [
-                      'themes',
-                      'lib-api',
-                      'app',
-                      'env',
-                      'core-api',
-                      'layout',
-                      'ui-api',
-                      'domain-routes',
-                    ],
-                  },
-                },
+                to: [
+                  { element: { type: ['themes', 'env', 'layout'] } },
+                  appFile,
+                  libApi,
+                  coreApi,
+                  uiApi,
+                  domainRoutesFile,
+                ],
               },
             },
             {
               from: { element: { type: 'pattern' } },
               allow: {
-                to: {
-                  element: { type: ['lib-api', 'env', 'core-api', 'ui-api'] },
-                },
+                to: [
+                  { element: { type: 'env' } },
+                  libApi,
+                  coreApi,
+                  uiApi,
+                ],
               },
             },
             {
-              from: {
-                element: {
-                  type: 'domain-application-anti-corruption-layer-api',
-                },
-              },
-              allow: {
-                to: {
-                  element: {
-                    type: [
-                      'domain-application-api',
-                      'domain-application-anti-corruption-layer-api',
-                    ],
-                  },
-                },
-              },
-            },
-            {
-              from: { element: { type: 'domain-routes' } },
+              from: aclFile,
               allow: {
                 to: [
                   {
-                    element: {
-                      type: ['lib-api', 'env', 'core-api', 'pattern-api'],
+                    element: { type: 'domain-application' },
+                    file: { categories: 'domain-application-api' },
+                  },
+                  aclFile,
+                ],
+              },
+            },
+            {
+              from: domainRoutesFile,
+              allow: {
+                to: [
+                  { element: { type: 'env' } },
+                  libApi,
+                  coreApi,
+                  patternApi,
+                  {
+                    file: {
+                      categories: 'domain-routes',
+                      captured: otherFileDomain,
                     },
                   },
                   {
-                    element: { type: 'domain-routes', captured: otherDomain },
+                    element: {
+                      type: 'domain-feature',
+                      captured: sameFileDomain,
+                    },
                   },
                   {
                     element: {
-                      type: [
-                        'domain-feature',
-                        'domain-infrastructure-api',
-                        'domain-application-api',
-                      ],
-                      captured: sameDomain,
+                      type: 'domain-infrastructure',
+                      captured: sameFileDomain,
                     },
+                    file: { categories: 'domain-infrastructure-api' },
+                  },
+                  {
+                    element: {
+                      type: 'domain-application',
+                      captured: sameFileDomain,
+                    },
+                    file: { categories: 'domain-application-api' },
                   },
                 ],
               },
@@ -143,7 +207,8 @@ export default [
               from: { element: { type: 'domain-infrastructure' } },
               allow: {
                 to: [
-                  { element: { type: ['env', 'core-api'] } },
+                  { element: { type: 'env' } },
+                  coreApi,
                   {
                     element: {
                       type: 'domain-infrastructure',
@@ -165,23 +230,21 @@ export default [
               from: { element: { type: 'domain-feature' } },
               allow: {
                 to: [
+                  { element: { type: 'env' } },
+                  coreApi,
+                  patternApi,
+                  uiApi,
+                  libApi,
                   {
                     element: {
-                      type: [
-                        'env',
-                        'core-api',
-                        'pattern-api',
-                        'ui-api',
-                        'lib-api',
-                      ],
+                      type: 'domain-feature',
+                      captured: sameFeature,
                     },
                   },
-                  {
-                    element: { type: 'domain-feature', captured: sameFeature },
-                  },
+                  sameDomainApplicationApi,
                   {
                     element: {
-                      type: ['domain-application-api', 'domain-shared'],
+                      type: 'domain-shared',
                       captured: sameDomain,
                     },
                   },
@@ -192,49 +255,34 @@ export default [
               from: { element: { type: 'domain-application' } },
               allow: {
                 to: [
-                  {
-                    element: {
-                      type: [
-                        'env',
-                        'core-api',
-                        'lib-api',
-                        'domain-application-anti-corruption-layer-api',
-                      ],
-                    },
-                  },
-                  {
-                    element: {
-                      type: 'domain-infrastructure-api',
-                      captured: sameDomain,
-                    },
-                  },
+                  { element: { type: 'env' } },
+                  coreApi,
+                  libApi,
+                  aclFile,
+                  sameDomainInfrastructureApi,
                   {
                     element: {
                       type: 'domain-application',
                       captured: sameDomain,
                     },
                   },
-                  {
-                    element: {
-                      type: 'domain-business-api',
-                      captured: sameDomain,
-                    },
-                  },
+                  sameDomainBusinessApi,
                 ],
               },
             },
             {
               from: { element: { type: 'domain-shared' } },
               allow: {
-                to: {
-                  element: {
-                    type: ['env', 'core-api', 'pattern-api', 'ui-api'],
-                  },
-                },
+                to: [
+                  { element: { type: 'env' } },
+                  coreApi,
+                  patternApi,
+                  uiApi,
+                ],
               },
             },
             {
-              from: { element: { type: 'lib-api' } },
+              from: libApi,
               allow: {
                 to: {
                   element: {
@@ -270,6 +318,30 @@ export default [
                 },
               },
             },
+            {
+              // Elements under src/app capture the domain on themselves and the
+              // Angular CLI project on their parent. Same-domain infrastructure
+              // stays allowed because both sides share that parent project.
+              message: 'Projects must not import from other projects',
+              disallow: {
+                from: {
+                  element: {
+                    parent: { type: 'project', captured: { project: '*' } },
+                  },
+                },
+                to: {
+                  element: {
+                    parent: {
+                      type: 'project',
+                      captured: {
+                        project:
+                          '!{{ from.element.parents.[0].captured.project }}',
+                      },
+                    },
+                  },
+                },
+              },
+            },
           ],
         },
       ],
@@ -298,6 +370,71 @@ export default [
       },
       'boundaries/ignore': [],
       'boundaries/dependency-nodes': ['import', 'dynamic-import'],
+      'boundaries/root-path': resolve(import.meta.dirname),
+      'boundaries/files': [
+        {
+          category: 'main',
+          pattern: 'projects/*/src/main.ts',
+          capture: ['project'],
+        },
+        {
+          category: 'app',
+          pattern:
+            'projects/*/src/app/app\\.ts|projects/*/src/app/app[-.].*\\.ts|projects/*/src/app/app.*.ts',
+          capture: ['project'],
+        },
+        {
+          category: 'core-api',
+          pattern: 'projects/*/src/app/core/**/public-api.ts',
+          capture: ['project'],
+        },
+        {
+          category: 'ui-api',
+          pattern: 'projects/*/src/app/ui/**/public-api.ts',
+          capture: ['project'],
+        },
+        {
+          category: 'pattern-api',
+          pattern: 'projects/*/src/app/pattern/**/public-api.ts',
+          capture: ['project'],
+        },
+        {
+          category: 'domain-routes',
+          pattern: 'projects/*/src/app/domains/*/api/*.routes.ts',
+          capture: ['project', 'domain'],
+        },
+        {
+          category: 'domain-presentation-api',
+          pattern: 'projects/*/src/app/domains/*/presentation/public-api.ts',
+          capture: ['project', 'domain'],
+        },
+        {
+          category: 'domain-infrastructure-api',
+          pattern: 'projects/*/src/app/domains/*/infrastructure/public-api.ts',
+          capture: ['project', 'domain'],
+        },
+        {
+          category: 'domain-application-anti-corruption-layer-api',
+          pattern:
+            'projects/*/src/app/domains/*/application/anti-corruption-layer.ts',
+          capture: ['project', 'domain'],
+        },
+        {
+          category: 'domain-application-api',
+          pattern: 'projects/*/src/app/domains/*/application/public-api.ts',
+          capture: ['project', 'domain'],
+        },
+        {
+          category: 'domain-business-api',
+          pattern: 'projects/*/src/app/domains/*/domain/public-api.ts',
+          capture: ['project', 'domain'],
+        },
+        {
+          category: 'lib-api',
+          pattern: 'libs/*/src/public-api.ts',
+          capture: ['lib'],
+        },
+      ],
       'boundaries/elements': [
         {
           type: 'env',
@@ -306,137 +443,60 @@ export default [
         },
         {
           type: 'themes',
-          pattern: 'projects/*/src/app/themes',
-          capture: project,
-        },
-        {
-          type: 'main',
-          mode: 'file',
-          pattern: 'projects/*/src/main.ts',
-          capture: project,
-        },
-        {
-          type: 'app',
-          mode: 'file',
-          pattern:
-            'projects/*/src/app/app\\.ts|projects/*/src/app/app[-.].*\\.ts|projects/*/src/app/app.*.ts',
-          capture: project,
-        },
-        {
-          type: 'core-api',
-          mode: 'file',
-          pattern: 'projects/*/src/app/core/**/public-api.ts',
-          capture: project,
+          pattern: 'src/app/themes',
         },
         {
           type: 'core',
-          pattern: 'projects/*/src/app/core',
-          capture: project,
-        },
-        {
-          type: 'ui-api',
-          mode: 'file',
-          pattern: 'projects/*/src/app/ui/**/public-api.ts',
-          capture: project,
+          pattern: 'src/app/core',
         },
         {
           type: 'ui',
-          pattern: 'projects/*/src/app/ui',
-          capture: project,
+          pattern: 'src/app/ui',
         },
         {
           type: 'layout',
-          pattern: 'projects/*/src/app/layout',
-          capture: project,
-        },
-        {
-          type: 'pattern-api',
-          mode: 'file',
-          pattern: 'projects/*/src/app/pattern/**/public-api.ts',
-          capture: project,
+          pattern: 'src/app/layout',
         },
         {
           type: 'pattern',
-          pattern: 'projects/*/src/app/pattern',
-          capture: project,
-        },
-        {
-          type: 'domain-routes',
-          mode: 'file',
-          pattern: 'projects/*/src/app/domains/*/api/*.routes.ts',
-          capture: ['project', 'domain'],
+          pattern: 'src/app/pattern',
         },
         {
           type: 'domain-shared',
-          pattern: 'projects/*/src/app/domains/*/feat-shared',
-          capture: ['project', 'domain'],
+          pattern: 'src/app/domains/*/feat-shared',
+          capture: ['domain'],
         },
         {
           type: 'domain-feature',
-          pattern: 'projects/*/src/app/domains/*/feat-(*)',
-          capture: ['project', 'domain', 'feature'],
-        },
-        {
-          type: 'domain-presentation-api',
-          mode: 'file',
-          pattern: 'projects/*/src/app/domains/*/presentation/public-api.ts',
-          capture: ['project', 'domain'],
+          pattern: 'src/app/domains/*/feat-(*)',
+          capture: ['domain', 'feature'],
         },
         {
           type: 'domain-presentation',
-          pattern: 'projects/*/src/app/domains/*/presentation',
-          capture: ['project', 'domain'],
-        },
-        {
-          type: 'domain-infrastructure-api',
-          mode: 'file',
-          pattern: 'projects/*/src/app/domains/*/infrastructure/public-api.ts',
-          capture: ['project', 'domain'],
+          pattern: 'src/app/domains/*/presentation',
+          capture: ['domain'],
         },
         {
           type: 'domain-infrastructure',
-          pattern: 'projects/*/src/app/domains/*/infrastructure',
-          capture: ['project', 'domain'],
-        },
-        {
-          type: 'domain-application-anti-corruption-layer-api',
-          mode: 'file',
-          pattern:
-            'projects/*/src/app/domains/*/application/anti-corruption-layer.ts',
-          capture: project,
-        },
-        {
-          type: 'domain-application-api',
-          mode: 'file',
-          pattern: 'projects/*/src/app/domains/*/application/public-api.ts',
-          capture: ['project', 'domain'],
+          pattern: 'src/app/domains/*/infrastructure',
+          capture: ['domain'],
         },
         {
           type: 'domain-application',
-          pattern: 'projects/*/src/app/domains/*/application',
-          capture: ['project', 'domain'],
-        },
-        {
-          type: 'domain-business-api',
-          mode: 'file',
-          pattern: 'projects/*/src/app/domains/*/domain/public-api.ts',
-          capture: ['project', 'domain'],
+          pattern: 'src/app/domains/*/application',
+          capture: ['domain'],
         },
         {
           type: 'domain-business',
-          pattern: 'projects/*/src/app/domains/*/domain',
-          capture: ['project', 'domain'],
+          pattern: 'src/app/domains/*/domain',
+          capture: ['domain'],
         },
         {
+          // Parent layer of every element under projects/<name>/src/app.
+          // Slice patterns start at src/app so this folder stays outside them.
           type: 'project',
           pattern: 'projects/*',
           capture: project,
-        },
-        {
-          type: 'lib-api',
-          mode: 'file',
-          pattern: 'libs/*/src/public-api.ts',
-          capture: ['lib'],
         },
         {
           type: 'lib',
