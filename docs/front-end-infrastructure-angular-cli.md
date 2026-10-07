@@ -172,7 +172,6 @@ domains/<domain>/
     *.service.ts               # HTTP / remote clients
     *.model.ts                 # wire/API-only types (do not import from domain/)
   data/                        # optional mapping/cache helpers (still governed by feature/application imports)
-  presentation/                # optional; path type exists in ESLint for future “presentation” slice
 ```
 
 **HTTP and stores (mandatory split):**
@@ -263,14 +262,13 @@ Folder classification in the root `eslint.config.mjs`. Patterns are relative to 
 | `pattern`               | `src/app/pattern`                      |                     |
 | `domain-shared`         | `src/app/domains/*/feat-shared`        | `domain`            |
 | `domain-feature`        | `src/app/domains/*/feat-(*)`           | `domain`, `feature` |
-| `domain-presentation`   | `src/app/domains/*/presentation`       | `domain`            |
 | `domain-infrastructure` | `src/app/domains/*/infrastructure`     | `domain`            |
 | `domain-application`    | `src/app/domains/*/application`        | `domain`            |
 | `domain-business`       | `src/app/domains/*/domain`             | `domain`            |
 | `project`               | `projects/*`                           | `project`           |
 | `lib`                   | `libs/*`                               | `lib`               |
 
-`domain-infrastructure` holds HTTP clients and **local wire/DTO types only** (no `domain/` imports). `domain-presentation` is reserved for an optional presentation slice.
+`domain-infrastructure` holds HTTP clients and **local wire/DTO types only** (no `domain/` imports).
 
 ---
 
@@ -286,7 +284,6 @@ File classification for entry points and barrels. A policy that allows only a ba
 | `ui-api`                                       | `projects/*/src/app/ui/**/public-api.ts`                           | `project`            |
 | `pattern-api`                                  | `projects/*/src/app/pattern/**/public-api.ts`                      | `project`            |
 | `domain-routes`                                | `projects/*/src/app/domains/*/api/*.routes.ts`                     | `project`, `domain`  |
-| `domain-presentation-api`                      | `projects/*/src/app/domains/*/presentation/public-api.ts`          | `project`, `domain`  |
 | `domain-infrastructure-api`                    | `projects/*/src/app/domains/*/infrastructure/public-api.ts`        | `project`, `domain`  |
 | `domain-application-anti-corruption-layer-api` | `projects/*/src/app/domains/*/application/anti-corruption-layer.ts` | `project`, `domain` |
 | `domain-application-api`                       | `projects/*/src/app/domains/*/application/public-api.ts`           | `project`, `domain`  |
