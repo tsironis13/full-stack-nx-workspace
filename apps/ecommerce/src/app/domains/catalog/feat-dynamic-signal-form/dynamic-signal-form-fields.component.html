@@ -1,0 +1,196 @@
+@for (view of views(); track view.key) {
+  @if (!view.hidden) {
+    @if (view.kind === 'group') {
+      <fieldset class="dynamic-form__group">
+        <legend class="dynamic-form__legend">{{ view.field.label }}</legend>
+        @if (view.field.hint) {
+          <p class="dynamic-form__hint">{{ view.field.hint }}</p>
+        }
+        <app-dynamic-signal-form-fields
+          [parent]="view.group"
+          [fields]="view.field.fields"
+          [submitted]="submitted()"
+          [namePrefix]="view.controlId"
+        />
+      </fieldset>
+    } @else if (view.kind === 'repeat') {
+      <div class="dynamic-form__repeat">
+        <p class="dynamic-form__legend">{{ view.field.label }}</p>
+        @if (view.field.hint) {
+          <p class="dynamic-form__hint">{{ view.field.hint }}</p>
+        }
+        @for (row of view.rows; track $index) {
+          <div class="dynamic-form__repeat-row">
+            <app-dynamic-signal-form-fields
+              [parent]="row.group"
+              [fields]="view.field.fields"
+              [submitted]="submitted()"
+              [namePrefix]="row.controlId"
+            />
+            <button
+              type="button"
+              wr-btn
+              size="sm"
+              outlined
+              [disabled]="view.disabled"
+              (click)="removeRow(view.field, $index)"
+            >
+              {{ view.field.removeLabel }}
+            </button>
+          </div>
+        }
+        <button
+          type="button"
+          wr-btn
+          size="sm"
+          color="primary"
+          outlined
+          [disabled]="view.disabled"
+          (click)="addRow(view.field)"
+        >
+          {{ view.field.addLabel }}
+        </button>
+      </div>
+    } @else if (view.kind === 'checkbox') {
+      <wr-form-item [hasError]="view.error !== null">
+        <wr-checkbox [id]="view.controlId" [formField]="view.control">
+          {{ view.label }}
+        </wr-checkbox>
+        @if (view.field.hint) {
+          <p class="dynamic-form__hint">{{ view.field.hint }}</p>
+        }
+        @if (view.error; as error) {
+          <wr-form-error>{{ error }}</wr-form-error>
+        }
+      </wr-form-item>
+    } @else if (view.kind === 'checkboxGroup') {
+      <wr-form-field
+        [label]="view.field.label"
+        [hint]="view.field.hint ?? ''"
+        [required]="view.required"
+        [controlId]="view.controlId"
+        [autoErrors]="false"
+      >
+        <wr-checkbox-group [formField]="view.control">
+          @for (option of view.field.options; track option.value) {
+            <wr-checkbox [checkboxValue]="option.value">
+              {{ option.label }}
+            </wr-checkbox>
+          }
+        </wr-checkbox-group>
+        @if (view.error; as error) {
+          <wr-form-error>{{ error }}</wr-form-error>
+        }
+      </wr-form-field>
+    } @else if (view.kind === 'radio') {
+      <wr-form-field
+        [label]="view.field.label"
+        [hint]="view.field.hint ?? ''"
+        [required]="view.required"
+        [controlId]="view.controlId"
+        [autoErrors]="false"
+      >
+        <wr-radio-group [formField]="view.control">
+          @for (option of view.field.options; track option.value) {
+            <wr-radio [value]="option.value">{{ option.label }}</wr-radio>
+          }
+        </wr-radio-group>
+        @if (view.error; as error) {
+          <wr-form-error>{{ error }}</wr-form-error>
+        }
+      </wr-form-field>
+    } @else if (view.kind === 'select') {
+      <wr-form-field
+        [label]="view.field.label"
+        [hint]="view.field.hint ?? ''"
+        [required]="view.required"
+        [controlId]="view.controlId"
+        [autoErrors]="false"
+      >
+        <wr-select
+          [formField]="view.control"
+          [placeholder]="view.field.placeholder ?? ''"
+        >
+          @for (option of view.field.options; track option.value) {
+            <wr-option [value]="option.value">{{ option.label }}</wr-option>
+          }
+        </wr-select>
+        @if (view.error; as error) {
+          <wr-form-error>{{ error }}</wr-form-error>
+        }
+      </wr-form-field>
+    } @else if (view.kind === 'textarea') {
+      <wr-form-field
+        [label]="view.field.label"
+        [hint]="view.field.hint ?? ''"
+        [required]="view.required"
+        [controlId]="view.controlId"
+        [autoErrors]="false"
+      >
+        <wr-textarea
+          [formField]="view.control"
+          [placeholder]="view.field.placeholder ?? ''"
+          [rows]="view.field.rows ?? 4"
+        />
+        @if (view.error; as error) {
+          <wr-form-error>{{ error }}</wr-form-error>
+        }
+      </wr-form-field>
+    } @else if (view.kind === 'number') {
+      <wr-form-field
+        [label]="view.field.label"
+        [hint]="view.field.hint ?? ''"
+        [required]="view.required"
+        [controlId]="view.controlId"
+        [autoErrors]="false"
+      >
+        <wr-input-number
+          [formField]="view.control"
+          [placeholder]="view.field.placeholder ?? ''"
+          [step]="view.field.step ?? 1"
+        />
+        @if (view.error; as error) {
+          <wr-form-error>{{ error }}</wr-form-error>
+        }
+      </wr-form-field>
+    } @else if (view.kind === 'date') {
+      <wr-form-field
+        [label]="view.field.label"
+        [hint]="view.field.hint ?? ''"
+        [required]="view.required"
+        [controlId]="view.controlId"
+        [autoErrors]="false"
+      >
+        <wr-date-picker
+          [formField]="view.control"
+          [ariaLabel]="view.field.label"
+          format="yyyy-MM-dd"
+        />
+        @if (view.error; as error) {
+          <wr-form-error>{{ error }}</wr-form-error>
+        }
+      </wr-form-field>
+    } @else if (
+      view.kind === 'text' || view.kind === 'email' || view.kind === 'tel'
+    ) {
+      <wr-form-field
+        [label]="view.field.label"
+        [hint]="view.field.hint ?? ''"
+        [required]="view.required"
+        [controlId]="view.controlId"
+        [autoErrors]="false"
+      >
+        <input
+          wrInput
+          [id]="view.controlId"
+          [type]="view.field.type"
+          [formField]="view.control"
+          [attr.placeholder]="view.field.placeholder ?? null"
+        />
+        @if (view.error; as error) {
+          <wr-form-error>{{ error }}</wr-form-error>
+        }
+      </wr-form-field>
+    }
+  }
+}

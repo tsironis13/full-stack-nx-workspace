@@ -1,0 +1,66 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.dynamic-form__group,
+.dynamic-form__repeat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-inline-size: 0;
+}
+
+.dynamic-form__group {
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+}
+
+.dynamic-form__legend {
+  padding: 0;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.dynamic-form__hint {
+  margin: 0;
+  font-size: 0.875rem;
+  color: color-mix(in srgb, var(--color-foreground) 68%, transparent);
+}
+
+.dynamic-form__repeat-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+}
+
+.dynamic-form__repeat-row > app-dynamic-signal-form-fields {
+  align-self: stretch;
+}
+
+wr-form-field,
+wr-select,
+wr-input-number,
+wr-textarea,
+wr-date-picker,
+input[wrInput] {
+  width: 100%;
+}
+
+wr-radio-group,
+wr-checkbox-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
